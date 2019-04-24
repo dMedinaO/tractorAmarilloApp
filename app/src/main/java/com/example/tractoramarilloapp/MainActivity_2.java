@@ -1,5 +1,6 @@
 package com.example.tractoramarilloapp;
 
+
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,7 @@ import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,9 +33,11 @@ import org.w3c.dom.Text;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
 public class MainActivity_2 extends AppCompatActivity {
 
-    private ImageView imageCheck;
+    private ImageView imageCheck,imageSync,imageSignal;
     private Button buttonInicio,buttonVolver;
     private TextView mensajeAlert,nombreUsuario,usuarioRUT,nombrePredio,nombreFaena;
     private TextView nombreMaquina,maquinaModelo,maquinaCapacidad;
@@ -61,6 +65,12 @@ public class MainActivity_2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_2);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
         final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
         final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
         final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
@@ -70,6 +80,8 @@ public class MainActivity_2 extends AppCompatActivity {
         buttonVolver = (Button) findViewById(R.id.buttonVolver);
         imageCheck = (ImageView) findViewById(R.id.imageView5);
         mensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
 
 
         nombreUsuario = (TextView) findViewById(R.id.textNombreUsuario);
@@ -102,20 +114,17 @@ public class MainActivity_2 extends AppCompatActivity {
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
 
-        //Log.e("TAGGGG: ",""+prefs.getAll().toString());
-
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("predio_nombre","null"));
-        //prefs.getString("id_predio","null");
-        //prefs.getString("id_maquinaria","null");
+
         nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("maquinaria_nombre","null"));
         maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("maquinaria_modelo","null"));
         maquinaCapacidad.setText(maquinaCapacidad.getText().toString()+""+prefs.getString("maquinaria_capacidad","null"));
-        //prefs.getString("id_implemento","null");
+
         nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("implemento_nombre","null"));
         implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("implemento_modelo","null"));
         implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("implemento_capacidad","null"));
         nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("faena_nombre","null"));
-        //prefs.getString("id_faena","null");
+
         nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("usuario","null"));
         usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut","null"));
 
@@ -153,6 +162,12 @@ public class MainActivity_2 extends AppCompatActivity {
             }
         });
 
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
 
     }
 
@@ -226,8 +241,6 @@ public class MainActivity_2 extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
 
         String nombreImplemento = prefs.getString("implemento_nombre","null");

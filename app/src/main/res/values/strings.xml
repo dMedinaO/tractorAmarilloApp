@@ -14,4 +14,10 @@
     <string name="alert_faena">Seleccione una faena y presione el botón aceptar.</string>
     <string name="alert_finish">Para finalizar la sesión debe acercar el dispositivo a la maquinaria seleccionada.</string>
 
+    <string name="alert_implemento_error">El implemento seleccionado no se puede ocupar con la maquinaria actual</string>
+    <string name="alert_trabajar_implemento">¿Confirma que desea trabajar sin implemento?</string>
+    <string name="alert_eliminar_implemento">¿Confirma que desea quitar el implemento?</string>
+
+
+
 </resources>

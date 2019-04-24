@@ -1,5 +1,9 @@
 package com.example.tractoramarilloapp;
 
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.v7.app.ActionBar;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,17 +14,23 @@ import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static ConnectivityManager manager;
+
+    private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
-    private TextView msjMotivacional;
+    private TextView msjMotivacional,textComentario;
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
@@ -35,18 +45,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = this;
 
+        // VARIABLES INIT
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
+        imageComentario = (ImageView) findViewById(R.id.imageComentario);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
+        textComentario = (TextView) findViewById(R.id.textComentarioLink);
+        imageComentario.setColorFilter(Color.rgb(206, 206, 206));
+        textComentario.setTextColor(Color.rgb(206, 206, 206));
+
+        //SHARED PREFERENCES
         SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
-
         editor = prefs.edit();
 
-        String usuario = "Ricardo Etcheverry";
-        String usuarioRut = "24.858.868-3";
 
-        //tvNFCContent = findViewById(R.id.nfc_contents);
-       // message = findViewById(R.id.edit_message);
+        // NFC CONFIGURATION
+        context = this;
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
@@ -55,41 +76,21 @@ public class MainActivity extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
-        /*btnWrite = findViewById(R.id.button);
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Click", "Try Write");
-                nfcHandler.writeNFC(message.getText().toString(), myTag, pendingIntent, writeTagFilters);
-            }
-        });*/
-
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-        //.setText("NFC Content: " + text);
-        //Toast.makeText(MainActivity.this,"HOLA "+text,Toast.LENGTH_SHORT).show();
 
 
-
-        msjMotivacional = (TextView) findViewById(R.id.textMotivacional);
-
-        msjMotivacional.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(MainActivity.this,"Hola mensaje",Toast.LENGTH_LONG).show();
-
-                Intent intent = new Intent(MainActivity.this,MainActivity_predio.class);
-                //intent.putExtra("usuario","Ricardo Etcheverry");
-                //intent.putExtra("usuario_rut","24.858.868-3");
-                startActivity(intent);
-
-
-            }
-        });
-
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
 
 
     }
+
+
 
     @Override
     protected void onNewIntent(Intent intent) {
