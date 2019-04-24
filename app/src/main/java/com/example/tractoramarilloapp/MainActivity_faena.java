@@ -121,7 +121,7 @@ public class MainActivity_faena extends AppCompatActivity {
                 editor.putInt("id_faena",spinner.getSelectedItemPosition());
                 editor.commit();
 
-                Intent intent = new Intent(MainActivity_faena.this,MainActivity_2.class);
+                Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
                 startActivity(intent);
                 finish();
 

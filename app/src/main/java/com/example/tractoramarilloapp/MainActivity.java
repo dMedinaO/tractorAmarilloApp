@@ -1,5 +1,7 @@
 package com.example.tractoramarilloapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -87,10 +89,34 @@ public class MainActivity extends AppCompatActivity {
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
 
+        imageSync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isOnline(getApplicationContext())){
+                    alertSync("Sincronización exitosa.");
+                }else{
+                    alertSync("Error de sincronización, intente nuevamente.");
+                }
+            }
+        });
+
 
     }
 
+    public void alertSync(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
 
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {

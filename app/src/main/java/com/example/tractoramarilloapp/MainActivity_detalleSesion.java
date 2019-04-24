@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
@@ -17,25 +16,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
-
-import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_2 extends AppCompatActivity {
+public class MainActivity_detalleSesion extends AppCompatActivity {
 
     private ImageView imageCheck,imageSync,imageSignal;
     private Button buttonInicio,buttonVolver;
@@ -63,7 +57,7 @@ public class MainActivity_2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_2);
+        setContentView(R.layout.activity_detalleSesion);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -155,7 +149,7 @@ public class MainActivity_2 extends AppCompatActivity {
                 editor.remove("faena_nombre");
                 editor.commit();
 
-                Intent intent = new Intent(MainActivity_2.this,MainActivity_faena.class);
+                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_faena.class);
                 startActivity(intent);
                 finish();
 
@@ -188,7 +182,7 @@ public class MainActivity_2 extends AppCompatActivity {
                 String data2 = data.getStringExtra("horometro");
 
                 // Do something with the contact here (bigger example below)
-                //Toast.makeText(MainActivity_2.this,"Hola horometro " + data2,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity_detalleSesion.this,"Hola horometro " + data2,Toast.LENGTH_SHORT).show();
                 //mensajeAlert.setText("Acerque el dispositivo al implemento.");
                 relativeInicioSesion.setVisibility(View.GONE);
                 relativeCierreSesion.setVisibility(View.VISIBLE);
@@ -202,7 +196,7 @@ public class MainActivity_2 extends AppCompatActivity {
                         editor.clear().commit();
 
                         //editor.clear().commit();
-                        Intent intent = new Intent(MainActivity_2.this,MainActivity.class);
+                        Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
                         startActivity(intent);
                         finish();
 
@@ -219,7 +213,7 @@ public class MainActivity_2 extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface arg0, int arg1) {
-                                Toast.makeText(MainActivity_2.this,"You clicked yes button",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity_detalleSesion.this,"You clicked yes button",Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -250,24 +244,24 @@ public class MainActivity_2 extends AppCompatActivity {
         // IF SI EL TAG ES EL IMPLEMENTO
         if (nombreImplemento.equalsIgnoreCase(""+response)){
 
-            Toast.makeText(MainActivity_2.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
 
         }
         // IF SI EL TAG ES LA PULSERA
         else if (nombreUsuario.equalsIgnoreCase(""+response)) {
 
-            Toast.makeText(MainActivity_2.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
         }
         // UF SI EL TAG ES LA MAQUINARIA Y CIERRA LA SESION
         else if(nombreMaquina.equalsIgnoreCase(""+response)){
 
             if (flagInicio!=1){
-                Toast.makeText(MainActivity_2.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
             }else{
                 Log.e("TAG 8: ","Maquinaria cierre sesión: "+response+" maquina: "+nombreMaquina);
 
                 //editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_2.this,MainActivity_horometro.class);
+                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_horometro.class);
                 intent2.putExtra("flagHorometro","2");
                 startActivityForResult(intent2,HOROMETRO_REQUEST);
                 //finish();
