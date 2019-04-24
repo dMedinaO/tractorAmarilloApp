@@ -65,18 +65,6 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         cursor.moveToFirst();//vamos al primer elemento
 
         //obtenemos la informacion de las columnas
-        int sessionToken = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.TABLE_NAME);
-        int lastChange = cursor.getColumnIndex(TableSyncDeviceContract.TableSyncDeviceEntry.LAST_CHANGE);
-        int codeInterno = cursor.getColumnIndex(TableSyncDeviceContract.TableSyncDeviceEntry.CODE_INTERNO);
-
-        while (!cursor.isAfterLast()){
-
-
-            String nameTableValue = cursor.getString(nameTable);
-            String lastChangeValue = cursor.getString(lastChange);
-            String codeInternoValue = cursor.getString(codeInterno);
-            cursor.moveToNext();
-        }
 
         return listSession;
     }
