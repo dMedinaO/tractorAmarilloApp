@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#ffccbc"
+    tools:context=".MainActivity_2">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/relativeProfile"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="3dp"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/textNombreUsuario"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/colorPrimaryLight"
+                android:text="Bienvenido "
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/textRUT"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@id/textNombreUsuario"
+                android:text="Rut: "/>
+
+            <ImageView
+                android:id="@+id/imageProfile"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                app:srcCompat="@mipmap/baseline_account" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativePredioInfo"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/inputPredioInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Predio:"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textPredioNombre"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@id/inputPredioInfo"
+                android:text="Nombre del predio: "
+                android:textSize="15dp"/>
+
+            <ImageView
+                android:id="@+id/imagePredio"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                app:srcCompat="@mipmap/baseline_terrain" />
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeMaquinaria"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/textMaquinaria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Información de la maquinaria:"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textMaquinariaDescripcion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@+id/textMaquinaria"
+                android:text="Descripción: "
+                android:textSize="15dp"
+                />
+
+            <TextView
+                android:id="@+id/textMaquinariaModelo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@+id/textMaquinariaDescripcion"
+                android:text="Modelo: "
+                android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/textMaquinariaCapacidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Capacidad: "
+                android:layout_below="@id/textMaquinariaModelo"
+                android:textSize="15dp"/>
+
+            <ImageView
+                android:id="@+id/imageMaquinaria"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                app:srcCompat="@mipmap/baseline_local_shipping" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeImplemento"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/textImplemento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Información del implemento:"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textImplementoDescripcion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@+id/textImplemento"
+                android:text="Descripción: "
+                android:textSize="15dp"
+                />
+
+            <TextView
+                android:id="@+id/textImplementoTipo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@+id/textImplementoDescripcion"
+                android:text="Tipo: "
+                android:textSize="15dp"/>
+            <TextView
+                android:id="@+id/textImplementoCapacidad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Capacidad: "
+                android:layout_below="@id/textImplementoTipo"
+                android:textSize="15dp"/>
+
+            <ImageView
+                android:id="@+id/imageImplemento"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                app:srcCompat="@mipmap/baseline_build" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/relativeFaenaInfo"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp">
+
+            <TextView
+                android:id="@+id/inputFaenaInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:text="Faena:"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textFaena"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimaryLight"
+                android:layout_below="@id/inputFaenaInfo"
+                android:text="Nombre de la faena: "
+                android:textSize="15dp"/>
+
+            <ImageView
+                android:id="@+id/imageFaena"
+                android:layout_width="48dp"
+                android:layout_height="42dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                app:srcCompat="@mipmap/baseline_group" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeMensajeSesión"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/textMensajeFinish"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:text="Sesión iniciada."
+            android:textAlignment="center"
+            android:textSize="25dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_above="@+id/textMensajeAlert"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@mipmap/baseline_check_circle"/>
+
+        <TextView
+            android:id="@+id/textMensajeAlert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="@color/colorPrimaryLight"
+            android:text="@string/alert_finish"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textStyle="bold"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeMensajeSesionOff"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/textMensajeCierreSesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Sesión cerrada con éxito."
+            android:textAlignment="center"
+            android:textSize="25dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/textMensajeCierreSesion"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@mipmap/baseline_check_circle"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        >
+
+        <Button
+            android:id="@+id/buttonIniciarJornada"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorPrimaryDark"
+            android:text="Iniciar sesión" />
+
+        <Button
+            android:id="@+id/buttonVolver"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_below="@id/buttonIniciarJornada"
+            android:layout_centerInParent="true"
+            android:background="@color/colorPrimaryDark"
+            android:text="Volver" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

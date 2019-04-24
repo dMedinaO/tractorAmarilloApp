@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">TractorAmarilloApp</string>
+    <string name="app_name">SmartHarvest</string>
+    <string name="title_activity_main_2">MainActivity_2</string>
+
+    <string name="horometro_inicio">Inicio horómetro</string>
+    <string name="horometro_fin">Fin horómetro</string>
+
+    <string name="buttonPredio">Aceptar</string>
+    <string name="buttonImplemento">Trabajar sin implemento</string>
+
+    <string name="alert_predio">Seleccione el predio y presione el botón aceptar.</string>
+    <string name="alert_maquinaria">Acerque el dipositivo a la maquinaria.</string>
+    <string name="alert_implemento">Acerque el dispositivo al implemento.</string>
+    <string name="alert_faena">Seleccione una faena y presione el botón aceptar.</string>
+    <string name="alert_finish">Para finalizar la sesión debe acercar el dispositivo a la maquinaria seleccionada.</string>
+
 </resources>
