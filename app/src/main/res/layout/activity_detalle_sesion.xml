@@ -320,20 +320,30 @@
             android:id="@+id/buttonIniciarJornada"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
             android:background="@color/colorPrimaryDark"
-            android:text="Iniciar sesión" />
+            android:text="Iniciar sesión"/>
 
         <Button
             android:id="@+id/buttonVolver"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:layout_below="@id/buttonIniciarJornada"
             android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
             android:background="@color/colorPrimaryDark"
             android:text="Volver" />
+
+        <Button
+            android:id="@+id/buttonVolverLista"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="Volver a la lista"
+            android:visibility="gone"/>
 
 
     </RelativeLayout>

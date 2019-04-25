@@ -50,7 +50,7 @@ public class MainActivity_faena extends AppCompatActivity {
         setContentView(R.layout.activity_faena);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -71,17 +71,8 @@ public class MainActivity_faena extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        writeTagFilters = new IntentFilter[]{tagDetected};
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-
-        /*btnWrite = findViewById(R.id.button);
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Click", "Try Write");
-                nfcHandler.writeNFC(message.getText().toString(), myTag, pendingIntent, writeTagFilters);
-            }
-        });*/
 
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
@@ -95,13 +86,6 @@ public class MainActivity_faena extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(MainActivity_predio.this,"HOLA spinner "+position,Toast.LENGTH_SHORT).show();
-
-                if (position != 0) {
-
-
-                }
-
 
             }
 
@@ -174,8 +158,6 @@ public class MainActivity_faena extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
 
         String nombreImplemento = prefs.getString("implemento_nombre","null");

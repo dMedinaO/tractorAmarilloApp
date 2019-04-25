@@ -163,44 +163,90 @@ public class MainActivity_implemento extends AppCompatActivity {
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
-
-        String nombreMaquina = prefs.getString("maquinaria_nombre","null");
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String nombreMaquina = prefs.getString("id_maquinaria","null");
         String nombreUsuario = prefs.getString("usuario","null");
+        String modalidad = prefs.getString("modalidad","null");
 
-        if (nombreMaquina.equalsIgnoreCase(""+response)){
+        if (modalidad.equalsIgnoreCase("2")){
 
-            Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
+            if (nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
 
-            editor.clear().commit();
-            Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
-            intent2.putExtra("flagHorometro","3");
-            startActivity(intent2);
-            finish();
+                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
 
-        }else if (nombreUsuario.equalsIgnoreCase(""+response)) {
-            Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-        }else {
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro","3");
+                startActivity(intent2);
+                finish();
 
-            String currentDateandTime = sdf.format(new Date());
-            editor.putString("inicio_implemento", ""+currentDateandTime);
+            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+                Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            }else {
 
-            Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
+                String currentDateandTime = sdf.format(new Date());
+                editor.putString("inicio_implemento", ""+currentDateandTime);
 
-            editor.putInt("id_implemento",1);
-            editor.putString("implemento_nombre",response);
-            editor.putString("implemento_modelo","XXX-RE2");
-            editor.putString("implemento_capacidad","5kg");
-            editor.commit();
+                Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
 
-            Log.e("TAG 6","Implemento: "+response+" maquina: "+nombreMaquina);
-            Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-            startActivity(intent2);
-            finish();
-            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                editor.putString("id_implemento",arrayResponse[0]);
+                editor.putString("implemento_nombre",arrayResponse[2]);
+                editor.putString("implemento_modelo","XXX-RE2");
+                editor.putString("implemento_capacidad","5kg");
+                editor.commit();
+
+                Log.e("TAG 6","Implemento: "+arrayResponse[0]+" maquina: "+nombreMaquina);
+                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                startActivity(intent2);
+                finish();
+                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                }
+
             }
 
         }
+
+        if (modalidad.equalsIgnoreCase("1")){
+
+            if (nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
+
+                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
+
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro","3");
+                startActivity(intent2);
+                finish();
+
+            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+                Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            }else {
+
+                String currentDateandTime = sdf.format(new Date());
+                editor.putString("inicio_implemento", ""+currentDateandTime);
+
+                Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
+
+                editor.putString("id_implemento",arrayResponse[0]);
+                editor.putString("implemento_nombre",arrayResponse[2]);
+                editor.putString("implemento_modelo","XXX-RE2");
+                editor.putString("implemento_capacidad","5kg");
+                editor.commit();
+
+                Log.e("TAG 6","Implemento: "+response+" maquina: "+nombreMaquina);
+                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                startActivity(intent2);
+                finish();
+                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                }
+
+            }
+
+        }
+
 
     }
 

@@ -91,8 +91,6 @@ public class MainActivity_predio extends AppCompatActivity {
 
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-        //.setText("NFC Content: " + text);
-        //Toast.makeText(MainActivity.this,"HOLA "+text,Toast.LENGTH_SHORT).show();
 
 
         //Espera los 5 segundos para cerrar la sesión luego de haberla iniciado
@@ -178,26 +176,61 @@ public class MainActivity_predio extends AppCompatActivity {
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity_predio.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
+        String[] arrayResponse = response.split(":");
         String nombreUsuario = prefs.getString("usuario","null");
+        String modalidad = prefs.getString("modalidad","null");
 
-        if (nombreUsuario.equalsIgnoreCase(""+response)){
 
-            if (flagLogin == 1){
+        if (modalidad.equalsIgnoreCase("1")) {
 
-                Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                startActivity(intent2);
-                finish();
+            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
 
-            }else{
-                Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                if (flagLogin == 1){
+
+                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                    editor.remove("usuario"+arrayResponse[0]);
+                    editor.remove("usuario_rut"+arrayResponse[0]);
+                    editor.commit();
+                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
+                    startActivity(intent2);
+                    finish();
+
+                }else{
+                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                }
+
+
             }
 
 
-        }else{
-            Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
+        }else if (modalidad.equalsIgnoreCase("2")){
+
+            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+
+                if (flagLogin == 1){
+
+                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                    editor.remove("usuario");
+                    editor.remove("usuario_rut");
+                    editor.commit();
+                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                    startActivity(intent2);
+                    finish();
+
+                }else{
+                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                }
+
+
+            }else{
+                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+nombreUsuario);
+                Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
+            }
+
+
         }
+
+
 
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){

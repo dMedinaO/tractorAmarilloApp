@@ -95,12 +95,81 @@ public class MainActivity extends AppCompatActivity {
                 if(isOnline(getApplicationContext())){
                     alertSync("Sincronización exitosa.");
                 }else{
-                    alertSync("Error de sincronización, intente nuevamente.");
+                    alertSync("No dispone de conexión a internet, por favor intente más tarde.");
                 }
             }
         });
 
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        String response = this.nfcHandler.readerTAGNFC(intent);
+        //tvNFCContent.setText("NFC Content: " + response);
+        //Toast.makeText(MainActivity.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
+
+        //editor.putString("usuario",response);
+        //editor.putString("usuario_rut","24858868-3");
+        //editor.commit();
+
+        String[] arrayResponse = response.split(":");
+
+        for (int i = 0;i <  arrayResponse.length;i++){
+            Log.e("ARRAY VALUES "+i,""+arrayResponse[i]);
+        }
+
+
+        Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
+
+        if (arrayResponse[1].equalsIgnoreCase("1")){
+
+            editor.putString("id_usuario",arrayResponse[0]);
+            editor.putString("usuario_jefe",arrayResponse[0]);
+            editor.putString("modalidad","1");
+            editor.putString("usuario_jefe_rut",arrayResponse[2]);
+            editor.commit();
+            Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
+            startActivity(intent2);
+            finish();
+        }
+        if (arrayResponse[1].equalsIgnoreCase("2")){
+
+            editor.putString("id_usuario",arrayResponse[0]);
+            editor.putString("usuario",arrayResponse[0]);
+            editor.putString("modalidad","2");
+            editor.putString("usuario_rut",arrayResponse[2]);
+            editor.commit();
+
+            Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+            startActivity(intent2);
+            finish();
+        }
+        if (arrayResponse[1].equalsIgnoreCase("3")){
+            alertErrorLogin("Por favor acerque una pulsera al dispositivo...");
+        }
+        if (arrayResponse[1].equalsIgnoreCase("4")){
+            alertErrorLogin("Por favor acerque una pulsera al dispositivo...");
+        }
+
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
     }
 
     public void alertSync(String message){
@@ -118,37 +187,18 @@ public class MainActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
+    public void alertErrorLogin(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
 
-        editor.putString("usuario",response);
-        editor.putString("usuario_rut","24858868-3");
-        editor.commit();
-
-        Log.e("TAG 1","Pulsera: "+response);
-
-        Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-        startActivity(intent2);
-        finish();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        }
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
-
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

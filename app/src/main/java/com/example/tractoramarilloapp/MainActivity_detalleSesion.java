@@ -32,12 +32,13 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_detalleSesion extends AppCompatActivity {
 
     private ImageView imageCheck,imageSync,imageSignal;
-    private Button buttonInicio,buttonVolver;
+    private Button buttonInicio,buttonVolver,buttonVolverLista;
     private TextView mensajeAlert,nombreUsuario,usuarioRUT,nombrePredio,nombreFaena;
     private TextView nombreMaquina,maquinaModelo,maquinaCapacidad;
     private TextView nombreImplemento,implementoTipo,implementoCapacidad;
     static final int HOROMETRO_REQUEST = 1;
     private int flagInicio;
+    private String modalidad;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -57,10 +58,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalleSesion);
+        setContentView(R.layout.activity_detalle_sesion);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -69,9 +70,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
         final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
 
-
+        //INIT VARIABLES
         buttonInicio = (Button) findViewById(R.id.buttonIniciarJornada);
         buttonVolver = (Button) findViewById(R.id.buttonVolver);
+        buttonVolverLista = (Button) findViewById(R.id.buttonVolverLista);
         imageCheck = (ImageView) findViewById(R.id.imageView5);
         mensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
@@ -89,6 +91,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         implementoTipo = (TextView) findViewById(R.id.textImplementoTipo);
         implementoCapacidad = (TextView) findViewById(R.id.textImplementoCapacidad);
 
+        sdf = new SimpleDateFormat();
 
         //NFC
         context = this;
@@ -107,24 +110,25 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
+        modalidad = prefs.getString("modalidad","null");
 
+        //SET VALUES FROM LAYOUT
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("predio_nombre","null"));
+        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("faena_nombre","null"));
 
         nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("maquinaria_nombre","null"));
         maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("maquinaria_modelo","null"));
         maquinaCapacidad.setText(maquinaCapacidad.getText().toString()+""+prefs.getString("maquinaria_capacidad","null"));
 
-        nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("implemento_nombre","null"));
-        implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("implemento_modelo","null"));
-        implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("implemento_capacidad","null"));
-        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("faena_nombre","null"));
+        nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("implemento_nombre","Sin implemento"));
+        implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("implemento_modelo","--"));
+        implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("implemento_capacidad","--"));
 
         nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("usuario","null"));
         usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut","null"));
 
 
-
-        Log.e("HOLA HOLA",prefs.getAll().toString());
+        Log.e("TAG RESULT:",prefs.getAll().toString());
 
         // BOTON INICIO DE SESION
         buttonInicio.setOnClickListener(new View.OnClickListener() {
@@ -134,7 +138,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 buttonInicio.setVisibility(View.GONE);
                 buttonVolver.setVisibility(View.GONE);
                 relativeInicioSesion.setVisibility(View.VISIBLE);
-
 
             }
         });
@@ -176,29 +179,36 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         if (requestCode == HOROMETRO_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                // The user picked a contact.
-                // The Intent's data Uri identifies which contact was selected.
 
                 String data2 = data.getStringExtra("horometro");
 
-                // Do something with the contact here (bigger example below)
-                //Toast.makeText(MainActivity_detalleSesion.this,"Hola horometro " + data2,Toast.LENGTH_SHORT).show();
-                //mensajeAlert.setText("Acerque el dispositivo al implemento.");
+
                 relativeInicioSesion.setVisibility(View.GONE);
                 relativeCierreSesion.setVisibility(View.VISIBLE);
+
+
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     public void run() {
 
                         String currentDateandTime = sdf.format(new Date());
-                        //editor.putString("fin_implemento", currentDateandTime);
+
+                        editor.putString("fin_implemento", currentDateandTime);
                         editor.clear().commit();
 
                         //editor.clear().commit();
-                        Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        if (modalidad.equalsIgnoreCase("1")){
+                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        if (modalidad.equalsIgnoreCase("2")){
+                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
 
                     }
                 }, 3000);
@@ -236,29 +246,30 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
-
-        String nombreImplemento = prefs.getString("implemento_nombre","null");
-        String nombreMaquina = prefs.getString("maquinaria_nombre","null");
-        String nombreUsuario = prefs.getString("usuario","null");
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String nombreImplemento = prefs.getString("id_implemento","null");
+        String nombreMaquina = prefs.getString("id_maquinaria","null");
+        String nombreUsuario = prefs.getString("id_usuario","null");
 
         // IF SI EL TAG ES EL IMPLEMENTO
-        if (nombreImplemento.equalsIgnoreCase(""+response)){
+        if (nombreImplemento.equalsIgnoreCase(""+arrayResponse[0])){
 
             Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
 
         }
         // IF SI EL TAG ES LA PULSERA
-        else if (nombreUsuario.equalsIgnoreCase(""+response)) {
+        else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
 
             Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
         }
         // UF SI EL TAG ES LA MAQUINARIA Y CIERRA LA SESION
-        else if(nombreMaquina.equalsIgnoreCase(""+response)){
+        else if(nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
 
             if (flagInicio!=1){
                 Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
             }else{
-                Log.e("TAG 8: ","Maquinaria cierre sesión: "+response+" maquina: "+nombreMaquina);
+                Log.e("TAG 8: ","Maquinaria cierre sesión: "+arrayResponse[0]+" maquina: "+nombreMaquina);
 
                 //editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_horometro.class);
@@ -271,12 +282,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 }
 
             }
-
-
         }
-
-
-
     }
 
     @Override

@@ -25,6 +25,9 @@ public class MainActivity_horometro extends AppCompatActivity {
     private EditText inputHorometro;
     private Button buttonHorometro;
 
+    private SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +51,9 @@ public class MainActivity_horometro extends AppCompatActivity {
         imageComentario.setColorFilter(Color.rgb(206, 206, 206));
         textComentario.setTextColor(Color.rgb(206, 206, 206));
 
-        SharedPreferences prefs =
-                getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = prefs.edit();
+        // SHARED PREFERENCES
+        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        editor = prefs.edit();
 
         final Bundle bundle = getIntent().getExtras();
 
@@ -71,6 +74,9 @@ public class MainActivity_horometro extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(MainActivity_horometro.this,"Horómetro: "+inputHorometro.getText().toString(),Toast.LENGTH_SHORT).show();
+
+                String modalidad = prefs.getString("modalidad","null");
+
 
                 if (inputHorometro.getText().toString().equalsIgnoreCase("")){
                     Toast.makeText(MainActivity_horometro.this,"Debe ingresar horómetro para continuar.", Toast.LENGTH_LONG).show();
@@ -100,9 +106,20 @@ public class MainActivity_horometro extends AppCompatActivity {
                         editor.putString("fin_horometro",inputHorometro.getText().toString());
                         editor.commit();
 
-                        Intent intent = new Intent(MainActivity_horometro.this,MainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        if (modalidad.equalsIgnoreCase("1")) {
+                            Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefe.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        if (modalidad.equalsIgnoreCase("2")){
+                            Intent intent = new Intent(MainActivity_horometro.this,MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+
+
+
+
                     }
 
                 }

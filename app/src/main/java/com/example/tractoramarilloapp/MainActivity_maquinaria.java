@@ -106,32 +106,55 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity_maquinaria.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
-        editor.putInt("id_maquinaria",1);
-        editor.putString("maquinaria_nombre",response);
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String nombreUsuario = prefs.getString("usuario","null");
+        String modalidad = prefs.getString("modalidad","null");
+
+        editor.putString("id_maquinaria",arrayResponse[0]);
+        editor.putString("maquinaria_nombre",arrayResponse[2]);
         editor.putString("maquinaria_modelo","XSRW-R2");
         editor.putString("maquinaria_capacidad","1000kg");
         editor.commit();
 
-        String nombreUsuario = prefs.getString("usuario","null");
+        //Modalidad jefe de taller
+        if (modalidad.equalsIgnoreCase("1")) {
+            if (nombreUsuario.equalsIgnoreCase("" + response)) {
 
-        if (nombreUsuario.equalsIgnoreCase(""+response)){
+                Log.e("TAG 3", "Pulsera nuevamente: " + response + " usuario: " + nombreUsuario);
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
+                startActivity(intent2);
+                finish();
 
-            Log.e("TAG 3","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-            editor.clear().commit();
-            Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
-            startActivity(intent2);
-            finish();
+            } else {
 
-        }else{
+                Log.e("TAG 4", "Maquina: " + response + " usuario: " + nombreUsuario);
+                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro", "1");
+                startActivity(intent2);
+                finish();
+            }
+        }
+        //Modalidad gestor
+        if (modalidad.equalsIgnoreCase("2")){
+            if (nombreUsuario.equalsIgnoreCase(""+response)){
 
-            Log.e("TAG 4","Maquina: "+response+" usuario: "+nombreUsuario);
-            Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity_horometro.class);
-            intent2.putExtra("flagHorometro","1");
-            startActivity(intent2);
-            finish();
+                Log.e("TAG 3","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
+                startActivity(intent2);
+                finish();
+
+            }else{
+
+                Log.e("TAG 4","Maquina: "+response+" usuario: "+nombreUsuario);
+                Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro","1");
+                startActivity(intent2);
+                finish();
+            }
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
