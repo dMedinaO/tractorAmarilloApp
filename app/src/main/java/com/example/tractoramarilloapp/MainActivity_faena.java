@@ -1,12 +1,15 @@
 package com.example.tractoramarilloapp;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,16 +17,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
 public class MainActivity_faena extends AppCompatActivity {
 
     private Button buttonFaena;
-
+    private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
 
@@ -43,8 +49,16 @@ public class MainActivity_faena extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faena);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
         //FINDBYID VARIABLES
         buttonFaena = (Button) findViewById(R.id.buttonAceptarFaena);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
 
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
@@ -107,15 +121,50 @@ public class MainActivity_faena extends AppCompatActivity {
                 editor.putInt("id_faena",spinner.getSelectedItemPosition());
                 editor.commit();
 
-                Intent intent = new Intent(MainActivity_faena.this,MainActivity_2.class);
+                Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
                 startActivity(intent);
                 finish();
 
             }
         });
 
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
 
 
+    }
+
+    public void alertEliminarImplemento(){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(R.string.alert_eliminar_implemento)
+                .setPositiveButton("ACEPTAR",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        editor.remove("id_implemento");
+                        editor.remove("implemento_nombre");
+                        editor.remove("implemento_modelo");
+                        editor.remove("implemento_capacidad");
+                        editor.remove("inicio_implemento");
+                        editor.commit();
+                        Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
+                        startActivity(intent2);
+                        finish();
+                    }
+                })
+                .setNegativeButton("CANCELAR",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -136,16 +185,8 @@ public class MainActivity_faena extends AppCompatActivity {
         if (nombreImplemento.equalsIgnoreCase(""+response)){
 
             Log.e("TAG 7: ","Implemento nuevamente: "+response+" maquina: "+nombreMaquina);
+            alertEliminarImplemento();
 
-            editor.remove("id_implemento");
-            editor.remove("implemento_nombre");
-            editor.remove("implemento_modelo");
-            editor.remove("implemento_capacidad");
-            editor.remove("inicio_implemento");
-            editor.commit();
-            Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
-            startActivity(intent2);
-            finish();
 
         }else if (nombreUsuario.equalsIgnoreCase(""+response)) {
             Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();

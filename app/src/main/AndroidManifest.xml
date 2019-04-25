@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.NFC" />
     <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -28,7 +30,7 @@
                 android:name="android.nfc.action.TECH_DISCOVERED"
                 android:resource="@xml/nfc_tech_filter" />
         </activity>
-        <activity android:name=".MainActivity_2" />
+        <activity android:name=".MainActivity_detalleSesion" />
         <activity android:name=".MainActivity_horometro" />
         <activity android:name=".MainActivity_predio">
 

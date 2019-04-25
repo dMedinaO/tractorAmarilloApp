@@ -19,7 +19,7 @@ allprojects {
         google()
         //se agrega informacion asociada a test para richi XD
         jcenter()
-        
+        maven { url "https://jitpack.io" }
     }
 }
 

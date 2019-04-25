@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
-import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,14 +31,8 @@ public class MainActivity extends AppCompatActivity {
     TextView message;
     Button btnWrite;
 
-    //declaramos como atributo al gestor de Sesiones
-    SessionHandler sessionHandler;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        //instanciamos el session handler en el onCreate
-        this.sessionHandler = new SessionHandler(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = this;
@@ -62,10 +55,21 @@ public class MainActivity extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
+        /*btnWrite = findViewById(R.id.button);
+        btnWrite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("Click", "Try Write");
+                nfcHandler.writeNFC(message.getText().toString(), myTag, pendingIntent, writeTagFilters);
+            }
+        });*/
+
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
         //.setText("NFC Content: " + text);
         //Toast.makeText(MainActivity.this,"HOLA "+text,Toast.LENGTH_SHORT).show();
+
+
 
         msjMotivacional = (TextView) findViewById(R.id.textMotivacional);
 
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     @Override
@@ -98,13 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("TAG 1","Pulsera: "+response);
 
-        //se hace la manipulacion de la sesion inicial
-        int responseSession = this.sessionHandler.createSession(response);
-        Log.e("TAG 1", responseSession+" responseSession");
-
-        //Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-        //startActivity(intent2);
-        //finish();
+        Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+        startActivity(intent2);
+        finish();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }

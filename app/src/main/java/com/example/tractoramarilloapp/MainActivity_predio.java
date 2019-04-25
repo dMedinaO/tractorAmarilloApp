@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -23,9 +25,12 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.kofigyan.stateprogressbar.StateProgressBar;
 
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
 public class MainActivity_predio extends AppCompatActivity {
 
     private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert;
+    private ImageView imageComentario,imageSync,imageSignal;
     private Button buttonPredio;
     private int flagLogin;
 
@@ -47,12 +52,20 @@ public class MainActivity_predio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_predio);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
         //FINDBYID VARIABLES
         buttonPredio = (Button) findViewById(R.id.buttonAceptarPredio);
         //textUsuario = (TextView) findViewById(R.id.textUsuario);
         //textRut = (TextView) findViewById(R.id.textUsuarioRut);
         textPredioNombre = (TextView) findViewById(R.id.textPredioNombre);
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
 
         final RelativeLayout relativePredioSelect = findViewById(R.id.relativePredioSelect);
         final RelativeLayout relativePredioInfo = findViewById(R.id.relativePredioInfo);
@@ -146,20 +159,12 @@ public class MainActivity_predio extends AppCompatActivity {
             }
         });
 
-        /*
-            HACIA VENTANA MAQUINARIA
-         */
-//        textMensajeAlert.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                Intent intent = new Intent(MainActivity_predio.this,MainActivity_horometro.class);
-//                intent.putExtra("flagHorometro","1");
-//                startActivity(intent);
-//
-//
-//            }
-//        });
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
 
     }
 

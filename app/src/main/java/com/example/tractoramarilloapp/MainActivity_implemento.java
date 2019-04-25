@@ -1,12 +1,16 @@
 package com.example.tractoramarilloapp;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,9 +28,12 @@ import com.example.tractoramarilloapp.nfc.NFCHandler;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
 public class MainActivity_implemento extends AppCompatActivity {
 
     private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert;
+    private ImageView imageComentario,imageSync,imageSignal;
     private Button buttonImplemento;
 
     private SharedPreferences.Editor editor;
@@ -49,9 +57,17 @@ public class MainActivity_implemento extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_implemento);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
         //FINDBYID VARIABLES
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
         buttonImplemento = (Button) findViewById(R.id.buttonAceptarImplemento);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
 
 
         // SHARED PREFERENCES
@@ -72,15 +88,6 @@ public class MainActivity_implemento extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
-        /*btnWrite = findViewById(R.id.button);
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Click", "Try Write");
-                nfcHandler.writeNFC(message.getText().toString(), myTag, pendingIntent, writeTagFilters);
-            }
-        });*/
-
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
 
@@ -88,19 +95,62 @@ public class MainActivity_implemento extends AppCompatActivity {
         buttonImplemento.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                editor.putInt("id_implemento",0);
-                editor.putString("implemento_nombre","");
-                editor.putString("implemento_modelo","");
-                editor.putString("implemento_capacidad","");
-                editor.commit();
-                Intent intent = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                startActivity(intent);
-                finish();
-
+                alertTrabajarSinImplemento(v);
             }
         });
 
+        textMensajeAlert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertImplementoError(v);
+            }
+        });
+
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+
+    }
+
+    public void alertImplementoError(View view){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(R.string.alert_implemento_error)
+                .setPositiveButton("ACEPTAR",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void alertTrabajarSinImplemento(View view){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(R.string.alert_trabajar_implemento)
+                .setPositiveButton("ACEPTAR",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                        startActivity(intent2);
+                        finish();
+                    }
+                })
+                .setNegativeButton("CANCELAR",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override

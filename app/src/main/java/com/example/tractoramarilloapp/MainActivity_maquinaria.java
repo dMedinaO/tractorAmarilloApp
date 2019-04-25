@@ -13,19 +13,24 @@ import android.nfc.Tag;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
+import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
 public class MainActivity_maquinaria extends AppCompatActivity {
 
     private TextView textMensajeAlert,textUsuario,textRut;
+    private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
@@ -45,9 +50,15 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maquinaria);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar);
+
+        View customActionBarView = actionBar.getCustomView();
+
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
-        //textUsuario = (TextView) findViewById(R.id.textUsuario);
-        //textRut = (TextView) findViewById(R.id.textUsuarioRut);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        imageSync = (ImageView) findViewById(R.id.imageSync);
 
 
         // SHARED PREFERENCES
@@ -55,10 +66,6 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         editor = prefs.edit();
         String nombreUsuario = prefs.getString("usuario","null");
         String rutUsuario = prefs.getString("usuario_rut","null");
-
-        //textUsuario.setText("Bienvenido "+nombreUsuario);
-        //textRut.setText("Rut: "+rutUsuario);
-        //<\SHARED PREFERENCES
 
 
         //NFC CONFIGURATION
@@ -70,30 +77,25 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
-        /*btnWrite = findViewById(R.id.button);
-        btnWrite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("Click", "Try Write");
-                nfcHandler.writeNFC(message.getText().toString(), myTag, pendingIntent, writeTagFilters);
-            }
-        });*/
-
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-
-
-
 
 
         textMensajeAlert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentManager = getSupportFragmentManager();
-                DialogoAlerta dialogo = new DialogoAlerta("Mensaje","Actualmente no está habilitado para operar la maquinaria seleccionada","ACEPTAR");
+                DialogoAlerta dialogo = new DialogoAlerta("Mensaje","Actualmente no está habilitado para operar la maquinaria seleccionada",1);
                 dialogo.show(fragmentManager, "tagAlerta");
             }
         });
+
+        // CHECK INTERNET CONNECTION
+        if(isOnline(getApplicationContext())){
+            imageSignal.setImageResource(R.mipmap.signal);
+        }else{
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
 
     }
 
