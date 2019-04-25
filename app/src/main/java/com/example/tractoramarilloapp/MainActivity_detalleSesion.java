@@ -57,7 +57,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detalleSesion);
+        setContentView(R.layout.activity_detalle_sesion);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);

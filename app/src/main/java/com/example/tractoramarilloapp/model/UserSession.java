@@ -1,6 +1,9 @@
 package com.example.tractoramarilloapp.model;
 
+import android.content.ContentValues;
+
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.persistence.UserContract;
 
 import java.util.ArrayList;
 
@@ -14,13 +17,15 @@ public class UserSession {
     private String IDUser;
     private String NameUser;
     private String RutUser;
+    private String rol;
     private ArrayList<SessionClass> listSession;
 
-    public UserSession(String IDUser, String NameUser, String RutUser){
+    public UserSession(String IDUser, String NameUser, String RutUser, String rol){
 
         this.IDUser = IDUser;
         this.NameUser = NameUser;
         this.RutUser = RutUser;
+        this.rol = rol;
         this.listSession = new ArrayList<>();//representa la sesiones que tendra un usuario, imaginando que un usuario puede tener varias sesiones en un mismo dispositivo
     }
 
@@ -47,5 +52,33 @@ public class UserSession {
 
     public void setRutUser(String rutUser) {
         RutUser = rutUser;
+    }
+
+    public ArrayList<SessionClass> getListSession() {
+        return listSession;
+    }
+
+    public void setListSession(ArrayList<SessionClass> listSession) {
+        this.listSession = listSession;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    public ContentValues toConentValues(){
+
+        ContentValues values = new ContentValues();
+
+        values.put(UserContract.UserContractEntry.ID_USER, this.IDUser);
+        values.put(UserContract.UserContractEntry.NAME_USER, this.NameUser);
+        values.put(UserContract.UserContractEntry.ROL, this.rol);
+        values.put(UserContract.UserContractEntry.RUT_USER, this.RutUser);
+
+        return values;
     }
 }

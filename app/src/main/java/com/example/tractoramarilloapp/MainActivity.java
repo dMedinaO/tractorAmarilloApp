@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,12 +31,17 @@ public class MainActivity extends AppCompatActivity {
     TextView tvNFCContent;
     TextView message;
     Button btnWrite;
+    private SessionHandler sessionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        new ValuesTempDB().addElements(this);
+
+        this.context = this;
+        this.sessionHandler = new SessionHandler(this.context);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = this;
 
         SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
@@ -104,9 +110,12 @@ public class MainActivity extends AppCompatActivity {
 
         Log.e("TAG 1","Pulsera: "+response);
 
-        Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-        startActivity(intent2);
-        finish();
+        //Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+        //startActivity(intent2);
+        int responseSession = this.sessionHandler.createSession(response);
+        Log.e("SESSION_RESPONSE", responseSession+" response Session");
+
+        //finish();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
