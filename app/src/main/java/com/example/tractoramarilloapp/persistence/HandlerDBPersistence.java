@@ -47,7 +47,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
      * Metodo que permite poder obtener todas las sesiones activas en el dispositivo
      * @return
      */
-    public ArrayList<SessionClass> getSessionActive(){
+    public ArrayList<SessionClass> getSessionActive(String params){
 
         ArrayList<SessionClass> listSession = new ArrayList<>();//definicion de la lista de sesiones
 
@@ -56,7 +56,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 SessionClassContract.SessionClassContractEntry.TABLE_NAME,
                 null,
                 SessionClassContract.SessionClassContractEntry.STATUS + " LIKE ?",
-                new String[]{"ACTIVE"},
+                new String[]{params},
                 null,
                 null,
                 null);
@@ -64,8 +64,48 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         //desde el cursor obtenemos las listas activas asociadas al dispositivo
         cursor.moveToFirst();//vamos al primer elemento
 
-        //obtenemos la informacion de las columnas
+        //obtenemos los indices de las columnas
+
+        int sessionToken = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.TOKEN);
+        int status = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.STATUS);
+        int startSessionDate = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.START_SESSION);
+        int endSessionDate = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.END_SESSION);
+        int closeSessionKind = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.CLOSE_SESSION_KIND);
+        int sessionKind = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.SESSION_KIND);
+        int userAssociated = cursor.getColumnIndex(SessionClassContract.SessionClassContractEntry.USER_SESSION);
+
+        //recorremos el cursor para obtener la informacion y formar el objeto de interes
+        while (!cursor.isAfterLast()){
+
+            String sessionTokenV = cursor.getString(sessionToken);
+            String statusV = cursor.getString(status);
+            String startSessionDateV = cursor.getString(startSessionDate) ;
+            String endSessionDateV =  cursor.getString(endSessionDate);
+            String closeSessionKindV = cursor.getString(closeSessionKind);
+            String sessionKindV = cursor.getString(sessionKind);
+            String userAssociatedV = cursor.getString(userAssociated);
+
+            //instanciamos un objeto del tipo sesion y lo agregamos a la lista
+            listSession.add(new SessionClass(sessionTokenV, statusV, startSessionDateV, endSessionDateV, closeSessionKindV, sessionKindV, userAssociatedV));
+            cursor.moveToNext();
+        }
 
         return listSession;
+    }
+
+    /**
+     * Metodo que permite registrar una sesion en la base de datos
+     * @param sessionClass
+     * @return
+     */
+    public long saveSessionInDB(SessionClass sessionClass){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                SessionClassContract.SessionClassContractEntry.TABLE_NAME,
+                null,
+                sessionClass.toConentValues()
+            );
     }
 }
