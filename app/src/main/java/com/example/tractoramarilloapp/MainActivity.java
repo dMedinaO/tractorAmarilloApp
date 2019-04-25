@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,9 +43,15 @@ public class MainActivity extends AppCompatActivity {
     TextView tvNFCContent;
     TextView message;
     Button btnWrite;
+    private SessionHandler sessionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        new ValuesTempDB().addElements(this);
+
+        this.context = this;
+        this.sessionHandler = new SessionHandler(this.context);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -95,12 +102,27 @@ public class MainActivity extends AppCompatActivity {
                 if(isOnline(getApplicationContext())){
                     alertSync("Sincronización exitosa.");
                 }else{
-                    alertSync("No dispone de conexión a internet, por favor intente más tarde.");
+                    alertSync("Error de sincronización, intente nuevamente.");
                 }
             }
         });
 
 
+    }
+
+    public void alertSync(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     @Override
@@ -110,50 +132,18 @@ public class MainActivity extends AppCompatActivity {
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
-        //editor.putString("usuario",response);
-        //editor.putString("usuario_rut","24858868-3");
-        //editor.commit();
+        editor.putString("usuario",response);
+        editor.putString("usuario_rut","24858868-3");
+        editor.commit();
 
-        String[] arrayResponse = response.split(":");
+        Log.e("TAG 1","Pulsera: "+response);
 
-        for (int i = 0;i <  arrayResponse.length;i++){
-            Log.e("ARRAY VALUES "+i,""+arrayResponse[i]);
-        }
+        //Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+        //startActivity(intent2);
+        int responseSession = this.sessionHandler.createSession(response);
+        Log.e("SESSION_RESPONSE", responseSession+" response Session");
 
-
-        Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
-
-        if (arrayResponse[1].equalsIgnoreCase("1")){
-
-            editor.putString("id_usuario",arrayResponse[0]);
-            editor.putString("usuario_jefe",arrayResponse[0]);
-            editor.putString("modalidad","1");
-            editor.putString("usuario_jefe_rut",arrayResponse[2]);
-            editor.commit();
-            Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
-            startActivity(intent2);
-            finish();
-        }
-        if (arrayResponse[1].equalsIgnoreCase("2")){
-
-            editor.putString("id_usuario",arrayResponse[0]);
-            editor.putString("usuario",arrayResponse[0]);
-            editor.putString("modalidad","2");
-            editor.putString("usuario_rut",arrayResponse[2]);
-            editor.commit();
-
-            Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-            startActivity(intent2);
-            finish();
-        }
-        if (arrayResponse[1].equalsIgnoreCase("3")){
-            alertErrorLogin("Por favor acerque una pulsera al dispositivo...");
-        }
-        if (arrayResponse[1].equalsIgnoreCase("4")){
-            alertErrorLogin("Por favor acerque una pulsera al dispositivo...");
-        }
-
-
+        //finish();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
