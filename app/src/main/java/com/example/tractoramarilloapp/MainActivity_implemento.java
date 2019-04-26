@@ -73,8 +73,7 @@ public class MainActivity_implemento extends AppCompatActivity {
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario","unknow");
-        String rutUsuario = prefs.getString("usuario_rut","9999999-K");
+        String idUsuario = prefs.getString("idUsuario","");
 
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -165,15 +164,15 @@ public class MainActivity_implemento extends AppCompatActivity {
 
         //SPLIT TO ARRAY THE VALUES OF TAG
         String[] arrayResponse = response.split(":");
-        String nombreMaquina = prefs.getString("id_maquinaria","null");
-        String nombreUsuario = prefs.getString("usuario","null");
+        String tagMaquina = prefs.getString("tagMaquinaria","null");
+        String nombreUsuario = prefs.getString("idUsuario","null");
         String modalidad = prefs.getString("modalidad","null");
 
         if (modalidad.equalsIgnoreCase("2")){
 
-            if (nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
+            if (tagMaquina.equalsIgnoreCase(""+arrayResponse[0])){
 
-                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
+                Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+tagMaquina);
 
                 editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
@@ -181,7 +180,7 @@ public class MainActivity_implemento extends AppCompatActivity {
                 startActivity(intent2);
                 finish();
 
-            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[2])) {
                 Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
             }else {
 
@@ -190,19 +189,14 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                 Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
 
-                editor.putString("id_implemento",arrayResponse[0]);
-                editor.putString("implemento_nombre",arrayResponse[2]);
-                editor.putString("implemento_modelo","XXX-RE2");
-                editor.putString("implemento_capacidad","5kg");
+                editor.putString("idImplemento",arrayResponse[0]);
+                editor.putString("nameImplemento",arrayResponse[2]);
                 editor.commit();
 
-                Log.e("TAG 6","Implemento: "+arrayResponse[0]+" maquina: "+nombreMaquina);
+                Log.e("TAG 6","Implemento: "+arrayResponse[0]+" maquina: "+tagMaquina);
                 Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
                 startActivity(intent2);
                 finish();
-                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                }
 
             }
 
@@ -210,9 +204,9 @@ public class MainActivity_implemento extends AppCompatActivity {
 
         if (modalidad.equalsIgnoreCase("1")){
 
-            if (nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
+            if (tagMaquina.equalsIgnoreCase(""+arrayResponse[0])){
 
-                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
+                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+tagMaquina);
 
                 editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
@@ -235,18 +229,19 @@ public class MainActivity_implemento extends AppCompatActivity {
                 editor.putString("implemento_capacidad","5kg");
                 editor.commit();
 
-                Log.e("TAG 6","Implemento: "+response+" maquina: "+nombreMaquina);
+                Log.e("TAG 6","Implemento: "+response+" maquina: "+tagMaquina);
                 Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
                 startActivity(intent2);
                 finish();
-                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                }
+
 
             }
 
         }
 
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
 
     }
 

@@ -101,8 +101,8 @@ public class MainActivity_faena extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                editor.putString("faena_nombre",spinner.getSelectedItem().toString());
-                editor.putInt("id_faena",spinner.getSelectedItemPosition());
+                editor.putString("nameFaena",spinner.getSelectedItem().toString());
+                editor.putInt("idFaena",spinner.getSelectedItemPosition());
                 editor.commit();
 
                 Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
@@ -129,11 +129,9 @@ public class MainActivity_faena extends AppCompatActivity {
                 .setPositiveButton("ACEPTAR",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        editor.remove("id_implemento");
-                        editor.remove("implemento_nombre");
-                        editor.remove("implemento_modelo");
-                        editor.remove("implemento_capacidad");
-                        editor.remove("inicio_implemento");
+
+                        editor.remove("idImplemento");
+                        editor.remove("nameImplemento");
                         editor.commit();
                         Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
                         startActivity(intent2);
@@ -159,22 +157,23 @@ public class MainActivity_faena extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String idImplemento = prefs.getString("idImplemento","");
+        String idMaquina = prefs.getString("idMaquina","");
+        String idUsuario = prefs.getString("idUsuario","null");
 
-        String nombreImplemento = prefs.getString("implemento_nombre","null");
-        String nombreMaquina = prefs.getString("maquinaria_nombre","null");
-        String nombreUsuario = prefs.getString("usuario","null");
+        if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
 
-        if (nombreImplemento.equalsIgnoreCase(""+response)){
-
-            Log.e("TAG 7: ","Implemento nuevamente: "+response+" maquina: "+nombreMaquina);
+            Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
             alertEliminarImplemento();
 
 
-        }else if (nombreUsuario.equalsIgnoreCase(""+response)) {
+        }else if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
             Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-        }else if(nombreMaquina.equalsIgnoreCase(""+response)){
+        }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
 
-            Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+nombreMaquina);
+            Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
 
             editor.clear().commit();
             Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
@@ -182,12 +181,10 @@ public class MainActivity_faena extends AppCompatActivity {
             startActivity(intent2);
             finish();
 
-        }else{
+        }
 
-            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            }
-
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
     }

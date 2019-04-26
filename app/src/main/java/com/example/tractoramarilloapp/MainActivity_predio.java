@@ -60,8 +60,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
         //FINDBYID VARIABLES
         buttonPredio = (Button) findViewById(R.id.buttonAceptarPredio);
-        //textUsuario = (TextView) findViewById(R.id.textUsuario);
-        //textRut = (TextView) findViewById(R.id.textUsuarioRut);
+
         textPredioNombre = (TextView) findViewById(R.id.textPredioNombre);
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
@@ -146,8 +145,8 @@ public class MainActivity_predio extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                editor.putString("predio_nombre",spinner.getSelectedItem().toString());
-                editor.putInt("id_predio",spinner.getSelectedItemPosition());
+                editor.putString("namePredio",spinner.getSelectedItem().toString());
+                editor.putInt("idPredio",spinner.getSelectedItemPosition());
                 editor.commit();
 
                 Intent intent = new Intent(MainActivity_predio.this,MainActivity_maquinaria.class);
@@ -188,9 +187,7 @@ public class MainActivity_predio extends AppCompatActivity {
                 if (flagLogin == 1){
 
                     Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                    editor.remove("usuario"+arrayResponse[0]);
-                    editor.remove("usuario_rut"+arrayResponse[0]);
-                    editor.commit();
+                    editor.clear().commit();
                     Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
                     startActivity(intent2);
                     finish();
@@ -210,9 +207,7 @@ public class MainActivity_predio extends AppCompatActivity {
                 if (flagLogin == 1){
 
                     Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                    editor.remove("usuario");
-                    editor.remove("usuario_rut");
-                    editor.commit();
+                    editor.clear().commit();
                     Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
                     startActivity(intent2);
                     finish();

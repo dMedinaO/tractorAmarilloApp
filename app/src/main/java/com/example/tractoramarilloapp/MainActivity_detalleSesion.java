@@ -110,23 +110,21 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-        modalidad = prefs.getString("modalidad","null");
+        modalidad = prefs.getString("modalidad","0");
 
         //SET VALUES FROM LAYOUT
-        nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("predio_nombre","null"));
-        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("faena_nombre","null"));
+        nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
+        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
 
-        nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("maquinaria_nombre","null"));
-        maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("maquinaria_modelo","null"));
-        maquinaCapacidad.setText(maquinaCapacidad.getText().toString()+""+prefs.getString("maquinaria_capacidad","null"));
+        nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("nameMaquinaria",""));
+        maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("model_machine",""));
 
-        nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("implemento_nombre","Sin implemento"));
-        implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("implemento_modelo","--"));
-        implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("implemento_capacidad","--"));
+        nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("nameImplemento","Sin implemento"));
+        implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("modeL_implemento",""));
+        implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("capacidad_implemento",""));
 
-        nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("usuario","null"));
-        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut","null"));
-
+        nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("nameUsuario",""));
+        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut",""));
 
         Log.e("TAG RESULT:",prefs.getAll().toString());
 

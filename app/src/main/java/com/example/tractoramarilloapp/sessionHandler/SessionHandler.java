@@ -77,7 +77,7 @@ public class SessionHandler {
                         response=-1;
                         Log.e(TAG, "DB ERROR");
                     }else{
-                        response=0;
+                        response=1;
                         Log.e(TAG, "OK INSERT OPERADOR");
                     }
                 }

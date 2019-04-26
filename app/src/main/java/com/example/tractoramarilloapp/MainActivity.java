@@ -110,21 +110,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void alertSync(String message){
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("Mensaje")
-                .setMessage(message)
-                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int arg1) {
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.show();
-    }
-
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
@@ -132,21 +117,38 @@ public class MainActivity extends AppCompatActivity {
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
-        editor.putString("usuario",response);
-        editor.putString("usuario_rut","24858868-3");
-        editor.commit();
-
-        Log.e("TAG 1","Pulsera: "+response);
-
         //Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
         //startActivity(intent2);
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
         int responseSession = this.sessionHandler.createSession(response);
         Log.e("SESSION_RESPONSE", responseSession+" response Session");
 
-        //finish();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        // BOSS LOGIN
+        if (responseSession==0) {
+            Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
+            startActivity(intent2);
+            finish();
+
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            }
         }
+        // WORKER LOGIN
+        if (responseSession==1){
+
+            editor.putString("idUsuario",arrayResponse[2]);
+            Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+            startActivity(intent2);
+            finish();
+
+            if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            }
+        }
+
+        //finish();
+
     }
 
     @Override

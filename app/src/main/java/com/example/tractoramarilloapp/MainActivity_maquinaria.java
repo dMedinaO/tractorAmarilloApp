@@ -109,20 +109,20 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
         //SPLIT TO ARRAY THE VALUES OF TAG
         String[] arrayResponse = response.split(":");
-        String nombreUsuario = prefs.getString("usuario","null");
+        String nombreUsuario = prefs.getString("id_usuario","null");
         String modalidad = prefs.getString("modalidad","null");
 
-        editor.putString("id_maquinaria",arrayResponse[0]);
-        editor.putString("maquinaria_nombre",arrayResponse[2]);
-        editor.putString("maquinaria_modelo","XSRW-R2");
-        editor.putString("maquinaria_capacidad","1000kg");
+        editor.putString("nameMaquinaria",arrayResponse[2]);
+        editor.putString("tagMaquinaria",arrayResponse[0]);
         editor.commit();
+
+        Log.e("TAG 23323", "Pulsera nuevamente: " + arrayResponse[2] + " usuario: " + nombreUsuario);
 
         //Modalidad jefe de taller
         if (modalidad.equalsIgnoreCase("1")) {
-            if (nombreUsuario.equalsIgnoreCase("" + response)) {
+            if (nombreUsuario.equalsIgnoreCase("" + arrayResponse[2])) {
 
-                Log.e("TAG 3", "Pulsera nuevamente: " + response + " usuario: " + nombreUsuario);
+                Log.e("TAG 3", "Pulsera nuevamente: " + arrayResponse[2] + " usuario: " + nombreUsuario);
                 editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
                 startActivity(intent2);
@@ -130,7 +130,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
             } else {
 
-                Log.e("TAG 4", "Maquina: " + response + " usuario: " + nombreUsuario);
+                Log.e("TAG 4", "Maquina: " + arrayResponse[0] + " usuario: " + nombreUsuario);
                 Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
                 intent2.putExtra("flagHorometro", "1");
                 startActivity(intent2);
@@ -139,9 +139,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         }
         //Modalidad gestor
         if (modalidad.equalsIgnoreCase("2")){
-            if (nombreUsuario.equalsIgnoreCase(""+response)){
+            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[2])){
 
-                Log.e("TAG 3","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+nombreUsuario);
                 editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
                 startActivity(intent2);
@@ -149,7 +149,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
             }else{
 
-                Log.e("TAG 4","Maquina: "+response+" usuario: "+nombreUsuario);
+                Log.e("TAG 4","Maquina: "+arrayResponse[0]+" usuario: "+nombreUsuario);
                 Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity_horometro.class);
                 intent2.putExtra("flagHorometro","1");
                 startActivity(intent2);
