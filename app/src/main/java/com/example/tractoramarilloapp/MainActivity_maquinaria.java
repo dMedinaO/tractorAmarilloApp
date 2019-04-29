@@ -109,7 +109,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
         //SPLIT TO ARRAY THE VALUES OF TAG
         String[] arrayResponse = response.split(":");
-        String nombreUsuario = prefs.getString("id_usuario","null");
+        String nombreUsuario = prefs.getString("idUsuario","null");
         String modalidad = prefs.getString("modalidad","null");
 
         editor.putString("nameMaquinaria",arrayResponse[2]);

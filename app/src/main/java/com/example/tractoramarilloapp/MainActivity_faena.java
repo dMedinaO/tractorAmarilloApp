@@ -81,7 +81,12 @@ public class MainActivity_faena extends AppCompatActivity {
         // SPINNER CREATE
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerFaena);
         String[] letra = {"ARAR", "LIMPIAR CAMPO"};
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,letra);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+
+        //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

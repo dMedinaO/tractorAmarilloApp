@@ -53,7 +53,7 @@ public class MainActivity_predio extends AppCompatActivity {
         setContentView(R.layout.activity_predio);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -71,10 +71,10 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // SHARED PREFERENCES
-        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario","null");
-        String rutUsuario = prefs.getString("usuario_rut","null");
+        String nombreUsuario = prefs.getString("usuario", "null");
+        String rutUsuario = prefs.getString("usuario_rut", "null");
 
 
         //NFC
@@ -84,7 +84,7 @@ public class MainActivity_predio extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        writeTagFilters = new IntentFilter[]{tagDetected};
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
 
@@ -103,7 +103,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // STATE PROGRESS BAR CREATE
-        String[] descriptionData = {" "," ", " ", " "};
+        String[] descriptionData = {" ", " ", " ", " "};
         final StateProgressBar stateProgressBar = (StateProgressBar) findViewById(R.id.stateProgressBar);
         stateProgressBar.setMaxStateNumber(StateProgressBar.StateNumber.FOUR);
         stateProgressBar.setStateDescriptionData(descriptionData);
@@ -115,9 +115,12 @@ public class MainActivity_predio extends AppCompatActivity {
 
         // SPINNER CREATE
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerPredio);
-        String[] letra = {"MARIA","CARLOS","RICARDO","LUIS","FRANCISCO"};
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
+        String[] letra = {"MARIA", "CARLOS", "RICARDO", "LUIS", "FRANCISCO"};
 
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,letra);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+        //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

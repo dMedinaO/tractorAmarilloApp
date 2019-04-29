@@ -126,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
         // BOSS LOGIN
         if (responseSession==0) {
+            editor.putString("modalidad","1");
+            editor.commit();
             Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
             startActivity(intent2);
             finish();
@@ -138,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         if (responseSession==1){
 
             editor.putString("idUsuario",arrayResponse[2]);
+            editor.putString("modalidad","2");
+            editor.commit();
             Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
             startActivity(intent2);
             finish();

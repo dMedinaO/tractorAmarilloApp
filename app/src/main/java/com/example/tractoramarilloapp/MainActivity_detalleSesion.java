@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -39,6 +40,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     static final int HOROMETRO_REQUEST = 1;
     private int flagInicio;
     private String modalidad;
+    private ArrayList<String> result;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -112,6 +114,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         editor = prefs.edit();
         modalidad = prefs.getString("modalidad","0");
 
+
         //SET VALUES FROM LAYOUT
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
         nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
@@ -135,7 +138,17 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 flagInicio = 1;
                 buttonInicio.setVisibility(View.GONE);
                 buttonVolver.setVisibility(View.GONE);
-                relativeInicioSesion.setVisibility(View.VISIBLE);
+
+                //Modalidad inicio sesión JEFE
+                if (modalidad.equalsIgnoreCase("1")){
+
+                        Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                        startActivity(intent);
+                        finish();
+
+                }else{
+                    relativeInicioSesion.setVisibility(View.VISIBLE);
+                }
 
             }
         });
@@ -146,8 +159,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             public void onClick(View v) {
 
                 //limipia los datos de faena obtenidos anteriormente
-                editor.remove("id_faena");
-                editor.remove("faena_nombre");
+                editor.remove("nameFaena");
+                editor.remove("idFaena");
                 editor.commit();
 
                 Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_faena.class);
