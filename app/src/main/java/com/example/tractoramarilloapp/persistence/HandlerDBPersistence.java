@@ -4,11 +4,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.tractoramarilloapp.model.Faena;
 import com.example.tractoramarilloapp.model.Implemento;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.Predio;
+import com.example.tractoramarilloapp.model.TipoMaquinaria;
 import com.example.tractoramarilloapp.model.UserSession;
 
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         //instanciamos la tabla de sesion para que quede habilitada a la hora de crear una sesion de usuario
-        db.execSQL("CREATE TABLE " + SessionClassContract.SessionClassContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + SessionClassContract.SessionClassContractEntry.TABLE_NAME + " ("
                 + SessionClassContract.SessionClassContractEntry.TOKEN + " TEXT NOT NULL, "
                 + SessionClassContract.SessionClassContractEntry.STATUS + " TEXT NOT NULL, "
                 + SessionClassContract.SessionClassContractEntry.START_SESSION + " TEXT NOT NULL, "
@@ -43,7 +45,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "UNIQUE (" + SessionClassContract.SessionClassContractEntry.TOKEN + "))");
 
         /*demo tabla usuarios*/
-        db.execSQL("CREATE TABLE " + UserContract.UserContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + UserContract.UserContractEntry.TABLE_NAME + " ("
                 + UserContract.UserContractEntry.ID_USER + " TEXT NOT NULL, "
                 + UserContract.UserContractEntry.NAME_USER + " TEXT NOT NULL, "
                 + UserContract.UserContractEntry.ROL + " TEXT NOT NULL, "
@@ -51,19 +53,19 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "UNIQUE (" + UserContract.UserContractEntry.ID_USER + "))");
 
         /*demo tabla predio*/
-        db.execSQL("CREATE TABLE " + PredioContract.PredioContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + PredioContract.PredioContractEntry.TABLE_NAME + " ("
                 + PredioContract.PredioContractEntry.CODE_PREDIO + " TEXT NOT NULL, "
                 + PredioContract.PredioContractEntry.PREDIO_NAME + " TEXT NOT NULL, "
                 + "UNIQUE (" + PredioContract.PredioContractEntry.CODE_PREDIO + "))");
 
         /*demo tabla faena*/
-        db.execSQL("CREATE TABLE " + FaenaContract.FaenaContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + FaenaContract.FaenaContractEntry.TABLE_NAME + " ("
                 + FaenaContract.FaenaContractEntry.CODE_FAENA + " TEXT NOT NULL, "
                 + FaenaContract.FaenaContractEntry.FAENA_NAME + " TEXT NOT NULL, "
                 + "UNIQUE (" + FaenaContract.FaenaContractEntry.CODE_FAENA + "))");
 
         /*demo tabla maquinaria*/
-        db.execSQL("CREATE TABLE " + MaquinariaContract.MaquinariaContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + MaquinariaContract.MaquinariaContractEntry.TABLE_NAME + " ("
                 + MaquinariaContract.MaquinariaContractEntry.CODE_INTERNO_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.COLOR_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.MODEL_MACHINE + " TEXT NOT NULL, "
@@ -71,10 +73,12 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + MaquinariaContract.MaquinariaContractEntry.PATENT_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.YEARD_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.STATUS_MACHINE + " TEXT NOT NULL, "
+                + MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE + " TEXT NOT NULL, "
+                + MaquinariaContract.MaquinariaContractEntry.MARK_MACHINE + " TEXT NOT NULL, "
                 + "UNIQUE (" + MaquinariaContract.MaquinariaContractEntry.CODE_INTERNO_MACHINE + "))");
 
         /*demo tabla implementos*/
-        db.execSQL("CREATE TABLE " + ImplementContract.ImplementContractEntry.TABLE_NAME + " ("
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + ImplementContract.ImplementContractEntry.TABLE_NAME + " ("
                 + ImplementContract.ImplementContractEntry.ANO_IMPLEMENTO + " TEXT NOT NULL, "
                 + ImplementContract.ImplementContractEntry.CAPACIDAD_IMPLEMENTO + " TEXT NOT NULL, "
                 + ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO + " TEXT NOT NULL, "
@@ -83,6 +87,17 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + ImplementContract.ImplementContractEntry.NAME_IMPLEMENTO + " TEXT NOT NULL, "
                 + ImplementContract.ImplementContractEntry.STATUS_IMPLEMENTO + " TEXT NOT NULL, "
                 + "UNIQUE (" + ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO + "))");
+
+        /*demo tabla tipoMaquinaria*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME + " ("
+                + TipoMaquinariaContract.TipoMaquinariaContractEntry.CODE_INTERNO + " TEXT NOT NULL, "
+                + TipoMaquinariaContract.TipoMaquinariaContractEntry.NAME_TIPO + " TEXT NOT NULL )");
+
+        /*demo tabla tipoHabilitado*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS  tipoHabilitado ("
+                + "operadorID TEXT NOT NULL, "
+                + "tipoMaquinariaID TEXT NOT NULL )");
+
     }
 
     @Override
@@ -137,6 +152,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
 
+        cursor.close();
         return listSession;
 
     }
@@ -150,7 +166,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         ArrayList<UserSession> listUser = new ArrayList<>();//definicion de la lista de sesiones
 
         //hacemos la consulta para obtener la informacion en forma de cursor
-        Cursor cursor = getReadableDatabase().query(
+        Cursor cursor = this.getReadableDatabase().query(
                 UserContract.UserContractEntry.TABLE_NAME,
                 null,
                 null,
@@ -183,6 +199,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
 
+        cursor.close();
         return listUser;
 
     }
@@ -225,6 +242,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
 
+        cursor.close();
         return listPredio;
     }
 
@@ -266,7 +284,63 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             cursor.moveToNext();
         }
 
+        cursor.close();
         return listFaena;
+    }
+
+    /**
+     * Metodo que permite poder obtener todos las maquinarias
+     * @return
+     */
+    public ArrayList<Maquinaria> getMaquinariaList(){
+
+        ArrayList<Maquinaria> listMaquina = new ArrayList<>();//definicion de la lista de sesiones
+
+        //hacemos la consulta para obtener la informacion en forma de cursor
+        Cursor cursor = getReadableDatabase().query(
+                MaquinariaContract.MaquinariaContractEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        //desde el cursor obtenemos las listas activas asociadas al dispositivo
+        cursor.moveToFirst();//vamos al primer elemento
+
+        //obtenemos los indices de las columnas
+
+        int codeInternoMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.CODE_INTERNO_MACHINE);
+        int nameMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.NAME_MACHINE);
+        int markMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.MARK_MACHINE);
+        int modelMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.MODEL_MACHINE);
+        int yeardMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.YEARD_MACHINE);
+        int statusMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.STATUS_MACHINE);
+        int patentMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.PATENT_MACHINE);
+        int colorMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.COLOR_MACHINE);
+        int tipoMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE);
+
+        //recorremos el cursor para obtener la informacion y formar el objeto de interes
+        while (!cursor.isAfterLast()){
+
+            String codeInternoMachineV = cursor.getString(codeInternoMachine);
+            String nameMachineV = cursor.getString(nameMachine);
+            String markMachineV = cursor.getString(markMachine);
+            String modelMachineV = cursor.getString(modelMachine);
+            String yeardMachineV = cursor.getString(yeardMachine);
+            String statusMachineV = cursor.getString(statusMachine);
+            String patentMachineV = cursor.getString(patentMachine);
+            String colorMachineV = cursor.getString(colorMachine);
+            String tipoMachineV = cursor.getString(tipoMachine);
+
+            //instanciamos un objeto del tipo sesion y lo agregamos a la lista
+            listMaquina.add(new Maquinaria(nameMachineV, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, codeInternoMachineV, tipoMachineV));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return listMaquina;
     }
 
     /**
@@ -307,6 +381,17 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
+    public long saveTipoMaquina(TipoMaquinaria tipoMaquinaria){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME,
+                null,
+                tipoMaquinaria.toContentValus()
+        );
+    }
+
     public long saveImplemento(Implemento implemento){
 
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
@@ -340,6 +425,44 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
-    //metodo que te permite ejecutar una sql
+    //<SQL SELECT GENERICO>
+    public Cursor consultarRegistros(String sql_select) {
 
+        Cursor cursor = null;
+
+        try {
+
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.rawQuery(sql_select, null);
+
+            if (cursor != null) {
+                cursor.moveToFirst();
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cursor;
+
+    }
+    //</SQL SELECT GENERICO>
+
+    //<METODO QUE PERMITE GRABAR DE MANERA GENERICA EN LA BD
+    public int execSQLData(String sqlValues){
+
+        int response = 0;
+        try{
+            SQLiteDatabase db = getWritableDatabase();
+            db.execSQL(sqlValues);
+        }catch (Exception e){
+            response = 1;
+            Log.e("ERROR DB", "ERROR SQL");
+        }
+
+
+        return response;
+
+    }
 }

@@ -23,9 +23,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.model.Maquinaria;
+import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
+import com.example.tractoramarilloapp.utils.FA;
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         new ValuesTempDB().addElements(this);
+
+        HandlerDBPersistence handlerDBPersistence = new HandlerDBPersistence(this);
+        ArrayList<Maquinaria> listMaquinaria = handlerDBPersistence.getMaquinariaList();
+        for (int i=0; i<listMaquinaria.size(); i++){
+            Log.e("MAQUINARIA", listMaquinaria.get(i).getCodeInternoMachine());
+        }
 
         this.context = this;
         this.sessionHandler = new SessionHandler(this.context);
@@ -107,7 +118,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
 
+    /**
+     * Metodo que permite mostrar los mensajes de error de sesion con respecto al tipo de error existente
+     * @param responseSession
+     */
+    public void showMessageError(int responseSession){
+
+        //ERROR DE PULSERA
+        if (responseSession == -1){
+            Log.e("TAG-RESPONSE", "TAG NOT AVAILABLE!");
+        }
+
+        //ERROR DB
+        if (responseSession == -2){
+
+            Log.e("TAG-RESPONSE", "ERROR DB TO INSERT VALUES");
+        }
+
+        //ERROR OPERARIO ACTIVO
+        if (responseSession == -3){
+            Log.e("TAG-RESPONSE", "WORKER IS ACTIVE, DEVICE IS NOT AVAILABLE");
+        }
+
+        //ERROR JEFE ACTIVO
+        if (responseSession == -4){
+            Log.e("TAG-RESPONSE", "BOSS ACTIVE");
+        }
     }
 
     @Override

@@ -22,12 +22,20 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.kofigyan.stateprogressbar.StateProgressBar;
+
+import java.util.ArrayList;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity_predio extends AppCompatActivity {
+
+    //atributo para representar el valor obtenido desde la activity previa
+    private String [] predioString;//para almacenar los predios a mostrar en la lista
+    private String [] predioCodeInterno; // para almacenar la informacion de los codigo interno del predio, esto se hace por si los locos son wns y ponen un predio  repetido
 
     private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert;
     private ImageView imageComentario,imageSync,imageSignal;
@@ -49,11 +57,15 @@ public class MainActivity_predio extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //metodo que permite completar los arreglos de string de predios con la informacion de la base de datos
+        this.getNamePredios();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_predio);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -71,10 +83,10 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // SHARED PREFERENCES
-        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario", "null");
-        String rutUsuario = prefs.getString("usuario_rut", "null");
+        String nombreUsuario = prefs.getString("usuario","null");
+        String rutUsuario = prefs.getString("usuario_rut","null");
 
 
         //NFC
@@ -103,7 +115,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // STATE PROGRESS BAR CREATE
-        String[] descriptionData = {" ", " ", " ", " "};
+        String[] descriptionData = {" "," ", " ", " "};
         final StateProgressBar stateProgressBar = (StateProgressBar) findViewById(R.id.stateProgressBar);
         stateProgressBar.setMaxStateNumber(StateProgressBar.StateNumber.FOUR);
         stateProgressBar.setStateDescriptionData(descriptionData);
@@ -115,7 +127,8 @@ public class MainActivity_predio extends AppCompatActivity {
 
         // SPINNER CREATE
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerPredio);
-        String[] letra = {"MARIA", "CARLOS", "RICARDO", "LUIS", "FRANCISCO"};
+        //String[] letra = {"MARIA","CARLOS","RICARDO","LUIS","FRANCISCO"};
+        //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.predioString));
 
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,letra);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
@@ -249,4 +262,23 @@ public class MainActivity_predio extends AppCompatActivity {
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
     }
 
+    /**
+     * Metodo que permite obtener los predios existentes en el dispositivo
+     */
+    public void getNamePredios(){
+
+        HandlerDBPersistence handlerDBPersistence = new HandlerDBPersistence(this);
+        ArrayList<Predio> listPredio = handlerDBPersistence.getPredio();
+
+        this.predioCodeInterno = new String[listPredio.size()];
+        this.predioString = new String[listPredio.size()];
+
+        for (int i=0; i<listPredio.size(); i++){
+
+            this.predioString[i] = listPredio.get(i).getNamePredio();
+            this.predioCodeInterno[i] = listPredio.get(i).getCode_internoPredio();
+        }
+
+        handlerDBPersistence.close();
+    }
 }

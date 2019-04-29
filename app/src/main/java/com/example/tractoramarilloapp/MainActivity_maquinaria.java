@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.model.HandlerMaquinaria;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -33,6 +34,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+
+    //se agrega el handler asociado a la maquinaria
+    private HandlerMaquinaria handlerMaquinaria;
 
     //NFC VARIABLES
     NFCHandler nfcHandler;
@@ -64,8 +68,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario","null");
-        String rutUsuario = prefs.getString("usuario_rut","null");
+        String nombreUsuario = prefs.getString("usuario","null");//corresponde al ID del usuario
 
 
         //NFC CONFIGURATION
@@ -76,10 +79,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-
-        //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-
 
         textMensajeAlert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,17 +116,41 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         editor.putString("tagMaquinaria",arrayResponse[0]);
         editor.commit();
 
-        Log.e("TAG 23323", "Pulsera nuevamente: " + arrayResponse[2] + " usuario: " + nombreUsuario);
+        String nombreUsuario = prefs.getString("usuario","null");
+        //NFC CONFIGURATION
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        //Modalidad jefe de taller
-        if (modalidad.equalsIgnoreCase("1")) {
-            if (nombreUsuario.equalsIgnoreCase("" + arrayResponse[2])) {
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
 
-                Log.e("TAG 3", "Pulsera nuevamente: " + arrayResponse[2] + " usuario: " + nombreUsuario);
-                editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
-                startActivity(intent2);
-                finish();
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+        String text = this.nfcHandler.readerTAGNFC(getIntent());
+        this.context = getApplicationContext();
+        this.handlerMaquinaria = new HandlerMaquinaria(nombreUsuario, text, this.context);
+
+        int responseHander = this.handlerMaquinaria.applyFluxe();
+        Log.e("RESPONSE-HANDLER", responseHander + " response");
+
+        if (responseHander == 0){//todo esta ok!!!
+
+            String [] tagRead = text.split(":");
+            String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+nombreUsuario;
+            Log.e("WRITE", newTag+" new text to NFC");
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+            if (responseWrite == 0){
+                Log.e("HANDLER", "OK");
+
+            }else{
+                Log.e("HANDLER", "ERROR");
+            }
+
+        }
+
+        /*
+        if (nombreUsuario.equalsIgnoreCase(""+response)){
 
             } else {
 
@@ -156,6 +180,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 finish();
             }
         }
+        */
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

@@ -43,6 +43,7 @@ public class SessionHandler {
         //obtenemos las sesiones activas en el dispositivo
         ArrayList<SessionClass> active = this.handlerDBPersistence.getSessionActive("ACTIVE");
         ArrayList<SessionClass> pending = this.handlerDBPersistence.getSessionActive("PENDING");
+        this.handlerDBPersistence.close();
 
         //unimos las listas
         ArrayList<SessionClass> activeSession = FA.joinList(active, pending);
@@ -68,7 +69,7 @@ public class SessionHandler {
                             Log.e(TAG, "USER NOT REGISTERED");
 
                         }else {
-                            response = 0;
+                            response =0;
                             Log.e(TAG, "OK INSERT SESSION BOSS");
                         }
                     }
@@ -116,7 +117,7 @@ public class SessionHandler {
                                     Log.e(TAG, "USER NOT REGISTERED");
                                 }else {
                                     Log.e(TAG, "SESSION ACTIVE IS UNIQUE INSERT OPERATOR OK");
-                                    response = 0;
+                                    response = 1;
                                 }
                             }
                         }
@@ -141,7 +142,7 @@ public class SessionHandler {
                                     Log.e(TAG, "USER NOT REGISTERED IN SYSTEM");
                                 }else {
                                     Log.e(TAG, "SESSION ACTIVE IS NOT UNIQUE AND BOSS AVAILABLE OK INSERT OPERATOR");
-                                    response = 0;
+                                    response = 1;
                                 }
                             }
                         }
