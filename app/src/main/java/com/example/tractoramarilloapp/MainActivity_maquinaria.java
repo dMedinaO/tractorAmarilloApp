@@ -138,7 +138,13 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+nombreUsuario;
             Log.e("WRITE", newTag+" new text to NFC");
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+            if (responseWrite == 0){
+                Log.e("HANDLER", "OK");
+
+            }else{
+                Log.e("HANDLER", "ERROR");
+            }
 
         }
 
