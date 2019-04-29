@@ -1,5 +1,10 @@
 package com.example.tractoramarilloapp.utils;
 
+import android.content.Context;
+import android.util.Log;
+
+import com.example.tractoramarilloapp.model.UserSession;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
 
 import java.util.ArrayList;
@@ -22,6 +27,7 @@ public class FA {
         Long tsLong = System.currentTimeMillis()/1000;
         String ts = tsLong.toString();
         response = id+"_"+tsLong;
+        Log.e("FA-Values", response);
         return response;
     }
 
@@ -66,5 +72,28 @@ public class FA {
         }
 
         return joinValues;
+    }
+
+    /**
+     * Metodo que permite buscar la informacion del usuario
+     * @param idUser
+     * @param context
+     * @return
+     */
+    public static UserSession getUserInformationByCode (String idUser, Context context){
+
+        HandlerDBPersistence handlerDBPersistence = new HandlerDBPersistence(context);
+        ArrayList<UserSession> userSessions = handlerDBPersistence.getUser();
+
+        UserSession userSessionO = null;
+
+        for (int i=0; i<userSessions.size(); i++){
+            if (userSessions.get(i).getIDUser().equalsIgnoreCase(idUser)){
+                userSessionO = userSessions.get(i);
+                break;
+            }
+        }
+
+        return userSessionO;
     }
 }

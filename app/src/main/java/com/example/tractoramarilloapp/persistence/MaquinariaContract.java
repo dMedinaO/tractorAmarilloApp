@@ -14,5 +14,7 @@ public class MaquinariaContract {
         public static final String PATENT_MACHINE = "patent_machine";
         public static final String COLOR_MACHINE = "color_machine";
         public static final String CODE_INTERNO_MACHINE = "codeInternoMachine";
+        public static final String KIND_MACHINE = "tipoMaquinaria";
+        public static final String MARK_MACHINE = "marca_maquina";
     }
 }

@@ -56,10 +56,10 @@ public class NFCHandler {
         this.nfcWrite = new NFCWrite(nfcAdapter, pendingIntent, writeTagFilters, this.activity);
 
         //preguntamos el modo
-        if (nfcWrite.isWriteMode() == false){
+        //if (nfcWrite.isWriteMode() == false){
 
-            nfcWrite.WriteModeOn();
-        }
+        //    nfcWrite.WriteModeOn();
+        //}
 
         try {
             if (myTag == null) {
@@ -77,7 +77,7 @@ public class NFCHandler {
             response = -1;//ERROR
         }
 
-        nfcWrite.WriteModeOff();//cambiamos los estados a mode of
+        //nfcWrite.WriteModeOff();//cambiamos los estados a mode of
 
         return  response;
     }
