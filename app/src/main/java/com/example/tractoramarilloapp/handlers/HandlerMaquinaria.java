@@ -1,4 +1,4 @@
-package com.example.tractoramarilloapp.model;
+package com.example.tractoramarilloapp.handlers;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.util.Log;
 
+import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 

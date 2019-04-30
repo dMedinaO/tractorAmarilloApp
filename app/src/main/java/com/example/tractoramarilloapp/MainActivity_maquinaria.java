@@ -1,18 +1,14 @@
 package com.example.tractoramarilloapp;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,9 +18,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.tractoramarilloapp.model.HandlerMaquinaria;
+import com.example.tractoramarilloapp.handlers.HandlerMaquinaria;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -159,7 +154,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
                 levantarDialog(MainActivity_maquinaria.this,"Por favor no aleje el dispositivo de la maquinaria...");
 
-                String [] tagRead = text.split(":");
+                final String [] tagRead = text.split(":");
                 String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
                 Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -174,6 +169,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             public void run() {
                                 dialog.dismiss();
+                                editor.putString("nameMaquinaria",tagRead[2]);
+                                editor.putString("tagMaquinaria",tagRead[0]);
+                                editor.commit();
                                 Log.e("HANDLER", "OK");
                                 Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
                                 intent2.putExtra("flagHorometro", "1");
@@ -198,7 +196,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             }
         }
 
-        /*
+        /* cerrar sesion
         if (nombreUsuario.equalsIgnoreCase(""+response)){
 
             } else {

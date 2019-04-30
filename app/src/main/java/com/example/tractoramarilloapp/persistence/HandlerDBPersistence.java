@@ -62,6 +62,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + FaenaContract.FaenaContractEntry.TABLE_NAME + " ("
                 + FaenaContract.FaenaContractEntry.CODE_FAENA + " TEXT NOT NULL, "
                 + FaenaContract.FaenaContractEntry.FAENA_NAME + " TEXT NOT NULL, "
+                + FaenaContract.FaenaContractEntry.CODE_IMPLEMENTO + " TEXT NOT NULL, "
                 + "UNIQUE (" + FaenaContract.FaenaContractEntry.CODE_FAENA + "))");
 
         /*demo tabla maquinaria*/
@@ -97,6 +98,11 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS  tipoHabilitado ("
                 + "operadorID TEXT NOT NULL, "
                 + "tipoMaquinariaID TEXT NOT NULL )");
+
+        /*demo tabla implementoHabilitado*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS  implementoHabilitado ("
+                + "implementoID TEXT NOT NULL, "
+                + "maquinariaID TEXT NOT NULL )");
 
     }
 
@@ -271,16 +277,18 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
 
         int faneaName = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.FAENA_NAME);
         int codeFaena = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.CODE_FAENA);
+        int codeImplemento = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.CODE_IMPLEMENTO);
 
         //recorremos el cursor para obtener la informacion y formar el objeto de interes
         while (!cursor.isAfterLast()){
 
             String faneaNameV = cursor.getString(faneaName);
             String codeFaenaV = cursor.getString(codeFaena);
+            String codeImplementoV = cursor.getString(codeImplemento);
 
 
             //instanciamos un objeto del tipo sesion y lo agregamos a la lista
-            listFaena.add(new Faena(faneaNameV, codeFaenaV));
+            listFaena.add(new Faena(faneaNameV, codeFaenaV, codeImplementoV));
             cursor.moveToNext();
         }
 
@@ -343,6 +351,50 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         return listMaquina;
     }
 
+    public ArrayList<Implemento> getImplementos(){
+
+        ArrayList<Implemento> listImplemento = new ArrayList<>();
+
+        //hacemos la consulta para obtener la informacion en forma de cursor
+        Cursor cursor = getReadableDatabase().query(
+                ImplementContract.ImplementContractEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+
+        //desde el cursor obtenemos las listas activas asociadas al dispositivo
+        cursor.moveToFirst();//vamos al primer elemento
+
+        int codeInterno = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO);
+        int nameImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.NAME_IMPLEMENTO);
+        int anoImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.ANO_IMPLEMENTO);
+        int capacidadImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CAPACIDAD_IMPLEMENTO);
+        int colorImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.COLOR_IMPLEMENTO);
+        int statusImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.STATUS_IMPLEMENTO);
+        int fabricanteImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.FABRICANTE_IMPLEMENTO);
+
+        //recorremos el cursor para obtener la informacion y formar el objeto de interes
+        while (!cursor.isAfterLast()){
+
+            String codeInternoV = cursor.getString(codeInterno);
+            String nameImplementV = cursor.getString(nameImplement);
+            String anoImplementV = cursor.getString(anoImplement);
+            String capacidadImplementV = cursor.getString(capacidadImplement);
+            String colorImplementV = cursor.getString(colorImplement);
+            String statusImplementV = cursor.getString(statusImplement);
+            String fabricanteImplementV = cursor.getString(fabricanteImplement);
+
+            //instanciamos un objeto del tipo sesion y lo agregamos a la lista
+            listImplemento.add(new Implemento(nameImplementV, statusImplementV, anoImplementV, fabricanteImplementV, colorImplementV, capacidadImplementV, codeInternoV));
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return  listImplemento;
+    }
     /**
      * Metodo que permite registrar una sesion en la base de datos
      * @param sessionClass

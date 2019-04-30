@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerFaena;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -32,6 +33,8 @@ public class MainActivity_faena extends AppCompatActivity {
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
+
+    private HandlerFaena handlerFaena;
 
     //NFC VARIABLES
     NFCHandler nfcHandler;
@@ -46,6 +49,15 @@ public class MainActivity_faena extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // SHARED PREFERENCES
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+
+        this.context = getApplicationContext();
+        String nombreImplemento = prefs.getString("tagImplemento","null");
+
+        this.handlerFaena = new HandlerFaena("", this.context);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faena);
 
@@ -74,6 +86,8 @@ public class MainActivity_faena extends AppCompatActivity {
         writeTagFilters = new IntentFilter[]{tagDetected};
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
+
+
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
 
@@ -81,12 +95,11 @@ public class MainActivity_faena extends AppCompatActivity {
         // SPINNER CREATE
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerFaena);
         String[] letra = {"ARAR", "LIMPIAR CAMPO"};
+        //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.handlerFaena.getFaenaList()));
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,letra);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,this.handlerFaena.getFaenaList());
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
         spinner.setAdapter(spinnerArrayAdapter);
-
-        //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

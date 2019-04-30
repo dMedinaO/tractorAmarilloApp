@@ -23,6 +23,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerImplemento;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -41,6 +42,8 @@ public class MainActivity_implemento extends AppCompatActivity {
 
     private SimpleDateFormat sdf;
 
+    private HandlerImplemento handlerImplemento;
+
     //NFC VARIABLES
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -54,6 +57,7 @@ public class MainActivity_implemento extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_implemento);
 
@@ -158,8 +162,7 @@ public class MainActivity_implemento extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
-        String response = this.nfcHandler.readerTAGNFC(intent);
-        Log.e("TAG response: "," data: "+response);
+
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
@@ -181,12 +184,54 @@ public class MainActivity_implemento extends AppCompatActivity {
                 startActivity(intent2);
                 finish();
 
-            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[2])) {
-                Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-            }else {
+        String nombreMaquina = prefs.getString("maquinaria_nombre","null");
+        String tagMaquinaria = prefs.getString("tagMaquinaria","null");
+        String nombreUsuario = prefs.getString("usuario","null");
 
-                String currentDateandTime = sdf.format(new Date());
-                editor.putString("inicio_implemento", ""+currentDateandTime);
+        this.context = getApplicationContext();
+        //NFC CONFIGURATION
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
+
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+        String text = this.nfcHandler.readerTAGNFC(getIntent());
+
+        this.handlerImplemento = new HandlerImplemento(tagMaquinaria, text, this.context);
+
+        int responseHandler = this.handlerImplemento.applyFluxeCheck();
+
+        if (responseHandler == 0){//todos los procesos fueron OK
+
+
+            String [] tagRead = text.split(":");
+            String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+nombreUsuario;
+            Log.e("WRITE", newTag+" new text to NFC");
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+            if (responseWrite == 0){
+
+                editor.putString("nameImplemento",tagRead[2]);
+                editor.putString("tagImplemento",tagRead[0]);
+                editor.commit();
+                Log.e("HANDLER", "OK");
+                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                startActivity(intent2);
+                finish();
+
+            }else{
+                Log.e("HANDLER", "ERROR");
+            }
+
+        }else{
+            Log.e("IMPLEMENT", "ERROR HANDLER IMPLEMENT");
+        }
+
+        /*
+        if (nombreMaquina.equalsIgnoreCase(""+response)){
 
                 Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
 
@@ -244,7 +289,8 @@ public class MainActivity_implemento extends AppCompatActivity {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
-    }
+
+     }*/
 
     @Override
     public void onPause(){
