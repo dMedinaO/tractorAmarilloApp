@@ -29,7 +29,7 @@ import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 
-import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.utils.FA;
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 import java.util.ArrayList;

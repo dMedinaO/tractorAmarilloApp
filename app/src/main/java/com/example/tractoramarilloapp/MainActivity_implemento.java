@@ -167,26 +167,6 @@ public class MainActivity_implemento extends AppCompatActivity {
         //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
         //SPLIT TO ARRAY THE VALUES OF TAG
-        String[] arrayResponse = response.split(":");
-        String tagMaquina = prefs.getString("tagMaquinaria","null");
-        String nombreUsuario = prefs.getString("idUsuario","null");
-        String modalidad = prefs.getString("modalidad","null");
-
-        if (modalidad.equalsIgnoreCase("2")){
-
-            if (tagMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-                Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+tagMaquina);
-
-                //editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro","3");
-                startActivity(intent2);
-                finish();
-
-        String nombreMaquina = prefs.getString("maquinaria_nombre","null");
-        String tagMaquinaria = prefs.getString("tagMaquinaria","null");
-        String nombreUsuario = prefs.getString("usuario","null");
 
         this.context = getApplicationContext();
         //NFC CONFIGURATION
@@ -195,40 +175,68 @@ public class MainActivity_implemento extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        writeTagFilters = new IntentFilter[]{tagDetected};
 
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-        String text = this.nfcHandler.readerTAGNFC(getIntent());
+        String text = this.nfcHandler.readerTAGNFC(intent);
 
-        this.handlerImplemento = new HandlerImplemento(tagMaquinaria, text, this.context);
+        String[] arrayResponse = text.split(":");
+        String tagMaquina = prefs.getString("tagMaquinaria", "null");
+        String idUsuario = prefs.getString("idUsuario", "null");
+        String modalidad = prefs.getString("modalidad", "null");
+
+        this.handlerImplemento = new HandlerImplemento(tagMaquina, text, this.context);
 
         int responseHandler = this.handlerImplemento.applyFluxeCheck();
 
-        if (responseHandler == 0){//todos los procesos fueron OK
+        if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
+
+            Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+
+            //editor.clear().commit();
+            Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
+            intent2.putExtra("flagHorometro", "3");
+            startActivity(intent2);
+            finish();
+
+        }
+
+        if (modalidad.equalsIgnoreCase("2")) {
 
 
-            String [] tagRead = text.split(":");
-            String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+nombreUsuario;
-            Log.e("WRITE", newTag+" new text to NFC");
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-            if (responseWrite == 0){
+            if (responseHandler == 0){//todos los procesos fueron OK
 
-                editor.putString("nameImplemento",tagRead[2]);
-                editor.putString("tagImplemento",tagRead[0]);
-                editor.commit();
-                Log.e("HANDLER", "OK");
-                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                startActivity(intent2);
-                finish();
+
+                String [] tagRead = text.split(":");
+                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
+                Log.e("WRITE", newTag+" new text to NFC");
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                if (responseWrite == 0){
+
+                    editor.putString("nameImplemento",tagRead[2]);
+                    editor.putString("tagImplemento",tagRead[0]);
+                    editor.commit();
+                    Log.e("HANDLER", "OK");
+                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                    startActivity(intent2);
+                    finish();
+
+                }else{
+                    Log.e("HANDLER", "ERROR");
+                }
 
             }else{
-                Log.e("HANDLER", "ERROR");
+                Log.e("IMPLEMENT", "ERROR HANDLER IMPLEMENT");
             }
 
-        }else{
-            Log.e("IMPLEMENT", "ERROR HANDLER IMPLEMENT");
+
+
         }
+
+
+
+
 
         /*
         if (nombreMaquina.equalsIgnoreCase(""+response)){
@@ -289,8 +297,9 @@ public class MainActivity_implemento extends AppCompatActivity {
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
+        */
 
-     }*/
+     }
 
     @Override
     public void onPause(){
