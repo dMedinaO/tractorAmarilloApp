@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerFaena;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -32,6 +33,8 @@ public class MainActivity_faena extends AppCompatActivity {
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
+
+    private HandlerFaena handlerFaena;
 
     //NFC VARIABLES
     NFCHandler nfcHandler;
@@ -46,6 +49,15 @@ public class MainActivity_faena extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // SHARED PREFERENCES
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+
+        this.context = getApplicationContext();
+        String nombreImplemento = prefs.getString("tagImplemento","null");
+
+        this.handlerFaena = new HandlerFaena("", this.context);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faena);
 
@@ -59,10 +71,6 @@ public class MainActivity_faena extends AppCompatActivity {
         buttonFaena = (Button) findViewById(R.id.buttonAceptarFaena);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
-
-        // SHARED PREFERENCES
-        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
-        editor = prefs.edit();
 
         //NFC CONFIGURATION
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -90,7 +98,7 @@ public class MainActivity_faena extends AppCompatActivity {
         // SPINNER CREATE
         final Spinner spinner = (Spinner) findViewById(R.id.spinnerFaena);
         String[] letra = {"ARAR", "LIMPIAR CAMPO"};
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
+        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.handlerFaena.getFaenaList()));
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

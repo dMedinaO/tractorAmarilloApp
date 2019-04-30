@@ -1,4 +1,4 @@
-package com.example.tractoramarilloapp.sessionHandler;
+package com.example.tractoramarilloapp.handlers;
 
 import android.content.Context;
 import android.util.Log;

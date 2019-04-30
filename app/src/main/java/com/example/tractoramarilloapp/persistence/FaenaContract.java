@@ -9,5 +9,6 @@ public class FaenaContract {
         public static final String TABLE_NAME = "faena";
         public static final String FAENA_NAME = "name_faena";
         public static final String CODE_FAENA = "code_faena";
+        public static final String CODE_IMPLEMENTO = "code_implemento";
     }
 }

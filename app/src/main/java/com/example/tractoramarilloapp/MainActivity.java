@@ -13,14 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tractoramarilloapp.model.Maquinaria;
-import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
-import com.example.tractoramarilloapp.sessionHandler.SessionHandler;
-import com.example.tractoramarilloapp.utils.FA;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 
 import java.util.ArrayList;
 
