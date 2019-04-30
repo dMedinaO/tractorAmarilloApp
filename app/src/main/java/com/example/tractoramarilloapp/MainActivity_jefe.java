@@ -118,11 +118,6 @@ public class MainActivity_jefe extends AppCompatActivity {
 
         String[] arrayResponse = response.split(":");
 
-        for (int i = 0;i <  arrayResponse.length;i++){
-            Log.e("ARRAY VALUES "+i,""+arrayResponse[i]);
-        }
-
-
         Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
 
         if (arrayResponse[1].equalsIgnoreCase("1")){
@@ -142,9 +137,24 @@ public class MainActivity_jefe extends AppCompatActivity {
         }
         if (arrayResponse[1].equalsIgnoreCase("3")){
             alertErrorLogin("Comentarios maquina");
+
+            editor.putString("idMaquina_comentario",arrayResponse[0]);
+            Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
+            intent2.putExtra("comentario_mode","1"); //modo maquinaria
+            startActivity(intent2);
+            finish();
+
+
+
         }
         if (arrayResponse[1].equalsIgnoreCase("4")){
             alertErrorLogin("Comentarios implemento");
+
+            editor.putString("idImplemento_comentario",arrayResponse[0]);
+            Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
+            intent2.putExtra("comentario_mode","2"); //modo maquinaria
+            startActivity(intent2);
+            finish();
         }
 
 

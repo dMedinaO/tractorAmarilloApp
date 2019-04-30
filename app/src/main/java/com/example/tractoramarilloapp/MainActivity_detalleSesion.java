@@ -142,9 +142,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 //Modalidad inicio sesión JEFE
                 if (modalidad.equalsIgnoreCase("1")){
 
-                        Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                        startActivity(intent);
-                        finish();
+                    Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                    startActivity(intent);
+                    finish();
 
                 }else{
                     relativeInicioSesion.setVisibility(View.VISIBLE);

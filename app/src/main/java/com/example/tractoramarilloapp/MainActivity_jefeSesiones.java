@@ -26,9 +26,10 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_jefe_sesiones);
 
+        // ACTION BAR INIT
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.custom_action_bar);
+        actionBar.setCustomView(R.layout.custom_action_bar_jefe);
 
         View customActionBarView = actionBar.getCustomView();
 

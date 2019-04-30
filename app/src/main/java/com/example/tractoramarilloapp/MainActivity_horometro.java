@@ -54,6 +54,7 @@ public class MainActivity_horometro extends AppCompatActivity {
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
+        final String modalidad = prefs.getString("modalidad","null");
 
         final Bundle bundle = getIntent().getExtras();
 
@@ -75,8 +76,7 @@ public class MainActivity_horometro extends AppCompatActivity {
             public void onClick(View v) {
                 //Toast.makeText(MainActivity_horometro.this,"Horómetro: "+inputHorometro.getText().toString(),Toast.LENGTH_SHORT).show();
 
-                String modalidad = prefs.getString("modalidad","null");
-
+                Log.e("TAG MODALIDAD:","modalidad: "+modalidad+"  horometro: "+inputHorometro.getText().toString());
 
                 if (inputHorometro.getText().toString().equalsIgnoreCase("")){
                     Toast.makeText(MainActivity_horometro.this,"Debe ingresar horómetro para continuar.", Toast.LENGTH_LONG).show();
@@ -116,9 +116,6 @@ public class MainActivity_horometro extends AppCompatActivity {
                             startActivity(intent);
                             finish();
                         }
-
-
-
 
                     }
 

@@ -130,7 +130,7 @@ public class MainActivity_predio extends AppCompatActivity {
         //String[] letra = {"MARIA","CARLOS","RICARDO","LUIS","FRANCISCO"};
         //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.predioString));
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,letra);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,this.predioString);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
         spinner.setAdapter(spinnerArrayAdapter);
         //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));

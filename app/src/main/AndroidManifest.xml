@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity_jefeSesiones"></activity>
+        <activity android:name=".MainActivity_jefeComentarios"></activity>
+        <activity android:name=".MainActivity_jefeSesiones" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,9 +40,9 @@
         </activity>
         <activity android:name=".MainActivity_detalleSesion" />
         <activity android:name=".MainActivity_horometro" />
-        <activity android:name=".MainActivity_predio"></activity>
+        <activity android:name=".MainActivity_predio" />
         <activity android:name=".MainActivity_maquinaria" />
-        <activity android:name=".MainActivity_implemento"></activity>
+        <activity android:name=".MainActivity_implemento" />
         <activity android:name=".MainActivity_comentario" />
         <activity android:name=".MainActivity_jefe" />
         <activity android:name=".MainActivity_faena" />

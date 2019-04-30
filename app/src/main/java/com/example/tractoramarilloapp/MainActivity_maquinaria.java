@@ -3,6 +3,7 @@ package com.example.tractoramarilloapp;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,6 +35,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+    private ProgressDialog dialog;
 
     //se agrega el handler asociado a la maquinaria
     private HandlerMaquinaria handlerMaquinaria;
@@ -65,10 +67,16 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         imageSync = (ImageView) findViewById(R.id.imageSync);
 
 
+
+
+
+
+
+
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario","null");//corresponde al ID del usuario
+        //String nombreUsuario = prefs.getString("usuario","null");//corresponde al ID del usuario
 
 
         //NFC CONFIGURATION
@@ -109,44 +117,85 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
         //SPLIT TO ARRAY THE VALUES OF TAG
         String[] arrayResponse = response.split(":");
-        String nombreUsuario = prefs.getString("idUsuario","null");
+        String idUsuario = prefs.getString("idUsuario","null");
         String modalidad = prefs.getString("modalidad","null");
 
+
+        Log.e("RESPONSE-TAG",  "response: "+response);
         editor.putString("nameMaquinaria",arrayResponse[2]);
         editor.putString("tagMaquinaria",arrayResponse[0]);
         editor.commit();
 
-        String nombreUsuario = prefs.getString("usuario","null");
         //NFC CONFIGURATION
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        /*nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[] { tagDetected };
 
-        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);*/
         String text = this.nfcHandler.readerTAGNFC(getIntent());
         this.context = getApplicationContext();
-        this.handlerMaquinaria = new HandlerMaquinaria(nombreUsuario, text, this.context);
+        this.handlerMaquinaria = new HandlerMaquinaria(idUsuario, text, this.context);
 
-        int responseHander = this.handlerMaquinaria.applyFluxe();
+        final int responseHander = this.handlerMaquinaria.applyFluxe();
         Log.e("RESPONSE-HANDLER", responseHander + " response");
 
-        if (responseHander == 0){//todo esta ok!!!
 
-            String [] tagRead = text.split(":");
-            String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+nombreUsuario;
-            Log.e("WRITE", newTag+" new text to NFC");
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-            if (responseWrite == 0){
-                Log.e("HANDLER", "OK");
+        if (modalidad.equalsIgnoreCase("2")){
 
-            }else{
-                Log.e("HANDLER", "ERROR");
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){
+
+                Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
+                startActivity(intent2);
+                finish();
+
             }
 
+            if (responseHander == 0){//todo esta ok!!!
+
+                levantarDialog(MainActivity_maquinaria.this,"Por favor no aleje el dispositivo de la maquinaria...");
+
+                String [] tagRead = text.split(":");
+                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
+                Log.e("WRITE", newTag+" new text to NFC");
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                if (responseWrite == 0){
+
+                    Handler handler = new Handler();
+
+                    if (dialog.isShowing()) {
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                dialog.dismiss();
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
+                                intent2.putExtra("flagHorometro", "1");
+                                startActivity(intent2);
+                                finish();
+                            }
+                        }, 2000);
+
+                    }
+
+                }else{
+                    Log.e("HANDLER", "ERROR");
+                    alertWriteNFC("Error al escribir NFC. Favor intente nuevamente...");
+                }
+
+            }else if(responseHander == -3){
+                Log.e("HANDLER", "ERROR MACHINE OCUPADA");
+                alertWriteNFC("Esta maquina ya se encuentra ocupada por otra operador...");
+            }else if(responseHander == -4){
+                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
+                alertWriteNFC("Actualmente no está habilitado para operar la maquinaria seleccionada...");
+            }
         }
 
         /*
@@ -199,6 +248,32 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
+
+    public void alertWriteNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void levantarDialog(Context context, String msg) {
+
+        dialog = new ProgressDialog(context);
+        dialog.setTitle("Escribiendo");
+        dialog.setMessage(msg);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
     }
 }
 

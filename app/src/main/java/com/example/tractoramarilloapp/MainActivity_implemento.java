@@ -159,6 +159,7 @@ public class MainActivity_implemento extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
+        Log.e("TAG response: "," data: "+response);
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
 
@@ -174,7 +175,7 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                 Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+tagMaquina);
 
-                editor.clear().commit();
+                //editor.clear().commit();
                 Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
                 intent2.putExtra("flagHorometro","3");
                 startActivity(intent2);

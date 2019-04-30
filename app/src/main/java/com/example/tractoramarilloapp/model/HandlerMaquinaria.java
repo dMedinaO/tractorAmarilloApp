@@ -2,6 +2,7 @@ package com.example.tractoramarilloapp.model;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -26,6 +27,7 @@ public class HandlerMaquinaria {
     private Context context;
     private String tipoMaquinaria;
     public static String TAG="HANDLER-MACHINE";
+    private ProgressDialog dialog;
 
     /**
      * Constructor de la clase
@@ -39,6 +41,7 @@ public class HandlerMaquinaria {
         this.context = context;
         this.handlerDBPersistence = new HandlerDBPersistence(this.context);
         this.tipoMaquinaria = "-";//almacena el tipo de maquina
+
     }
 
     public int applyFluxe(){
@@ -59,7 +62,7 @@ public class HandlerMaquinaria {
                         response = -4;//operario no habilitado para la maquinaria
                     }
                 }else{
-                    Log.e(TAG, "is not available nachine");
+                    Log.e(TAG, "is not available machine");
                     response = -3;//maquina ocupada
                 }
             }else{
