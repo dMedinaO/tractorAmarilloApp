@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class MainActivity_jefeComentarios extends AppCompatActivity {
 
     private EditText editComentarios;
+    private Button cancelButton,acceptButton;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -43,6 +45,9 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         final RelativeLayout relativeComentarioMaquinaria = findViewById(R.id.relativeInfoMaquinaria);
 
         editComentarios = (EditText) findViewById(R.id.editTextComentarios);
+        cancelButton = (Button) findViewById(R.id.buttonCancel);
+        acceptButton = (Button) findViewById(R.id.buttonAccept);
+
         handlerDB = new HandlerDBPersistence(MainActivity_jefeComentarios.this);
 
         arrayMaquinarias = handlerDB.getMaquinariaList();
@@ -80,6 +85,17 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
                 }
 
         }
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent2 = new Intent(MainActivity_jefeComentarios.this,MainActivity_jefe.class);
+                startActivity(intent2);
+                finish();
+
+            }
+        });
 
 
     }

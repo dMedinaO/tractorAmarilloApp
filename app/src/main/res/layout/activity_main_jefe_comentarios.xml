@@ -117,8 +117,8 @@
             android:id="@+id/relativeImplemento"
             android:layout_width="match_parent"
             android:layout_height="90dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:paddingTop="5dp"
             android:visibility="gone">
 
@@ -194,16 +194,18 @@
                 android:layout_width="295dp"
                 android:layout_height="110dp"
                 android:layout_below="@+id/textView"
+                android:padding="3dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="8dp"
                 android:background="#efefef"
                 android:layout_centerHorizontal="true"
                 android:ems="10"
+                android:maxLength="50"
                 android:inputType="textMultiLine" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/buttonAccept"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -214,7 +216,7 @@
                 android:background="@color/colorPrimaryDark"/>
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/buttonCancel"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

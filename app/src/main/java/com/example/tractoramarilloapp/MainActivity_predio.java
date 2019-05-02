@@ -28,6 +28,7 @@ import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.kofigyan.stateprogressbar.StateProgressBar;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
@@ -37,14 +38,16 @@ public class MainActivity_predio extends AppCompatActivity {
     private String [] predioString;//para almacenar los predios a mostrar en la lista
     private String [] predioCodeInterno; // para almacenar la informacion de los codigo interno del predio, esto se hace por si los locos son wns y ponen un predio  repetido
 
-    private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert;
+    private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert,textComentarioLink,msjMotivacional;
     private ImageView imageComentario,imageSync,imageSignal;
     private Button buttonPredio;
     private int flagLogin;
 
+    static final int COMENTARIO_REQUEST = 1;
+
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
-    private TextView msjMotivacional;
+
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
@@ -75,8 +78,10 @@ public class MainActivity_predio extends AppCompatActivity {
 
         textPredioNombre = (TextView) findViewById(R.id.textPredioNombre);
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
+        textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
+        imageComentario = (ImageView) findViewById(R.id.imageComentario);
 
         final RelativeLayout relativePredioSelect = findViewById(R.id.relativePredioSelect);
         final RelativeLayout relativePredioInfo = findViewById(R.id.relativePredioInfo);
@@ -137,14 +142,6 @@ public class MainActivity_predio extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(MainActivity_predio.this,"HOLA spinner "+position,Toast.LENGTH_SHORT).show();
-
-                if (position != 0){
-
-
-
-                }
-
 
             }
 
@@ -172,11 +169,49 @@ public class MainActivity_predio extends AppCompatActivity {
             }
         });
 
+        imageComentario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_predio.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
+        textComentarioLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_predio.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
         // CHECK INTERNET CONNECTION
         if(isOnline(getApplicationContext())){
             imageSignal.setImageResource(R.mipmap.signal);
         }else{
             imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
+        final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
+        final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
+
+        // Check which request we're responding to
+        if (requestCode == COMENTARIO_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                String comentariosResult = data.getStringExtra("comentario");
+                //Toast.makeText(MainActivity_predio.this,"Ingresado comentario",Toast.LENGTH_SHORT).show();
+                editor.putString("comentarios",comentariosResult);
+                editor.commit();
+
+            }
         }
 
     }

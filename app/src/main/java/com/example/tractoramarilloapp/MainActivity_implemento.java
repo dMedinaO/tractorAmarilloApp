@@ -78,6 +78,8 @@ public class MainActivity_implemento extends AppCompatActivity {
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
         String idUsuario = prefs.getString("idUsuario","");
+        editor.putString("flagImplemento","0");
+        editor.commit();
 
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -99,6 +101,7 @@ public class MainActivity_implemento extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 alertTrabajarSinImplemento(v);
+
             }
         });
 
@@ -140,6 +143,9 @@ public class MainActivity_implemento extends AppCompatActivity {
                 .setPositiveButton("ACEPTAR",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+
+                        editor.putString("flagImplemento","1");
+                        editor.commit();
                         Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
                         startActivity(intent2);
                         finish();
@@ -224,10 +230,17 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                 }else{
                     Log.e("HANDLER", "ERROR");
+                    alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
                 }
 
-            }else{
-                Log.e("IMPLEMENT", "ERROR HANDLER IMPLEMENT");
+            } else if (responseHandler == -2) {
+                alertWriteNFC("Implemento no se encuentra registrado.");
+            } else if (responseHandler == -3) {
+                Log.e("HANDLER", "ERROR MACHINE OCUPADA");
+                alertWriteNFC("Implemento no se encuentra habilitado para trabajar");
+            } else if (responseHandler == -4) {
+                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
+                alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
             }
 
 
@@ -312,5 +325,20 @@ public class MainActivity_implemento extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
+
+    public void alertWriteNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

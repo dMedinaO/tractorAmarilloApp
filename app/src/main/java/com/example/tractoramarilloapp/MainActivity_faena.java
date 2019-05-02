@@ -140,6 +140,99 @@ public class MainActivity_faena extends AppCompatActivity {
 
     }
 
+
+
+    @Override
+    public void onBackPressed() { }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        String response = this.nfcHandler.readerTAGNFC(intent);
+
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String idImplemento = prefs.getString("idImplemento","");
+        String flagImplemento = prefs.getString("flagImplemento","");
+        String idMaquina = prefs.getString("idMaquina","");
+        String idUsuario = prefs.getString("idUsuario","null");
+
+        if (!arrayResponse[1].equalsIgnoreCase("4")){
+            alertNFC("TAG invalido. Favor acercar el dispositivo a un implemento.");
+        }else{
+
+            if (flagImplemento.equalsIgnoreCase("1")){
+
+                editor.putString("nameImplemento",arrayResponse[2]);
+                editor.putString("tagImplemento",arrayResponse[0]);
+                editor.commit();
+                Toast.makeText(MainActivity_faena.this,"Implemento agregado exitosamente.",Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
+
+                Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
+                alertEliminarImplemento();
+
+
+            }
+
+
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+                Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
+
+                Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
+
+                editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro","3");
+                startActivity(intent2);
+                finish();
+
+            }
+
+
+        }
+
+
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
+    public void alertNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+
     public void alertEliminarImplemento(){
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Mensaje")
@@ -165,58 +258,5 @@ public class MainActivity_faena extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-    }
-
-    @Override
-    public void onBackPressed() { }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        String response = this.nfcHandler.readerTAGNFC(intent);
-
-        //SPLIT TO ARRAY THE VALUES OF TAG
-        String[] arrayResponse = response.split(":");
-        String idImplemento = prefs.getString("idImplemento","");
-        String idMaquina = prefs.getString("idMaquina","");
-        String idUsuario = prefs.getString("idUsuario","null");
-
-        if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
-
-            Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-            alertEliminarImplemento();
-
-
-        }else if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
-            Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-        }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-            Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-
-            editor.clear().commit();
-            Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
-            intent2.putExtra("flagHorometro","3");
-            startActivity(intent2);
-            finish();
-
-        }
-
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        }
-
-    }
-
-    @Override
-    public void onPause(){
-        super.onPause();
-        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
-
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
     }
 }

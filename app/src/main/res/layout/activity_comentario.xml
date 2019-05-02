@@ -1,63 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryLight"
-    android:padding="10dp"
+    android:padding="5dp"
     tools:context=".MainActivity_comentario">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="20dp"
         android:text="Ingresa un comentario"
         android:textSize="25dp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/editTextComentarios"
         android:layout_width="295dp"
         android:layout_height="110dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_below="@+id/textView"
+        android:padding="3dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
         android:layout_marginEnd="8dp"
+        android:background="#efefef"
+        android:layout_centerHorizontal="true"
         android:ems="10"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        android:maxLength="50"
+        android:inputType="textMultiLine" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonAccept"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:layout_alignParentLeft="true"
         android:text="Ingresar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextComentarios"
+        android:layout_below="@+id/editTextComentarios"
         android:background="@color/colorPrimaryDark"/>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/buttonCancel"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:layout_alignParentRight="true"
         android:text="Cancelar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextComentarios"
+        android:layout_below="@+id/editTextComentarios"
         android:background="@color/colorPrimaryDark"/>
 
 
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

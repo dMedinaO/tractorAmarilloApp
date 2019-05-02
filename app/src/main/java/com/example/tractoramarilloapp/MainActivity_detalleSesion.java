@@ -38,6 +38,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     private TextView nombreMaquina,maquinaModelo,maquinaCapacidad;
     private TextView nombreImplemento,implementoTipo,implementoCapacidad;
     static final int HOROMETRO_REQUEST = 1;
+    static final int COMENTARIO_REQUEST = 1;
     private int flagInicio;
     private String modalidad;
     private ArrayList<String> result;
@@ -224,6 +225,11 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                     }
                 }, 3000);
             }
+        }
+
+        if (requestCode == COMENTARIO_REQUEST){
+            editor.putString("comentarios","comentario");
+            editor.commit();
         }
     }
 

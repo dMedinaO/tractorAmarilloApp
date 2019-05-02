@@ -136,7 +136,6 @@ public class MainActivity_jefe extends AppCompatActivity {
             finish();
         }
         if (arrayResponse[1].equalsIgnoreCase("3")){
-            alertErrorLogin("Comentarios maquina");
 
             editor.putString("idMaquina_comentario",arrayResponse[0]);
             Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
@@ -148,7 +147,6 @@ public class MainActivity_jefe extends AppCompatActivity {
 
         }
         if (arrayResponse[1].equalsIgnoreCase("4")){
-            alertErrorLogin("Comentarios implemento");
 
             editor.putString("idImplemento_comentario",arrayResponse[0]);
             Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
