@@ -94,7 +94,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         implementoTipo = (TextView) findViewById(R.id.textImplementoTipo);
         implementoCapacidad = (TextView) findViewById(R.id.textImplementoCapacidad);
 
-        sdf = new SimpleDateFormat();
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         //NFC
         context = this;
@@ -273,9 +273,13 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             String idUsuario = prefs.getString("idUsuario","null");
 
             // IF SI EL TAG ES EL IMPLEMENTO
-            if (tagImplemento.equalsIgnoreCase(""+arrayResponse[0])){
+            if (arrayResponse[1] == "4"){
 
                 //Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+
+                String currentDateandTime = sdf.format(new Date());
+
+                editor.putString("fin_implemento", currentDateandTime);
                 editor.remove("tagImplemento");
                 editor.remove("nameImplemento");
                 editor.commit();

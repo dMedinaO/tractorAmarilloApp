@@ -259,6 +259,7 @@ public class MainActivity_implemento extends AppCompatActivity {
                     Log.e("WRITE", newTag+" new text to NFC");
                     myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                     int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                    //WRITE NFC OK
                     if (responseWrite == 0){
 
                         Handler handler = new Handler();
@@ -267,6 +268,9 @@ public class MainActivity_implemento extends AppCompatActivity {
                             handler.postDelayed(new Runnable() {
                                 public void run() {
                                     dialog.dismiss();
+
+                                    String currentDateandTime = sdf.format(new Date());
+                                    editor.putString("inicio_implemento", currentDateandTime);
                                     editor.putString("nameImplemento",tagRead[2]);
                                     editor.putString("tagImplemento",tagRead[0]);
                                     editor.commit();
@@ -295,8 +299,6 @@ public class MainActivity_implemento extends AppCompatActivity {
                     Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
                     alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
                 }
-
-
 
             }
 

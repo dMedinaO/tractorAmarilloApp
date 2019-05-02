@@ -189,9 +189,12 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
                 }
 
-                if (responseHandler == 0 || responseHandler == -3){//todo esta ok!!!
+                //WRITE NFC OK
+                if (responseHandler == 0 || responseHandler == -3){
 
                     levantarDialog(MainActivity_maquinaria.this,"Este proceso puede tardar un momento. Favor espere...");
+
+
 
                     final String [] tagRead = text.split(":");
                     String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
@@ -200,6 +203,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
 
                     int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+
+
+                    //this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);
                     if (responseWrite == 0){
 
                         Handler handler = new Handler();
