@@ -29,11 +29,14 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity_faena extends AppCompatActivity {
 
+    private TextView textComentarioLink;
     private Button buttonFaena;
     private ImageView imageComentario,imageSync,imageSignal;
+
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
 
+    static final int COMENTARIO_REQUEST = 1;
     private HandlerFaena handlerFaena;
 
     //NFC VARIABLES
@@ -68,9 +71,11 @@ public class MainActivity_faena extends AppCompatActivity {
         View customActionBarView = actionBar.getCustomView();
 
         //FINDBYID VARIABLES
+        textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
         buttonFaena = (Button) findViewById(R.id.buttonAceptarFaena);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
+        imageComentario = (ImageView) findViewById(R.id.imageComentario);
 
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
@@ -85,7 +90,6 @@ public class MainActivity_faena extends AppCompatActivity {
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[]{tagDetected};
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-
 
 
         //instanciamos al handler de
@@ -137,9 +141,42 @@ public class MainActivity_faena extends AppCompatActivity {
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
 
+        imageComentario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_faena.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
+        textComentarioLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_faena.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Check which request we're responding to
+        if (requestCode == COMENTARIO_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                String comentariosResult = data.getStringExtra("comentario");
+                Toast.makeText(MainActivity_faena.this,"Comentario guardado exitosamente!.",Toast.LENGTH_SHORT).show();
+                editor.putString("comentarios",comentariosResult);
+                editor.commit();
+
+            }
+        }
+
+    }
 
 
     @Override
@@ -150,52 +187,61 @@ public class MainActivity_faena extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
-        //SPLIT TO ARRAY THE VALUES OF TAG
-        String[] arrayResponse = response.split(":");
-        String idImplemento = prefs.getString("idImplemento","");
-        String flagImplemento = prefs.getString("flagImplemento","");
-        String idMaquina = prefs.getString("idMaquina","");
-        String idUsuario = prefs.getString("idUsuario","null");
+        if (!response.equalsIgnoreCase("VOID")){
 
-        if (!arrayResponse[1].equalsIgnoreCase("4")){
-            alertNFC("TAG invalido. Favor acercar el dispositivo a un implemento.");
+            //SPLIT TO ARRAY THE VALUES OF TAG
+            String[] arrayResponse = response.split(":");
+            String idImplemento = prefs.getString("idImplemento","");
+            String flagImplemento = prefs.getString("flagImplemento","");
+            String idMaquina = prefs.getString("idMaquina","");
+            String idUsuario = prefs.getString("idUsuario","null");
+
+            if (!arrayResponse[1].equalsIgnoreCase("4")){
+                alertNFC("TAG invalido. Favor acercar el dispositivo a un implemento.");
+            }else{
+
+                if (flagImplemento.equalsIgnoreCase("1")){
+
+                    editor.putString("nameImplemento",arrayResponse[2]);
+                    editor.putString("tagImplemento",arrayResponse[0]);
+                    editor.commit();
+                    Toast.makeText(MainActivity_faena.this,"Implemento agregado exitosamente.",Toast.LENGTH_SHORT).show();
+
+
+                }
+
+                if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
+
+                    Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
+                    alertEliminarImplemento();
+
+
+                }
+
+
+                if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+                    Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+                }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
+
+                    Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
+
+                    editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
+                    intent2.putExtra("flagHorometro","3");
+                    startActivity(intent2);
+                    finish();
+
+                }
+
+
+            }
+
         }else{
-
-            if (flagImplemento.equalsIgnoreCase("1")){
-
-                editor.putString("nameImplemento",arrayResponse[2]);
-                editor.putString("tagImplemento",arrayResponse[0]);
-                editor.commit();
-                Toast.makeText(MainActivity_faena.this,"Implemento agregado exitosamente.",Toast.LENGTH_SHORT).show();
-
-
-            }
-
-            if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
-
-                Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-                alertEliminarImplemento();
-
-
-            }
-
-
-            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
-                Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-            }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-                Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-
-                editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro","3");
-                startActivity(intent2);
-                finish();
-
-            }
-
-
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
+
+
 
 
 
@@ -217,6 +263,7 @@ public class MainActivity_faena extends AppCompatActivity {
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
     }
+
     public void alertNFC(String message){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Mensaje")
@@ -252,6 +299,21 @@ public class MainActivity_faena extends AppCompatActivity {
                 .setNegativeButton("CANCELAR",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public void alertWriteNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
                         dialog.cancel();
                     }
                 });

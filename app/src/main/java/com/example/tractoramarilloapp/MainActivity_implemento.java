@@ -2,6 +2,7 @@ package com.example.tractoramarilloapp;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,14 +36,16 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity_implemento extends AppCompatActivity {
 
-    private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert;
+    private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert,textComentarioLink;
     private ImageView imageComentario,imageSync,imageSignal;
     private Button buttonImplemento;
+    private ProgressDialog dialog;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
 
     private SimpleDateFormat sdf;
+    static final int COMENTARIO_REQUEST = 1;
 
     private HandlerImplemento handlerImplemento;
 
@@ -69,9 +74,11 @@ public class MainActivity_implemento extends AppCompatActivity {
 
         //FINDBYID VARIABLES
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
+        textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
         buttonImplemento = (Button) findViewById(R.id.buttonAceptarImplemento);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
+        imageComentario = (ImageView) findViewById(R.id.imageComentario);
 
 
         // SHARED PREFERENCES
@@ -119,6 +126,22 @@ public class MainActivity_implemento extends AppCompatActivity {
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
 
+        imageComentario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_implemento.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
+        textComentarioLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity_implemento.this,MainActivity_comentario.class);
+                startActivityForResult(intent,COMENTARIO_REQUEST);
+            }
+        });
+
     }
 
     public void alertImplementoError(View view){
@@ -163,18 +186,32 @@ public class MainActivity_implemento extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // Check which request we're responding to
+        if (requestCode == COMENTARIO_REQUEST) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+
+                String comentariosResult = data.getStringExtra("comentario");
+                Toast.makeText(MainActivity_implemento.this,"Comentario guardado exitosamente!.",Toast.LENGTH_SHORT).show();
+                editor.putString("comentarios",comentariosResult);
+                editor.commit();
+
+            }
+        }
+
+    }
+
+    @Override
     public void onBackPressed() { }
 
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
 
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity_implemento.this,"MAQUINA: "+response,Toast.LENGTH_SHORT).show();
-
-        //SPLIT TO ARRAY THE VALUES OF TAG
-
         this.context = getApplicationContext();
+
         //NFC CONFIGURATION
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -184,133 +221,90 @@ public class MainActivity_implemento extends AppCompatActivity {
         writeTagFilters = new IntentFilter[]{tagDetected};
 
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-        String text = this.nfcHandler.readerTAGNFC(intent);
+        String response = this.nfcHandler.readerTAGNFC(intent);
 
-        String[] arrayResponse = text.split(":");
-        String tagMaquina = prefs.getString("tagMaquinaria", "null");
-        String idUsuario = prefs.getString("idUsuario", "null");
-        String modalidad = prefs.getString("modalidad", "null");
+        if (!response.equalsIgnoreCase("VOID")){
 
-        this.handlerImplemento = new HandlerImplemento(tagMaquina, text, this.context);
+            //SPLIT TO ARRAY THE VALUES OF TAG
+            String[] arrayResponse = response.split(":");
+            String tagMaquina = prefs.getString("tagMaquinaria", "null");
+            String idUsuario = prefs.getString("idUsuario", "null");
+            String modalidad = prefs.getString("modalidad", "null");
 
-        int responseHandler = this.handlerImplemento.applyFluxeCheck();
+            this.handlerImplemento = new HandlerImplemento(tagMaquina, response, this.context);
 
-        if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
+            int responseHandler = this.handlerImplemento.applyFluxeCheck();
 
-            Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+            if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
 
-            //editor.clear().commit();
-            Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
-            intent2.putExtra("flagHorometro", "3");
-            startActivity(intent2);
-            finish();
+                Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
-        }
+                //editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro", "3");
+                startActivity(intent2);
+                finish();
 
-        if (modalidad.equalsIgnoreCase("2")) {
+            }
+
+            if (modalidad.equalsIgnoreCase("2")) {
 
 
-            if (responseHandler == 0){//todos los procesos fueron OK
+                if (responseHandler == 0 || responseHandler == -3){//todos los procesos fueron OK
 
+                    levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
 
-                String [] tagRead = text.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
-                Log.e("WRITE", newTag+" new text to NFC");
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                if (responseWrite == 0){
+                    final String [] tagRead = response.split(":");
+                    String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
+                    Log.e("WRITE", newTag+" new text to NFC");
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                    if (responseWrite == 0){
 
-                    editor.putString("nameImplemento",tagRead[2]);
-                    editor.putString("tagImplemento",tagRead[0]);
-                    editor.commit();
-                    Log.e("HANDLER", "OK");
-                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                    startActivity(intent2);
-                    finish();
+                        Handler handler = new Handler();
 
-                }else{
-                    Log.e("HANDLER", "ERROR");
-                    alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
+                        if (dialog.isShowing()) {
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    dialog.dismiss();
+                                    editor.putString("nameImplemento",tagRead[2]);
+                                    editor.putString("tagImplemento",tagRead[0]);
+                                    editor.commit();
+                                    Log.e("HANDLER", "OK");
+                                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                                    startActivity(intent2);
+                                    finish();
+                                }
+                            }, 2000);
+
+                        }
+
+                    }else{
+                        Log.e("HANDLER", "ERROR");
+                        alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
+                    }
+
+                } else if (responseHandler == -1) {
+                    alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
+                } else if (responseHandler == -2) {
+                    alertWriteNFC("Implemento no se encuentra registrado.");
+                } else if (responseHandler == -3) {
+                    Log.e("HANDLER", "ERROR MACHINE OCUPADA");
+                    alertWriteNFC("Implemento no se encuentra habilitado para trabajar");
+                } else if (responseHandler == -4) {
+                    Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
+                    alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
                 }
 
-            } else if (responseHandler == -2) {
-                alertWriteNFC("Implemento no se encuentra registrado.");
-            } else if (responseHandler == -3) {
-                Log.e("HANDLER", "ERROR MACHINE OCUPADA");
-                alertWriteNFC("Implemento no se encuentra habilitado para trabajar");
-            } else if (responseHandler == -4) {
-                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
-                alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
-            }
-
-
-
-        }
-
-
-
-
-
-        /*
-        if (nombreMaquina.equalsIgnoreCase(""+response)){
-
-                Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
-
-                editor.putString("idImplemento",arrayResponse[0]);
-                editor.putString("nameImplemento",arrayResponse[2]);
-                editor.commit();
-
-                Log.e("TAG 6","Implemento: "+arrayResponse[0]+" maquina: "+tagMaquina);
-                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                startActivity(intent2);
-                finish();
-
-            }
-
-        }
-
-        if (modalidad.equalsIgnoreCase("1")){
-
-            if (tagMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-                Log.e("TAG 5: ","Maquina nuevamente: "+response+" maquina: "+tagMaquina);
-
-                editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro","3");
-                startActivity(intent2);
-                finish();
-
-            }else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
-                Toast.makeText(MainActivity_implemento.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-            }else {
-
-                String currentDateandTime = sdf.format(new Date());
-                editor.putString("inicio_implemento", ""+currentDateandTime);
-
-                Log.e("TAG implemento: ","inicio implemento date: "+currentDateandTime);
-
-                editor.putString("id_implemento",arrayResponse[0]);
-                editor.putString("implemento_nombre",arrayResponse[2]);
-                editor.putString("implemento_modelo","XXX-RE2");
-                editor.putString("implemento_capacidad","5kg");
-                editor.commit();
-
-                Log.e("TAG 6","Implemento: "+response+" maquina: "+tagMaquina);
-                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                startActivity(intent2);
-                finish();
 
 
             }
 
-        }
 
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
-
-        */
 
      }
 
@@ -340,5 +334,16 @@ public class MainActivity_implemento extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void levantarDialog(Context context, String msg) {
+
+        dialog = new ProgressDialog(context);
+        dialog.setTitle("Escribiendo");
+        dialog.setMessage(msg);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
     }
 }

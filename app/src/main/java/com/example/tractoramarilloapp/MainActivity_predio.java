@@ -1,7 +1,9 @@
 package com.example.tractoramarilloapp;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -197,17 +199,13 @@ public class MainActivity_predio extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
-        final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
-        final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
-
         // Check which request we're responding to
         if (requestCode == COMENTARIO_REQUEST) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
 
                 String comentariosResult = data.getStringExtra("comentario");
-                //Toast.makeText(MainActivity_predio.this,"Ingresado comentario",Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity_predio.this,"Comentario guardado exitosamente!.",Toast.LENGTH_SHORT).show();
                 editor.putString("comentarios",comentariosResult);
                 editor.commit();
 
@@ -223,61 +221,63 @@ public class MainActivity_predio extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity_predio.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
-        String[] arrayResponse = response.split(":");
-        String nombreUsuario = prefs.getString("usuario","null");
-        String modalidad = prefs.getString("modalidad","null");
+        if (!response.equalsIgnoreCase("VOID")){
+
+            String[] arrayResponse = response.split(":");
+            String nombreUsuario = prefs.getString("usuario","null");
+            String modalidad = prefs.getString("modalidad","null");
 
 
-        if (modalidad.equalsIgnoreCase("1")) {
+            if (modalidad.equalsIgnoreCase("1")) {
 
-            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+                if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
 
-                if (flagLogin == 1){
+                    if (flagLogin == 1){
 
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
-                    startActivity(intent2);
-                    finish();
+                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                        editor.clear().commit();
+                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
+                        startActivity(intent2);
+                        finish();
+
+                    }else{
+                        Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                    }
+
+
+                }
+
+
+            }else if (modalidad.equalsIgnoreCase("2")){
+
+                if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+
+                    if (flagLogin == 1){
+
+                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                        editor.clear().commit();
+                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                        startActivity(intent2);
+                        finish();
+
+                    }else{
+                        Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                    }
+
 
                 }else{
-                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                    Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+nombreUsuario);
+                    Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
                 }
 
 
             }
 
-
-        }else if (modalidad.equalsIgnoreCase("2")){
-
-            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
-
-                if (flagLogin == 1){
-
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                    startActivity(intent2);
-                    finish();
-
-                }else{
-                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
-                }
-
-
-            }else{
-                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+nombreUsuario);
-                Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
-            }
-
-
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
-
-
-
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -315,5 +315,20 @@ public class MainActivity_predio extends AppCompatActivity {
         }
 
         handlerDBPersistence.close();
+    }
+
+    public void alertWriteNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

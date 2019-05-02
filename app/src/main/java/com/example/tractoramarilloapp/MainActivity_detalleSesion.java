@@ -230,6 +230,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         if (requestCode == COMENTARIO_REQUEST){
             editor.putString("comentarios","comentario");
             editor.commit();
+            Toast.makeText(MainActivity_detalleSesion.this,"Comentario guardado exitosamente!.",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -240,7 +241,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface arg0, int arg1) {
-                                Toast.makeText(MainActivity_detalleSesion.this,"You clicked yes button",Toast.LENGTH_LONG).show();
+                                Toast.makeText(MainActivity_detalleSesion.this,"You clicked yes button",Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -263,42 +264,60 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
-        //SPLIT TO ARRAY THE VALUES OF TAG
-        String[] arrayResponse = response.split(":");
-        String nombreImplemento = prefs.getString("id_implemento","null");
-        String nombreMaquina = prefs.getString("id_maquinaria","null");
-        String nombreUsuario = prefs.getString("id_usuario","null");
+        if (!response.equalsIgnoreCase("VOID")){
 
-        // IF SI EL TAG ES EL IMPLEMENTO
-        if (nombreImplemento.equalsIgnoreCase(""+arrayResponse[0])){
+            //SPLIT TO ARRAY THE VALUES OF TAG
+            String[] arrayResponse = response.split(":");
+            String tagImplemento = prefs.getString("tagImplemento","null");
+            String tagMaquinaria = prefs.getString("tagMaquinaria","null");
+            String idUsuario = prefs.getString("idUsuario","null");
 
-            Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            // IF SI EL TAG ES EL IMPLEMENTO
+            if (tagImplemento.equalsIgnoreCase(""+arrayResponse[0])){
 
-        }
-        // IF SI EL TAG ES LA PULSERA
-        else if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+                //Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+                editor.remove("tagImplemento");
+                editor.remove("nameImplemento");
+                editor.commit();
+                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
+                startActivity(intent2);
+                finish();
 
-            Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-        }
-        // UF SI EL TAG ES LA MAQUINARIA Y CIERRA LA SESION
-        else if(nombreMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-            if (flagInicio!=1){
-                Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
-            }else{
-                Log.e("TAG 8: ","Maquinaria cierre sesión: "+arrayResponse[0]+" maquina: "+nombreMaquina);
-
-                //editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro","2");
-                startActivityForResult(intent2,HOROMETRO_REQUEST);
-                //finish();
-
-                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                }
 
             }
+            // IF SI EL TAG ES LA PULSERA
+            else if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
+
+                Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
+            }
+            // UF SI EL TAG ES LA MAQUINARIA Y CIERRA LA SESION
+            else if(tagMaquinaria.equalsIgnoreCase(""+arrayResponse[0])){
+
+                if (flagInicio!=1){
+                    Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
+                }else{
+                    Log.e("TAG 8: ","Maquinaria cierre sesión: "+arrayResponse[0]+" maquina: "+nombreMaquina);
+
+                    //editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_horometro.class);
+                    intent2.putExtra("flagHorometro","2");
+                    startActivityForResult(intent2,HOROMETRO_REQUEST);
+                    //finish();
+
+
+
+                }
+            }
+
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+        }
+
+
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
     }
 
@@ -313,5 +332,20 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
+
+    public void alertWriteNFC(String message){
+        android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

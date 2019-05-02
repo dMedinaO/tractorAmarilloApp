@@ -143,7 +143,7 @@ public class HandlerImplemento {
         Log.e(TAG, sqlQuery);
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlQuery);
         Log.e(TAG, cursor.getCount()+" tiene datos la puta caga XD ");
-        if (cursor.getCount()==0){
+        if (cursor.getCount()!=0){
             response = true;
         }
 
