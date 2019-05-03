@@ -191,6 +191,17 @@ public class MainActivity_faena extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
+        this.context = getApplicationContext();
+        //NFC CONFIGURATION
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[]{tagDetected};
+
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+
         String response = this.nfcHandler.readerTAGNFC(intent);
 
         if (!response.equalsIgnoreCase("VOID")){
@@ -199,54 +210,57 @@ public class MainActivity_faena extends AppCompatActivity {
             String[] arrayResponse = response.split(":");
             String tagImplemento = prefs.getString("tagImplemento","");
             String flagImplemento = prefs.getString("flagImplemento","");
-            String tagMaquina = prefs.getString("tagMaquina","");
+            String tagMaquina = prefs.getString("tagMaquinaria","");
             String idUsuario = prefs.getString("idUsuario","null");
 
-            if (arrayResponse[1].equalsIgnoreCase("3")){
+        if (arrayResponse[1].equalsIgnoreCase("3")){//SI ES MAQUINARIA
 
-                if(tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
+            if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])) {
 
-                    Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+                String [] tagRead = response.split(":");
+                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
 
-                    //editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
-                    intent2.putExtra("flagHorometro", "3");
-                    startActivity(intent2);
-                    finish();
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
 
-                }else {
-                    alertNFC("TAG invalido. La maquinaria no es la seleccionada.");
-                }
+                Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + idMaquina);
+                editor.putString("idImplementCierreForzado", idImplemento);//esto es un parche picante para que se usa para valorar el tag del implemento, si no tiene valores, realmente esta ocupado
+                //si dicho tag tiene valor, significa que fue ocupado pero su sesion fue cerrado forzado.
 
+                //editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro", "3");
+                startActivity(intent2);
+                finish();
+            }else{
+
+                Log.e("TAG-MAQUINARIA", "MAQUINARIA LEIDA NO CORRESPONDE");
             }
-
-            if (arrayResponse[1].equalsIgnoreCase("4")) {
-
-                if (flagImplemento.equalsIgnoreCase("1")){
-                    alertNFC("TAG invalido. Debe iniciar sesión antes de realizar esta operación.");
-                }else if (flagImplemento.equalsIgnoreCase("0")){
-                    if(tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
-                        Log.e("TAG 7: ", "Implemento nuevamente: " + arrayResponse[0] + " implemento: " + tagImplemento);
-                        alertEliminarImplemento();
-                    }else {
-                        alertNFC("TAG invalido. El implemento no es el seleccionado.");
-                    }
-                }
-
-            }
-
-            if (arrayResponse[1].equalsIgnoreCase("1") || arrayResponse[1].equalsIgnoreCase("2")) {
-                alertNFC("TAG invalido. Favor acerque el dispositivo a un implemento o maquinaria.");
-            }
-
         }else{
-            Log.e("TAG ERROR:","response VOID: "+response);
-            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+            if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
+                if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
+
+                    if (idImplemento.equalsIgnoreCase(arrayResponse[0])) {
+
+                        //ACA DEBOD HINCHAR LAS PELOTAS CON EL TAG DEL INFORME ACTUAL
+                        String [] tagRead = response.split(":");
+                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+                        this.alertEliminarImplemento(newTag, myTag);//le pasamos el new tag para escribir y dejar habilitado el implemento en el caso que corresponda
+
+                    }else {
+
+                        Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO CORRESPONDE AL ACTUAL");
+                    }
+
+                }else {//ACA ES CUANDO NO CORRESPONDE A NINGUN CASO
+
+                }
+            }else{
+                Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
+            }
         }
-
-
-
-
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -283,7 +297,8 @@ public class MainActivity_faena extends AppCompatActivity {
     }
 
 
-    public void alertEliminarImplemento(){
+    public void alertEliminarImplemento(final String newTagWrite, final Tag myTag){
+
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Mensaje")
                 .setMessage(R.string.alert_eliminar_implemento)
@@ -296,6 +311,22 @@ public class MainActivity_faena extends AppCompatActivity {
                         editor.remove("tagImplemento");
                         editor.remove("nameImplemento");
                         editor.commit();
+
+                        //escribimos la cosa
+                        //NFC CONFIGURATION
+                        nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_faena.this);
+
+                        pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_faena.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+                        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+                        writeTagFilters = new IntentFilter[]{tagDetected};
+
+                        nfcHandler = new NFCHandler(MainActivity_faena.this, context, nfcAdapter);
+
+                        Log.e("TAG-FAENA", newTagWrite+" TAG a escribir");
+
+                        int responseWrite = nfcHandler.writeNFC(newTagWrite, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+
                         Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
                         startActivity(intent2);
                         finish();

@@ -10,9 +10,11 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.util.Log;
 
+import com.example.tractoramarilloapp.model.InformeOperaciones;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.persistence.SessionClass;
 
 import java.util.ArrayList;
 
@@ -53,24 +55,17 @@ public class HandlerMaquinaria {
             Log.e(TAG, "is Machine");
             if (this.isMachineRegistered()){//si la maquina esta registrada en el sistema
                 Log.e(TAG, "is registered");
-                if (this.isMachineAvailable()){//si la maquina se encuentra disponible para trabajar//
-                    Log.e(TAG, " machine Available");
 
-                    if(this.isWorkerAvailable()){//si el operario se encuentra habilitado para dicha maquina
-                        Log.e(TAG, "User available");
-                    }else{
-                        Log.e(TAG, "worked is not available");
-                        response = -4;//operario no habilitado para la maquinaria
-                    }
+                if(this.isWorkerAvailable()){//si el operario se encuentra habilitado para dicha maquina
+                    Log.e(TAG, "User available");
                 }else{
-                    Log.e(TAG, "is not available machine");
-                    response = -3;//maquina ocupada
+                    Log.e(TAG, "worked is not available");
+                    response = -4;//operario no habilitado para la maquinaria
                 }
             }else{
                 Log.e(TAG, "is not registered");
                 response = -2;//maquina no registrada.
             }
-
         }else{
             Log.e(TAG, "is not a machine");
             response = -1;//tag no corresponde a una maquina

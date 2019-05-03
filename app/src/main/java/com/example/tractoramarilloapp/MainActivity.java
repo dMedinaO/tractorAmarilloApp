@@ -204,12 +204,14 @@ public class MainActivity extends AppCompatActivity {
             // WORKER LOGIN
             if (responseSession==1){
 
-                editor.putString("idUsuario",arrayResponse[2]);
-                editor.putString("modalidad","2");
-                editor.commit();
-                Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-                startActivity(intent2);
-                finish();
+            editor.putString("idUsuario",arrayResponse[2]);
+            editor.putString("modalidad","2");
+            editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+            editor.commit();
+
+            Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+            startActivity(intent2);
+            finish();
 
                 if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
                     myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

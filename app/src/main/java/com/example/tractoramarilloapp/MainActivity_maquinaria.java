@@ -23,7 +23,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.HandlerMaquinaria;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -181,11 +183,17 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
                 if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){
 
-                    Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
+
+                Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
+                String tokenSession = prefs.getString("tokenSession", "null");
+                if (new SessionHandler(this.context).closeSession(tokenSession)) {
                     editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
+                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
                     startActivity(intent2);
                     finish();
+                }else{
+                    Log.e("TAG:ERROR", "No se que paso aquí!!!");
+                }
 
                 }
 
@@ -194,36 +202,40 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
                     levantarDialog(MainActivity_maquinaria.this,"Este proceso puede tardar un momento. Favor espere...");
 
+                HandlerInforme handlerInforme = new HandlerInforme(this.context);
+                String predio = prefs.getInt("idPredio", 0)+"";
+                String tokenSession = prefs.getString("tokenSession", "null");
+                final int idInforme = handlerInforme.addElementToInforme(text.split(":")[0], idUsuario, predio);
+
+                final String [] tagRead = text.split(":");
+                //String newTag = tagRead[0]+tagRead[2]+":1:"+idUsuario;
+
+                String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
+                Log.e("WRITE", newTag+" new text to NFC");
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
 
-                    final String [] tagRead = text.split(":");
-                    String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
-                    Log.e("WRITE", newTag+" new text to NFC");
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-
-                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-
-
-                    //this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);
-                    if (responseWrite == 0){
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                if (responseWrite == 0){
 
                         Handler handler = new Handler();
 
-                        if (dialog.isShowing()) {
-                            handler.postDelayed(new Runnable() {
-                                public void run() {
-                                    dialog.dismiss();
-                                    editor.putString("nameMaquinaria",tagRead[2]);
-                                    editor.putString("tagMaquinaria",tagRead[0]);
-                                    editor.commit();
-                                    Log.e("HANDLER", "OK");
-                                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
-                                    intent2.putExtra("flagHorometro", "1");
-                                    startActivity(intent2);
-                                    finish();
-                                }
-                            }, 2000);
+                    if (dialog.isShowing()) {
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                dialog.dismiss();
+                                editor.putString("nameMaquinaria",tagRead[2]);
+                                editor.putString("tagMaquinaria",tagRead[0]);
+                                editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
+
+                                editor.commit();
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
+                                intent2.putExtra("flagHorometro", "1");
+                                startActivity(intent2);
+                                finish();
+                            }
+                        }, 2000);
 
                         }
 

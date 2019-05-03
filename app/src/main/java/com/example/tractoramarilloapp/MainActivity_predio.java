@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
@@ -65,6 +66,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
         //metodo que permite completar los arreglos de string de predios con la informacion de la base de datos
         this.getNamePredios();
+        this.context = getApplicationContext();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_predio);
@@ -219,6 +221,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
+        this.context = getApplicationContext();
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
@@ -231,29 +234,46 @@ public class MainActivity_predio extends AppCompatActivity {
 
             if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")){
 
-                if (arrayResponse[1].equalsIgnoreCase("1")) {
-                    alertWriteNFC("Ya se encuentra un operador ocupando el dispositivo");
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+
+                if (flagLogin == 1){
+
+                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
+                    editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                    startActivity(intent2);
+                    finish();
+
+                }else{
+                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
                 }
-                if (arrayResponse[1].equalsIgnoreCase("2")) {
-                    if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
-
-                        if (flagLogin == 1){
-
-                            Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
-                            editor.clear().commit();
-                            Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                            startActivity(intent2);
-                            finish();
-
-                        }else{
-                            Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
-                        }
 
 
+            }
+
+
+        }else if (modalidad.equalsIgnoreCase("2")){//MODALIDAD TRABAJADOR PERRO ESCLAVO
+
+
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){//PARA COMPARAR CON EL ID DEL USUARIO
+
+                if (flagLogin == 1){
+
+                    //CERRAMOS SESION
+                    String tokenSession = prefs.getString("tokenSession", "null");
+                    if (new SessionHandler(this.context).closeSession(tokenSession)){
+                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
+                        editor.clear().commit();//SE BORRA TODA LA DATA DEL SHARED QUE HA ESTADO ALMACENADA
+                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                        startActivity(intent2);
+                        finish();
                     }else{
-                        Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
-                        alertWriteNFC("Existe una sesión activa en este dispositivo.");
+                        Log.e("TAG:ERROR", "No se que paso :(");
                     }
+
+
+                }else{
+                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
                 }
 
                 if (arrayResponse[1].equalsIgnoreCase("3") || arrayResponse[1].equalsIgnoreCase("4")){
@@ -264,9 +284,12 @@ public class MainActivity_predio extends AppCompatActivity {
 
             }
 
-        }else{
-            Log.e("TAG ERROR:","response VOID: "+response);
-            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+            }else{
+                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
+                Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
+            }
+
+
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){

@@ -21,6 +21,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -151,7 +153,30 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                     finish();
 
                 }else{
+
                     relativeInicioSesion.setVisibility(View.VISIBLE);
+
+                    //cambios necesarios
+
+                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                    sessionHandler.ChangeStatusSession("ACTIVE");
+
+                    //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
+                    String idImplemento = prefs.getString("tagImplemento","-");
+
+                    String isImplementActive = "";
+
+                    if (idImplemento.equalsIgnoreCase("-")){
+                        isImplementActive="NO";
+                    }else{
+                        isImplementActive="TES";
+                    }
+
+                    String statusSend = "NOT_YET";
+
+                    //hacemos la instancia a la adicion de informacion al informe generado previamente
+                    //new HandlerInforme(getApplicationContext()).changeValuesHorometro(horometroInicio,horometroFinal,  idInforme, idImplemento, horarioInicio, horarioFinal, idFaena, statusSend, isImplementActive);
                 }
 
             }
@@ -238,9 +263,14 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                             finish();
                         }
                         if (modalidad.equalsIgnoreCase("2")){
-                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.e("TAG-ERROR", "NO SE QUE MIERDA PASO :(");
+                            }
                         }
 
 
@@ -277,75 +307,68 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         String response = this.nfcHandler.readerTAGNFC(intent);
         Log.e("TAG TAG","response: "+response);
 
-        if (!response.equalsIgnoreCase("VOID")){
-
-            Log.e("TAG TAG TAG","response: "+response);
-            //SPLIT TO ARRAY THE VALUES OF TAG
-            String[] arrayResponse = response.split(":");
-            String tagImplemento = prefs.getString("tagImplemento","null");
-            String tagMaquinaria = prefs.getString("tagMaquinaria","null");
-            String idUsuario = prefs.getString("idUsuario","null");
-
-            // IF SI EL TAG ES EL IMPLEMENTO
-            if (arrayResponse[1].equalsIgnoreCase("4")){
+        //SPLIT TO ARRAY THE VALUES OF TAG
+        String[] arrayResponse = response.split(":");
+        String nombreImplemento = prefs.getString("tagImplemento","null");
+        String nombreMaquina = prefs.getString("tagMaquinaria","null");
+        String nombreUsuario = prefs.getString("idUsuario","null");
 
 
-                Log.e("TAG TAG TAG","TAG es un implemento");
+        if (flagInicio == 1) {//boton ya se encuentra pulsado
+            if (arrayResponse[1].equalsIgnoreCase("4")){//corresponde a implemento
 
-                //Validacion para que marque primero el inicio de sesión para luego poder cambiar el implemento
-                if (flagInicio!=1){
-                    Log.e("TAG TAG TAG","FLAG - No ha iniciado sesión");
-                    //Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
-                    alertWriteNFC("Debe iniciar sesión antes de realizar esta operación...");
-                }else{
-                    String currentDateandTime = sdf.format(new Date());
-
-                    editor.putString("fin_implemento", currentDateandTime);
-                    editor.remove("tagImplemento");
-                    editor.remove("nameImplemento");
-                    editor.commit();
+                if (nombreImplemento.equalsIgnoreCase("null")){//el loco trabaja sin implemento
                     Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
                     startActivity(intent2);
                     finish();
+                }else{//el loco esta trabajando con implemento
+                    if (nombreImplemento.equalsIgnoreCase(arrayResponse[0])){
+
+                        String [] tagRead = response.split(":");
+                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+                        Log.e("TAG-ERROR", "ESTE ES MI IMPLEMENTO");
+
+                        nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_detalleSesion.this);
+
+                        pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_detalleSesion.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+                        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+                        writeTagFilters = new IntentFilter[]{tagDetected};
+
+                        nfcHandler = new NFCHandler(MainActivity_detalleSesion.this, context, nfcAdapter);
+
+                        Log.e("TAG-FAENA", newTag+" TAG a escribir");
+
+                        int responseWrite = nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+                        Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
+                        startActivity(intent2);
+                        finish();
+                    }else{
+                        Log.e("TAG-ERROR", "ESTE NO ES MI IMPLEMENTO");
+                    }
                 }
-
-            }
-            // IF SI EL TAG ES LA PULSERA
-            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
-                Log.e("TAG TAG TAG","TAG usuario "+response);
-                //Toast.makeText(MainActivity_detalleSesion.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-                alertWriteNFC("Debe iniciar sesión antes de realizar esta operación...");
-            }
-            // UF SI EL TAG ES LA MAQUINARIA Y CIERRA LA SESION
-            if(tagMaquinaria.equalsIgnoreCase(""+arrayResponse[0])){
-
-                if (flagInicio!=1){
-
-                    alertWriteNFC("Debe iniciar sesión antes de realizar esta operación...");
-                    //Toast.makeText(MainActivity_detalleSesion.this,"Debe iniciar sesión antes de realizar esta operación...",Toast.LENGTH_SHORT).show();
-                }else{
-                    Log.e("TAG 8: ","Maquinaria cierre sesión: "+arrayResponse[0]+" maquina: "+nombreMaquina);
-
-                    //editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_horometro.class);
-                    intent2.putExtra("flagHorometro","2");
-                    startActivityForResult(intent2,HOROMETRO_REQUEST);
-                    //finish();
-
-
+            }else{
+                if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
+                    if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
+                        if (arrayResponse[3].equalsIgnoreCase(nombreUsuario)) {//si esta ocupada la maquina por mi
+                            Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
+                            Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
+                            intent2.putExtra("flagHorometro", "2");
+                            startActivity(intent2);
+                            finish();
+                        }else{//UN WN ME CAGO
+                            Log.e("TAG-ERROR", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+                        }
+                    }else{
+                        Log.e("TAG-ERROR", "NO ES MI MAQUINA");
+                    }
+                }else{//corresponde a cualquier otra wea
+                    Log.e("TAG-ERROR", "ES CUALQUIER OTRA WEA QUE NO SEA MAQUINA NI IMPLEMENTO");
 
                 }
             }
-
-        }else{
-            Log.e("TAG ERROR:","response VOID: "+response);
-            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
-        }
-
-
-
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
     }
 

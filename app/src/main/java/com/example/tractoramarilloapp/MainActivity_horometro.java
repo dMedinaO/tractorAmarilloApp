@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.SessionHandler;
+
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity_horometro extends AppCompatActivity {
@@ -87,6 +89,7 @@ public class MainActivity_horometro extends AppCompatActivity {
                         editor.putString("inicio_horometro",inputHorometro.getText().toString());
                         editor.commit();
 
+                        //modificar el informe con el ID actual
                         Intent intent = new Intent(MainActivity_horometro.this,MainActivity_implemento.class);
                         startActivity(intent);
                         finish();
@@ -95,6 +98,7 @@ public class MainActivity_horometro extends AppCompatActivity {
                     // FIN DE HOROMETRO
                     if (bundle.getString("flagHorometro").equalsIgnoreCase("2")){
                         editor.putString("fin_horometro",inputHorometro.getText().toString());
+                        //modificar el informe con el ID actual
                         Intent output = new Intent();
                         //output.putExtra("horometro", inputHorometro.getText().toString());
                         setResult(RESULT_OK, output);
@@ -112,9 +116,18 @@ public class MainActivity_horometro extends AppCompatActivity {
                             finish();
                         }
                         if (modalidad.equalsIgnoreCase("2")){
-                            Intent intent = new Intent(MainActivity_horometro.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
+
+                            //ACA DEBO DARLE FIN AL INFORME COMPLETANDO LA INFORMACION ASOCIADA A LA DATA CORRESPONDIENTE Y SE DEBEN ELIMINAR LOS ELEMENTOS DE LAS SHARED PREDERENCE ASOCIADOS AL INFORME
+
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                Intent intent = new Intent(MainActivity_horometro.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.e("TAG:ERROR", "No se que carajos paso aqui :(");
+
+                            }
                         }
 
                     }
