@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.persistence.SessionClassContract;
 import com.example.tractoramarilloapp.utils.FA;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ public class SessionHandler {
     private Context context;
     private static String TAG="SESSION";
     private HandlerDBPersistence handlerDBPersistence;
+    private String tokenSession;
 
     /**
      * Constructor de la clase
@@ -167,6 +169,7 @@ public class SessionHandler {
         try {
             if (this.isUserIsRegistered(userID)) {
                 String sessionToken = FA.generateTokenSession(userID);
+                this.tokenSession = sessionToken;
                 Log.e(TAG, sessionToken + " session");
                 String status;
                 if (kindSession == 1) {
@@ -198,6 +201,15 @@ public class SessionHandler {
             return -1;
         }
 
+    }
+
+    //GETTER AND SETTER PARA TOKEN SESSION
+    public String getTokenSession() {
+        return tokenSession;
+    }
+
+    public void setTokenSession(String tokenSession) {
+        this.tokenSession = tokenSession;
     }
 
     /**
@@ -236,6 +248,44 @@ public class SessionHandler {
                 response=true;
                 break;
             }
+        }
+        return response;
+    }
+
+    /**
+     * Metodo que permite cambiar la informacion de la sesion con respecto al id usuario
+     * @param status
+     * @return
+     */
+    public boolean ChangeStatusSession(String status){
+
+        boolean response=false;
+
+        //primero obtenermos el token de la sesion
+        ArrayList<SessionClass> listSession = this.handlerDBPersistence.getSessionActive("PENDING");//solo las que estan pendiente
+        String tokenSession = listSession.get(listSession.size()-1).getSessionToken();//obtenemos el token del ultimo registro del compadre
+
+        String sqlExec = "UPDATE "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME +" "+SessionClassContract.SessionClassContractEntry.STATUS+ "= '"+status + "' WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
+        int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
+        if (responseDB ==0 ){
+            response=true;
+        }
+        return response;
+    }
+
+    /**
+     * Metodo que permite cerrar la sesion del usuario activo, recibe el token de la sesion activo, esto implica que se elimina la informacion del usuario en la base de datos
+     * @param tokenSession
+     * @return
+     */
+    public boolean closeSession(String tokenSession){
+
+        boolean response = false;
+        String sqlExec = "DELETE FROM "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME + " WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
+        int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
+        if (responseDB ==0 ){
+            Log.e(TAG, "SESSION REMOVE OK");
+            response=true;
         }
         return response;
     }

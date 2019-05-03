@@ -21,7 +21,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.HandlerMaquinaria;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -145,19 +147,31 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){
 
                 Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
-                editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_maquinaria.this,MainActivity.class);
-                startActivity(intent2);
-                finish();
+                String tokenSession = prefs.getString("tokenSession", "null");
+                if (new SessionHandler(this.context).closeSession(tokenSession)) {
+                    editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
+                    startActivity(intent2);
+                    finish();
+                }else{
+                    Log.e("TAG:ERROR", "No se que paso aquí!!!");
+                }
 
             }
 
             if (responseHander == 0){//todo esta ok!!!
 
+                HandlerInforme handlerInforme = new HandlerInforme(this.context);
+                String predio = prefs.getInt("idPredio", 0)+"";
+                String tokenSession = prefs.getString("tokenSession", "null");
+                final int idInforme = handlerInforme.addElementToInforme(text.split(":")[0], idUsuario, predio);
+
                 levantarDialog(MainActivity_maquinaria.this,"Por favor no aleje el dispositivo de la maquinaria...");
 
                 final String [] tagRead = text.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":1:"+idUsuario;
+                //String newTag = tagRead[0]+tagRead[2]+":1:"+idUsuario;
+
+                String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
                 Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
@@ -173,6 +187,8 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                                 dialog.dismiss();
                                 editor.putString("nameMaquinaria",tagRead[2]);
                                 editor.putString("tagMaquinaria",tagRead[0]);
+                                editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
+
                                 editor.commit();
                                 Log.e("HANDLER", "OK");
                                 Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
@@ -189,9 +205,6 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                     alertWriteNFC("Error al escribir NFC. Favor intente nuevamente...");
                 }
 
-            }else if(responseHander == -3){
-                Log.e("HANDLER", "ERROR MACHINE OCUPADA");
-                alertWriteNFC("Esta maquina ya se encuentra ocupada por otra operador...");
             }else if(responseHander == -4){
                 Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
                 alertWriteNFC("Actualmente no está habilitado para operar la maquinaria seleccionada...");

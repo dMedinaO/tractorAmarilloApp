@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
@@ -63,6 +64,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
         //metodo que permite completar los arreglos de string de predios con la informacion de la base de datos
         this.getNamePredios();
+        this.context = getApplicationContext();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_predio);
@@ -221,23 +223,24 @@ public class MainActivity_predio extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
+        this.context = getApplicationContext();
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
         //tvNFCContent.setText("NFC Content: " + response);
         //Toast.makeText(MainActivity_predio.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
         String[] arrayResponse = response.split(":");
-        String nombreUsuario = prefs.getString("usuario","null");
+        String idUsuario = prefs.getString("idUsuario","null");
         String modalidad = prefs.getString("modalidad","null");
 
 
         if (modalidad.equalsIgnoreCase("1")) {
 
-            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
 
                 if (flagLogin == 1){
 
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
+                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
                     editor.clear().commit();
                     Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
                     startActivity(intent2);
@@ -251,17 +254,25 @@ public class MainActivity_predio extends AppCompatActivity {
             }
 
 
-        }else if (modalidad.equalsIgnoreCase("2")){
+        }else if (modalidad.equalsIgnoreCase("2")){//MODALIDAD TRABAJADOR PERRO ESCLAVO
 
-            if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+
+            if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){//PARA COMPARAR CON EL ID DEL USUARIO
 
                 if (flagLogin == 1){
 
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                    startActivity(intent2);
-                    finish();
+                    //CERRAMOS SESION
+                    String tokenSession = prefs.getString("tokenSession", "null");
+                    if (new SessionHandler(this.context).closeSession(tokenSession)){
+                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
+                        editor.clear().commit();//SE BORRA TODA LA DATA DEL SHARED QUE HA ESTADO ALMACENADA
+                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                        startActivity(intent2);
+                        finish();
+                    }else{
+                        Log.e("TAG:ERROR", "No se que paso :(");
+                    }
+
 
                 }else{
                     Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
@@ -269,15 +280,12 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
             }else{
-                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+nombreUsuario);
+                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
                 Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
             }
 
 
         }
-
-
-
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

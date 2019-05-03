@@ -50,17 +50,11 @@ public class HandlerImplemento {
 
             if (this.isImplementRegistered()){//si el implemento se encuentra registrado en el dispositivo
 
-                if (this.isImplementAvailable()){//si el implemento se encuentra habilitado para trabajar
-
-                    if(this.isImplementAvailableForMachine()){
-                        Log.e(TAG, "implements OK");
-                    }else {
-                        Log.e(TAG,"Implemento no se puede ocupar con maquinaria seleccionada");
-                        response=-4;
-                    }
-                }else{
-                    response=-3;
-                    Log.e(TAG, "Implemento no se encuentra habilitado para trabajar");
+                if(this.isImplementAvailableForMachine()){
+                    Log.e(TAG, "implements OK");
+                }else {
+                    Log.e(TAG,"Implemento no se puede ocupar con maquinaria seleccionada");
+                    response=-4;
                 }
             }else{
                 response=-2;
@@ -143,7 +137,7 @@ public class HandlerImplemento {
         Log.e(TAG, sqlQuery);
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlQuery);
         Log.e(TAG, cursor.getCount()+" tiene datos la puta caga XD ");
-        if (cursor.getCount()==0){
+        if (cursor.getCount()!=0){
             response = true;
         }
 

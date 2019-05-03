@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.tractoramarilloapp.model.Faena;
 import com.example.tractoramarilloapp.model.Implemento;
+import com.example.tractoramarilloapp.model.InformeOperaciones;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.model.TipoMaquinaria;
@@ -103,6 +104,24 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS  implementoHabilitado ("
                 + "implementoID TEXT NOT NULL, "
                 + "maquinariaID TEXT NOT NULL )");
+
+        /*demo tabla informe operaciones contempla la data de usuarios, sesiones, maquinaria, implementos y faenas, los datos con respecto al implemento puede ser vacios debido a que existe la opcion trabajar sin implmento
+        * se agregar ademas un campo asociado a dicha instancia y un campo que permite evaluar si el informe fue enviado o no*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS informeOperaciones ("
+                + "idinformeOperaciones INTEGER  NOT NULL, "
+                + "idMaquinaria TEXT NOT NULL, "
+                + "horometroInicio TEXT NOT NULL, "
+                + "horometroFinal TEXT NOT NULL, "
+                + "userID TEXT NOT NULL, "
+                + "sessionTAG TEXT NOT NULL, "
+                + "isImplementActive TEXT NOT NULL, "
+                + "idImplemento TEXT, "
+                + "horarioInicio TEXT, "
+                + "horarioFinal TEXT, "
+                + "idFaena TEXT NOT NULL, "
+                + "idPredio TEXT NOT NULL, "
+                + "statusSend TEXT NOT NULL, "
+                + "UNIQUE (idinformeOperaciones))");
 
     }
 
@@ -477,6 +496,17 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
+    public long saveInformeOperaciones(InformeOperaciones informeOperaciones){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                InformeOperacionesContract.InformeOperacionesContractEntry.TABLE_NAME,
+                null,
+                informeOperaciones.toContentValues()
+        );
+    }
+
     //<SQL SELECT GENERICO>
     public Cursor consultarRegistros(String sql_select) {
 
@@ -516,5 +546,37 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
 
         return response;
 
+    }
+
+    /**
+     * Metodo que permite obtener el ultimo ID de un informe con el fin de poder agregar un nuevo elemento a partir de este
+     * @param sqlQuery
+     * @
+     * @return
+     */
+    public int getLastID(String sqlQuery, String identificador){
+
+        int lastID=-1;
+
+        Cursor cursor = null;
+
+        try {
+
+            SQLiteDatabase db = getReadableDatabase();
+            cursor = db.rawQuery(sqlQuery, null);
+
+            if (cursor != null) {
+                cursor.moveToLast();
+                int idValue = cursor.getColumnIndex(identificador);
+                lastID = cursor.getInt(idValue);
+
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lastID;
     }
 }
