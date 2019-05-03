@@ -204,61 +204,62 @@ public class MainActivity_faena extends AppCompatActivity {
 
         String response = this.nfcHandler.readerTAGNFC(intent);
 
-        if (!response.equalsIgnoreCase("VOID")){
+        if (!response.equalsIgnoreCase("VOID")) {
 
             //SPLIT TO ARRAY THE VALUES OF TAG
             String[] arrayResponse = response.split(":");
-            String tagImplemento = prefs.getString("tagImplemento","");
-            String flagImplemento = prefs.getString("flagImplemento","");
-            String tagMaquina = prefs.getString("tagMaquinaria","");
-            String idUsuario = prefs.getString("idUsuario","null");
+            String tagImplemento = prefs.getString("tagImplemento", "");
+            String flagImplemento = prefs.getString("flagImplemento", "");
+            String tagMaquina = prefs.getString("tagMaquinaria", "");
+            String idUsuario = prefs.getString("idUsuario", "null");
 
-        if (arrayResponse[1].equalsIgnoreCase("3")){//SI ES MAQUINARIA
+            if (arrayResponse[1].equalsIgnoreCase("3")) {//SI ES MAQUINARIA
 
-            if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])) {
+                if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
 
-                String [] tagRead = response.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                    String[] tagRead = response.split(":");
+                    String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
 
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
 
-                Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + idMaquina);
-                editor.putString("idImplementCierreForzado", idImplemento);//esto es un parche picante para que se usa para valorar el tag del implemento, si no tiene valores, realmente esta ocupado
-                //si dicho tag tiene valor, significa que fue ocupado pero su sesion fue cerrado forzado.
+                    Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+                    editor.putString("idImplementCierreForzado", tagImplemento);//esto es un parche picante para que se usa para valorar el tag del implemento, si no tiene valores, realmente esta ocupado
+                    //si dicho tag tiene valor, significa que fue ocupado pero su sesion fue cerrado forzado.
 
-                //editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro", "3");
-                startActivity(intent2);
-                finish();
-            }else{
+                    //editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
+                    intent2.putExtra("flagHorometro", "3");
+                    startActivity(intent2);
+                    finish();
+                } else {
 
-                Log.e("TAG-MAQUINARIA", "MAQUINARIA LEIDA NO CORRESPONDE");
-            }
-        }else{
-            if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
-                if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
-
-                    if (idImplemento.equalsIgnoreCase(arrayResponse[0])) {
-
-                        //ACA DEBOD HINCHAR LAS PELOTAS CON EL TAG DEL INFORME ACTUAL
-                        String [] tagRead = response.split(":");
-                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
-                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-                        this.alertEliminarImplemento(newTag, myTag);//le pasamos el new tag para escribir y dejar habilitado el implemento en el caso que corresponda
-
-                    }else {
-
-                        Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO CORRESPONDE AL ACTUAL");
-                    }
-
-                }else {//ACA ES CUANDO NO CORRESPONDE A NINGUN CASO
-
+                    Log.e("TAG-MAQUINARIA", "MAQUINARIA LEIDA NO CORRESPONDE");
                 }
-            }else{
-                Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
+            } else {
+                if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
+                    if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
+
+                        if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
+
+                            //ACA DEBOD HINCHAR LAS PELOTAS CON EL TAG DEL INFORME ACTUAL
+                            String[] tagRead = response.split(":");
+                            String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
+                            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+                            this.alertEliminarImplemento(newTag, myTag);//le pasamos el new tag para escribir y dejar habilitado el implemento en el caso que corresponda
+
+                        } else {
+
+                            Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO CORRESPONDE AL ACTUAL");
+                        }
+
+                    } else {//ACA ES CUANDO NO CORRESPONDE A NINGUN CASO
+
+                    }
+                } else {
+                    Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
+                }
             }
         }
 

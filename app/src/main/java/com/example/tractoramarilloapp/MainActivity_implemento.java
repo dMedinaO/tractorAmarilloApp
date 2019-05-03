@@ -235,20 +235,20 @@ public class MainActivity_implemento extends AppCompatActivity {
 
             int responseHandler = this.handlerImplemento.applyFluxeCheck();
 
-        if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {//CIERRE POR MAQUINARIA: CERRAR SESION Y TERMINAR REGISTRO DE INFORME, NOTA: ESTO SE REALIZA EN LA VENTANA DE HOROMETRO
+            if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {//CIERRE POR MAQUINARIA: CERRAR SESION Y TERMINAR REGISTRO DE INFORME, NOTA: ESTO SE REALIZA EN LA VENTANA DE HOROMETRO
 
                 Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
-            String [] tagRead = response.split(":");
-            String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                String [] tagRead = response.split(":");
+                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
 
-            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
-            //editor.clear().commit();
-            Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
-            intent2.putExtra("flagHorometro", "3");
-            startActivity(intent2);
-            finish();
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+                //editor.clear().commit();
+                Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
+                intent2.putExtra("flagHorometro", "3");
+                startActivity(intent2);
+                finish();
 
             }
 
@@ -259,12 +259,12 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                     levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
 
-                String [] tagRead = text.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
-                Log.e("WRITE", newTag+" new text to NFC");
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                if (responseWrite == 0){
+                    final String [] tagRead = response.split(":");
+                    String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
+                    Log.e("WRITE", newTag+" new text to NFC");
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                    if (responseWrite == 0){
 
                         Handler handler = new Handler();
 
@@ -300,15 +300,8 @@ public class MainActivity_implemento extends AppCompatActivity {
                     Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
                     alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
                 }
-            } else if (responseHandler == -2) {
-                alertWriteNFC("Implemento no se encuentra registrado.");
-            } else if (responseHandler == -4) {
-                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
-                alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
-            }
 
             }
-
 
         }else{
             Log.e("TAG ERROR:","response VOID: "+response);
