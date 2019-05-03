@@ -15,6 +15,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,10 @@ import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.utils.FA;
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
-    private TextView msjMotivacional,textComentario;
+    private TextView msjMotivacional,textComentario,textDateTime;
+
+    private SimpleDateFormat sdf,sdf_sync_date,sdf_sync_time;
+
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
     PendingIntent pendingIntent;
@@ -79,11 +86,15 @@ public class MainActivity extends AppCompatActivity {
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         textComentario = (TextView) findViewById(R.id.textComentarioLink);
+        textDateTime = (TextView) findViewById(R.id.textDateTime);
         imageComentario.setColorFilter(Color.rgb(206, 206, 206));
         textComentario.setTextColor(Color.rgb(206, 206, 206));
 
+        sdf_sync_date = new SimpleDateFormat("yyyy-MM-dd");
+        sdf_sync_time = new SimpleDateFormat("HH:mm:ss");
+
         //SHARED PREFERENCES
-        SharedPreferences prefs =
+        final SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
 
@@ -112,6 +123,18 @@ public class MainActivity extends AppCompatActivity {
         imageSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Log.e("TAG SYNC","activada sincronización");
+
+                String currentDate = sdf_sync_date.format(new Date());
+                String currentTime = sdf_sync_time.format(new Date());
+
+                editor.putString("last_sync",currentDate+" a las "+currentTime);
+                editor.commit();
+                Log.e("TAG SYNC","Data: "+prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+                textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+
+
                 if(isOnline(getApplicationContext())){
                     alertSync("Sincronización exitosa.");
                 }else{
@@ -119,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
 
     }
 
@@ -149,6 +173,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("TAG-RESPONSE", "BOSS ACTIVE");
         }
     }
+
+    @Override
+    public void onBackPressed() { }
 
     @Override
     protected void onNewIntent(Intent intent) {

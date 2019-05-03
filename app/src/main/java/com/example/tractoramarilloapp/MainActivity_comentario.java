@@ -45,7 +45,7 @@ public class MainActivity_comentario extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent output = new Intent();
-                setResult(RESULT_OK, output);
+                setResult(RESULT_CANCELED, output);
                 finish();
             }
         });
@@ -56,6 +56,11 @@ public class MainActivity_comentario extends AppCompatActivity {
 
 
 
+
+    }
+
+    @Override
+    public void onBackPressed() {
 
     }
 }

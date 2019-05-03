@@ -36,7 +36,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private ProgressDialog dialog;
 
-    static final int COMENTARIO_REQUEST = 1;
+    static final int COMENTARIO_REQUEST = 2;
 
     //se agrega el handler asociado a la maquinaria
     private HandlerMaquinaria handlerMaquinaria;

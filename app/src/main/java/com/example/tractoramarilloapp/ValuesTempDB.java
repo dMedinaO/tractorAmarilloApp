@@ -41,7 +41,7 @@ public class ValuesTempDB {
 
         //implementos
         handlerDBPersistence.saveImplemento(new Implemento("implement1", "0", "2018", "f1", "color1", "12345", "124pq"));
-        handlerDBPersistence.saveImplemento(new Implemento("i123", "0", "2018", "f1", "color1", "12345", "aqse"));
+        handlerDBPersistence.saveImplemento(new Implemento("i123", "0", "2018", "f1", "color1", "12345", "aqse2"));
 
         //tipo maquinaria
         handlerDBPersistence.saveTipoMaquina(new TipoMaquinaria("1", "Tipo1"));
@@ -55,7 +55,8 @@ public class ValuesTempDB {
         //SQL para insertar elementos en la tabla implemento habilitado esto en la relación de implementos que estan habilitados para cierta wea de maquina
         handlerDBPersistence.execSQLData("INSERT INTO implementoHabilitado VALUES ('124pq', '124ra')");
         handlerDBPersistence.execSQLData("INSERT INTO implementoHabilitado VALUES ('124pq', 'aqse')");
-        handlerDBPersistence.execSQLData("INSERT INTO implementoHabilitado VALUES ('aqse', '124ra')");
+        handlerDBPersistence.execSQLData("INSERT INTO implementoHabilitado VALUES ('aqse2', '124ra')");
+        handlerDBPersistence.execSQLData("INSERT INTO implementoHabilitado VALUES ('aqse2', 'aqse')");
 
         handlerDBPersistence.close();
 

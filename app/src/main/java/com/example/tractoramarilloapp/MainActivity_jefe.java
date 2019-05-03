@@ -125,10 +125,7 @@ public class MainActivity_jefe extends AppCompatActivity {
         }
         if (arrayResponse[1].equalsIgnoreCase("2")) {
 
-            editor.putString("id_usuario"+arrayResponse[0],arrayResponse[0]);
-            editor.putString("usuario"+arrayResponse[0],arrayResponse[0]);
-            editor.putString("modalidad","1");
-            editor.putString("usuario_rut"+arrayResponse[0],arrayResponse[2]);
+            editor.putString("idUsuario",arrayResponse[0]);
             editor.commit();
 
             Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_predio.class);
@@ -142,8 +139,6 @@ public class MainActivity_jefe extends AppCompatActivity {
             intent2.putExtra("comentario_mode","1"); //modo maquinaria
             startActivity(intent2);
             finish();
-
-
 
         }
         if (arrayResponse[1].equalsIgnoreCase("4")){

@@ -45,7 +45,7 @@ public class MainActivity_implemento extends AppCompatActivity {
     private SharedPreferences prefs;
 
     private SimpleDateFormat sdf;
-    static final int COMENTARIO_REQUEST = 1;
+    static final int COMENTARIO_REQUEST = 2;
 
     private HandlerImplemento handlerImplemento;
 

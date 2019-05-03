@@ -45,7 +45,7 @@ public class MainActivity_predio extends AppCompatActivity {
     private Button buttonPredio;
     private int flagLogin;
 
-    static final int COMENTARIO_REQUEST = 1;
+    static final int COMENTARIO_REQUEST = 2;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -225,50 +225,40 @@ public class MainActivity_predio extends AppCompatActivity {
         if (!response.equalsIgnoreCase("VOID")){
 
             String[] arrayResponse = response.split(":");
-            String nombreUsuario = prefs.getString("usuario","null");
+            String idUsuario = prefs.getString("idUsuario","null");
             String modalidad = prefs.getString("modalidad","null");
 
 
-            if (modalidad.equalsIgnoreCase("1")) {
+            if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")){
 
-                if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+                if (arrayResponse[1].equalsIgnoreCase("1")) {
+                    alertWriteNFC("Ya se encuentra un operador ocupando el dispositivo");
+                }
+                if (arrayResponse[1].equalsIgnoreCase("2")) {
+                    if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
 
-                    if (flagLogin == 1){
+                        if (flagLogin == 1){
 
-                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                        editor.clear().commit();
-                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity_jefe.class);
-                        startActivity(intent2);
-                        finish();
+                            Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
+                            editor.clear().commit();
+                            Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
+                            startActivity(intent2);
+                            finish();
+
+                        }else{
+                            Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                        }
+
 
                     }else{
-                        Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                        Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
+                        alertWriteNFC("Existe una sesión activa en este dispositivo.");
                     }
-
-
                 }
 
-
-            }else if (modalidad.equalsIgnoreCase("2")){
-
-                if (nombreUsuario.equalsIgnoreCase(""+arrayResponse[0])){
-
-                    if (flagLogin == 1){
-
-                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+nombreUsuario);
-                        editor.clear().commit();
-                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                        startActivity(intent2);
-                        finish();
-
-                    }else{
-                        Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
-                    }
-
-
-                }else{
-                    Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+nombreUsuario);
-                    Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
+                if (arrayResponse[1].equalsIgnoreCase("3") || arrayResponse[1].equalsIgnoreCase("4")){
+                    Log.e("TAG INVALIDO ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
+                    alertWriteNFC("TAG invalido. No esta permitido est");
                 }
 
 

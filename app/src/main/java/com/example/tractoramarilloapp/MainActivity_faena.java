@@ -25,6 +25,9 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.handlers.HandlerFaena;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 public class MainActivity_faena extends AppCompatActivity {
@@ -36,7 +39,8 @@ public class MainActivity_faena extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
 
-    static final int COMENTARIO_REQUEST = 1;
+    private SimpleDateFormat sdf;
+    static final int COMENTARIO_REQUEST = 2;
     private HandlerFaena handlerFaena;
 
     //NFC VARIABLES
@@ -76,6 +80,8 @@ public class MainActivity_faena extends AppCompatActivity {
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
+
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
@@ -191,49 +197,46 @@ public class MainActivity_faena extends AppCompatActivity {
 
             //SPLIT TO ARRAY THE VALUES OF TAG
             String[] arrayResponse = response.split(":");
-            String idImplemento = prefs.getString("idImplemento","");
+            String tagImplemento = prefs.getString("tagImplemento","");
             String flagImplemento = prefs.getString("flagImplemento","");
-            String idMaquina = prefs.getString("idMaquina","");
+            String tagMaquina = prefs.getString("tagMaquina","");
             String idUsuario = prefs.getString("idUsuario","null");
 
-            if (!arrayResponse[1].equalsIgnoreCase("4")){
-                alertNFC("TAG invalido. Favor acercar el dispositivo a un implemento.");
-            }else{
+            if (arrayResponse[1].equalsIgnoreCase("3")){
 
-                if (flagImplemento.equalsIgnoreCase("1")){
+                if(tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
 
-                    editor.putString("nameImplemento",arrayResponse[2]);
-                    editor.putString("tagImplemento",arrayResponse[0]);
-                    editor.commit();
-                    Toast.makeText(MainActivity_faena.this,"Implemento agregado exitosamente.",Toast.LENGTH_SHORT).show();
+                    Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
-
-                }
-
-                if (idImplemento.equalsIgnoreCase(""+arrayResponse[0])){
-
-                    Log.e("TAG 7: ","Implemento nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-                    alertEliminarImplemento();
-
-
-                }
-
-
-                if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])) {
-                    Toast.makeText(MainActivity_faena.this,"Para cerrar sesión acerque el dispositivo a la maquinaria...",Toast.LENGTH_SHORT).show();
-                }else if(idMaquina.equalsIgnoreCase(""+arrayResponse[0])){
-
-                    Log.e("TAG 5: ","Maquina nuevamente: "+arrayResponse[0]+" maquina: "+idMaquina);
-
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_horometro.class);
-                    intent2.putExtra("flagHorometro","3");
+                    //editor.clear().commit();
+                    Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
+                    intent2.putExtra("flagHorometro", "3");
                     startActivity(intent2);
                     finish();
 
+                }else {
+                    alertNFC("TAG invalido. La maquinaria no es la seleccionada.");
                 }
 
+            }
 
+            if (arrayResponse[1].equalsIgnoreCase("4")) {
+
+                if (flagImplemento.equalsIgnoreCase("1")){
+                    alertNFC("TAG invalido. Debe iniciar sesión antes de realizar esta operación.");
+                }else if (flagImplemento.equalsIgnoreCase("0")){
+                    if(tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
+                        Log.e("TAG 7: ", "Implemento nuevamente: " + arrayResponse[0] + " implemento: " + tagImplemento);
+                        alertEliminarImplemento();
+                    }else {
+                        alertNFC("TAG invalido. El implemento no es el seleccionado.");
+                    }
+                }
+
+            }
+
+            if (arrayResponse[1].equalsIgnoreCase("1") || arrayResponse[1].equalsIgnoreCase("2")) {
+                alertNFC("TAG invalido. Favor acerque el dispositivo a un implemento o maquinaria.");
             }
 
         }else{
@@ -288,7 +291,9 @@ public class MainActivity_faena extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
 
-                        editor.remove("idImplemento");
+                        String currentDateandTime = sdf.format(new Date());
+                        editor.putString("fin_implemento", currentDateandTime);
+                        editor.remove("tagImplemento");
                         editor.remove("nameImplemento");
                         editor.commit();
                         Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
