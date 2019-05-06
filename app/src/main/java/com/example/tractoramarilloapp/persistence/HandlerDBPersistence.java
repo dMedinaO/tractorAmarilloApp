@@ -6,9 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.tractoramarilloapp.model.Comentarios;
 import com.example.tractoramarilloapp.model.Faena;
 import com.example.tractoramarilloapp.model.Implemento;
-import com.example.tractoramarilloapp.model.InformeOperaciones;
+import com.example.tractoramarilloapp.model.InformeFaena;
+import com.example.tractoramarilloapp.model.InformeImplemento;
+import com.example.tractoramarilloapp.model.InformeMaquinaria;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.model.TipoMaquinaria;
@@ -105,23 +108,61 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "implementoID TEXT NOT NULL, "
                 + "maquinariaID TEXT NOT NULL )");
 
-        /*demo tabla informe operaciones contempla la data de usuarios, sesiones, maquinaria, implementos y faenas, los datos con respecto al implemento puede ser vacios debido a que existe la opcion trabajar sin implmento
-        * se agregar ademas un campo asociado a dicha instancia y un campo que permite evaluar si el informe fue enviado o no*/
-        db.execSQL("CREATE TABLE IF NOT EXISTS informeOperaciones ("
-                + "idinformeOperaciones INTEGER  NOT NULL, "
+        /*demo tabla informe maquinaria, se asocia a la informacion del uso de maquinarias*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS informeMaquinaria ("
+                + "idinformeMaquinaria INTEGER  NOT NULL, "
                 + "idMaquinaria TEXT NOT NULL, "
+                + "idPredio TEXT NOT NULL, "
                 + "horometroInicio TEXT NOT NULL, "
                 + "horometroFinal TEXT NOT NULL, "
                 + "userID TEXT NOT NULL, "
                 + "sessionTAG TEXT NOT NULL, "
-                + "isImplementActive TEXT NOT NULL, "
-                + "idImplemento TEXT, "
-                + "horarioInicio TEXT, "
-                + "horarioFinal TEXT, "
-                + "idFaena TEXT NOT NULL, "
-                + "idPredio TEXT NOT NULL, "
+                + "closeSessionKind TEXT NOT NULL, "
                 + "statusSend TEXT NOT NULL, "
-                + "UNIQUE (idinformeOperaciones))");
+                + "UNIQUE (idinformeMaquinaria))");
+
+        /*demo tabla informe implementos, se asocia a la informacion del uso de implementos en un implemento con respecto a una maquinaria
+        * para el desarrollo de una faena*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS informeUsoImplemento ("
+                + "idinformeImplemento INTEGER  NOT NULL, "
+                + "idImplemento TEXT NOT NULL, "
+                + "horaInicio TEXT NOT NULL, "
+                + "horaFinal TEXT NOT NULL, "
+                + "userID TEXT NOT NULL, "
+                + "sessionTAG TEXT NOT NULL, "
+                + "idInformeMaquinaria TEXT NOT NULL, "
+                + "statusSend TEXT NOT NULL, "
+                + "UNIQUE (idinformeImplemento))");
+
+        /*demo tabla informe faena, se asocia principalmente a los trabajos realizados con la maquinaria*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS informeFaena ("
+                + "idinformeFaena INTEGER  NOT NULL, "
+                + "idFaena TEXT NOT NULL, "
+                + "horaInicio TEXT NOT NULL, "
+                + "horaFinal TEXT NOT NULL, "
+                + "userID TEXT NOT NULL, "
+                + "sessionTAG TEXT NOT NULL, "
+                + "idInformeMaquinaria TEXT NOT NULL, "
+                + "statusSend TEXT NOT NULL, "
+                + "UNIQUE (idinformeFaena))");
+
+        /*demo tabla comentario general*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS comentario ("
+                + "idComentario INTEGER  NOT NULL, "
+                + "descripcion TEXT NOT NULL, "
+                + "horaComentario TEXT NOT NULL, "
+                + "userID TEXT NOT NULL, "
+                + "UNIQUE (idComentario))");
+
+        /*demo tabla comentario falla general, puede ser implemento o maquinaria*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS fallaHerramienta ("
+                + "idFallaHerramienta INTEGER  NOT NULL, "
+                + "descripcionFalla TEXT NOT NULL, "
+                + "horaNotificacion TEXT NOT NULL, "
+                + "userID TEXT NOT NULL, "
+                + "implementoID TEXT, "
+                + "maquinariaID TEXT, "
+                + "UNIQUE (idFallaHerramienta))");
 
     }
 
@@ -496,14 +537,47 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
-    public long saveInformeOperaciones(InformeOperaciones informeOperaciones){
+    public long saveInformeMaquinaria(InformeMaquinaria informeMaquinaria){
 
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
 
         return sqLiteDatabase.insert(
-                InformeOperacionesContract.InformeOperacionesContractEntry.TABLE_NAME,
+                InformeMaquinariaContract.InformeMaquinariaContractEntry.TABLE_NAME,
                 null,
-                informeOperaciones.toContentValues()
+                informeMaquinaria.toContentValues()
+        );
+    }
+
+    public long saveInformeImplemento(InformeImplemento informeImplemento){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                InformeImplementoContract.InformeImplementoContractEntry.TABLE_NAME,
+                null,
+                informeImplemento.toContentValues()
+        );
+    }
+
+    public long saveInformeFaena(InformeFaena informeFaena){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME,
+                null,
+                informeFaena.toContentValues()
+        );
+    }
+
+    public long saveComentario(Comentarios comentarios){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                ComentarioContract.ComentarioContractEntry.TABLE_NAME,
+                null,
+                comentarios.toConentValues()
         );
     }
 
@@ -579,4 +653,6 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
 
         return lastID;
     }
+
+
 }

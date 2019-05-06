@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerFaena;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -130,9 +131,21 @@ public class MainActivity_faena extends AppCompatActivity {
             public void onClick(View v) {
 
                 editor.putString("nameFaena",spinner.getSelectedItem().toString());
-                editor.putInt("idFaena",spinner.getSelectedItemPosition());
-                editor.commit();
+                editor.putInt("idFaena",spinner.getSelectedItemPosition());//REVISAR!!!
 
+
+                //obtener la informacion necesaria para crear el informe
+                SimpleDateFormat sdf;
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String tokenSession = prefs.getString("tokenSession", "null");
+                String currentDateandTime = sdf.format(new Date());
+                String idInforme = prefs.getString("idInforme", "null");
+                String idFaena = spinner.getSelectedItemPosition()+"";
+                String idUser = prefs.getString("idUsuario", "null");
+
+                int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);
+                editor.putString("idInformeFaena", idInformeFaena+"");
+                editor.commit();
                 Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
                 startActivity(intent);
                 finish();
@@ -243,6 +256,11 @@ public class MainActivity_faena extends AppCompatActivity {
                         if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
 
                             //ACA DEBOD HINCHAR LAS PELOTAS CON EL TAG DEL INFORME ACTUAL
+
+                            String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
+                            String currentDateandTime = sdf.format(new Date());
+                            new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
+
                             String[] tagRead = response.split(":");
                             String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
                             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

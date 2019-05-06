@@ -225,6 +225,7 @@ public class MainActivity_predio extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
+        Log.e("TAG-HANDLER-PREDIO", response);
         if (!response.equalsIgnoreCase("VOID")){
 
             String[] arrayResponse = response.split(":");
@@ -234,23 +235,25 @@ public class MainActivity_predio extends AppCompatActivity {
 
             if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")){
 
-            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+                if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
 
-                if (flagLogin == 1){
+                    if (flagLogin == 1){
+                        String tokenSession = prefs.getString("tokenSession", "null");
+                        if (new SessionHandler(this.context).closeSession(tokenSession)) {
+                            Log.e("TAG 2", "Pulsera nuevamente: " + response + " usuario: " + idUsuario);
+                            editor.clear().commit();
+                            Intent intent2 = new Intent(MainActivity_predio.this, MainActivity.class);
+                            startActivity(intent2);
+                            finish();
+                        }else{
+                            Log.e("TAG-CLOSE-SESSION", "No se que paso aquí :(");
+                        }
+                    }else{
+                        Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
+                    }
 
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                    startActivity(intent2);
-                    finish();
 
-                }else{
-                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
                 }
-
-
-            }
-
 
         }else if (modalidad.equalsIgnoreCase("2")){//MODALIDAD TRABAJADOR PERRO ESCLAVO
 

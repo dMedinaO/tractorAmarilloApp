@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerImplemento;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -228,7 +229,7 @@ public class MainActivity_implemento extends AppCompatActivity {
             //SPLIT TO ARRAY THE VALUES OF TAG
             String[] arrayResponse = response.split(":");
             String tagMaquina = prefs.getString("tagMaquinaria", "null");
-            String idUsuario = prefs.getString("idUsuario", "null");
+            final String idUsuario = prefs.getString("idUsuario", "null");
             String modalidad = prefs.getString("modalidad", "null");
 
             this.handlerImplemento = new HandlerImplemento(tagMaquina, response, this.context);
@@ -240,7 +241,7 @@ public class MainActivity_implemento extends AppCompatActivity {
                 Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
                 String [] tagRead = response.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                String newTag = tagRead[0]+":"+tagRead[1]+":0:-:-";
 
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
@@ -255,12 +256,15 @@ public class MainActivity_implemento extends AppCompatActivity {
             if (modalidad.equalsIgnoreCase("2")) {
 
 
-                if (responseHandler == 0 || responseHandler == -3){//todos los procesos fueron OK
+                if (responseHandler == 0){//todos los procesos fueron OK
 
                     levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
 
+                    final String tokenSession = prefs.getString("tokenSession", "null");
+
                     final String [] tagRead = response.split(":");
-                    String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
+                    String newTag = tagRead[0]+":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
+
                     Log.e("WRITE", newTag+" new text to NFC");
                     myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                     int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
@@ -275,9 +279,14 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                                     String currentDateandTime = sdf.format(new Date());
                                     editor.putString("inicio_implemento", currentDateandTime);
-                                    editor.putString("nameImplemento",tagRead[2]);
                                     editor.putString("tagImplemento",tagRead[0]);
+
+                                    String idInforme = prefs.getString("idInforme", "null");
+                                    //creamos un informe del tipo implemento
+                                    int informeImplemento = new HandlerInforme(getApplicationContext()).addElementToInformeImplemento(tagRead[0], idUsuario, tokenSession, currentDateandTime, idInforme );
+                                    editor.putString("idInformeImplemento", informeImplemento+"");
                                     editor.commit();
+
                                     Log.e("HANDLER", "OK");
                                     Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
                                     startActivity(intent2);

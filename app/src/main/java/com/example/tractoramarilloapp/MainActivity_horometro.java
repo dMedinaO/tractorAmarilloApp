@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -90,6 +91,8 @@ public class MainActivity_horometro extends AppCompatActivity {
                         editor.commit();
 
                         //modificar el informe con el ID actual
+                        String idInforme = prefs.getString("idInforme", "null");
+                        new HandlerInforme(getApplicationContext()).changeValuesHorometro(inputHorometro.getText().toString(), "-", idInforme);//se cambia el horario al inform
                         Intent intent = new Intent(MainActivity_horometro.this,MainActivity_implemento.class);
                         startActivity(intent);
                         finish();
@@ -98,6 +101,12 @@ public class MainActivity_horometro extends AppCompatActivity {
                     // FIN DE HOROMETRO
                     if (bundle.getString("flagHorometro").equalsIgnoreCase("2")){
                         editor.putString("fin_horometro",inputHorometro.getText().toString());
+
+                        //modificar el informe con el ID actual
+                        String idInforme = prefs.getString("idInforme", "null");
+
+                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_NORMAL");
+
                         //modificar el informe con el ID actual
                         Intent output = new Intent();
                         //output.putExtra("horometro", inputHorometro.getText().toString());
@@ -107,6 +116,9 @@ public class MainActivity_horometro extends AppCompatActivity {
                     // FIN DE HOROMETRO FORZADO
                     if (bundle.getString("flagHorometro").equalsIgnoreCase("3")){
 
+                        //cerramos el informe de maquinaria
+                        String idInforme = prefs.getString("idInforme", "null");
+                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_FORZADO");
                         editor.putString("fin_horometro",inputHorometro.getText().toString());
                         editor.commit();
 

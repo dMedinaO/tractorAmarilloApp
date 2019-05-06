@@ -1,20 +1,12 @@
 package com.example.tractoramarilloapp.handlers;
 
-import android.app.Activity;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.IntentFilter;
 import android.database.Cursor;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.util.Log;
 
-import com.example.tractoramarilloapp.model.InformeOperaciones;
 import com.example.tractoramarilloapp.model.Maquinaria;
-import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
-import com.example.tractoramarilloapp.persistence.SessionClass;
 
 import java.util.ArrayList;
 
@@ -80,7 +72,7 @@ public class HandlerMaquinaria {
 
         boolean response = false;
 
-        String statusMachine = this.tagNFC.split(":")[3];
+        String statusMachine = this.tagNFC.split(":")[2];
         if (statusMachine.equalsIgnoreCase("0")){
             response = true;
         }
