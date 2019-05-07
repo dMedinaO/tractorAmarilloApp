@@ -64,13 +64,6 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         if (bundle != null){
 
             Log.e("TAG COMMENT MODE","valor: "+bundle.getString("comentario_mode"));
-            if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
-                relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
-
-            }else
-                //Comentarios modo implemento
-                if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
-                    relativeComentarioImplemento.setVisibility(View.VISIBLE);
 
             //Comentarios modo maquinaria
             if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
@@ -82,27 +75,19 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
 
                 new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
 
-                /*editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
-                Intent output = new Intent();
-                setResult(RESULT_OK, output);
-                finish();*/
 
             }else
                 //Comentarios modo implemento
-                if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+                if(bundle.getString("comentario_mode").equalsIgnoreCase("2")) {
 
+                    relativeComentarioImplemento.setVisibility(View.VISIBLE);
                     String descripcionFalla = editComentarios.getText().toString();
                     String userID = prefs.getString("idUser", "null");
                     String idElemento = "-";//debes pasarle el tag!!!
-                    String tipoElemento="IMPLEMENTO";
+                    String tipoElemento = "IMPLEMENTO";
 
                     new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
 
-                    relativeComentarioImplemento.setVisibility(View.VISIBLE);
-                    editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
-                    Intent output = new Intent();
-                    setResult(RESULT_OK, output);
-                    finish();
                 }
 
         }
@@ -110,25 +95,23 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
             acceptButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //Comentarios modo maquinaria
-                    if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
-                        relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
+                //Comentarios modo maquinaria
+                if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
 
+                    editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
+                    Intent output = new Intent();
+                    setResult(RESULT_OK, output);
+                    finish();
 
-                        editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
+                }else
+                    //Comentarios modo implemento
+                    if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+
+                        editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
                         Intent output = new Intent();
                         setResult(RESULT_OK, output);
                         finish();
-
-                    }else
-                        //Comentarios modo implemento
-                        if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
-                            relativeComentarioImplemento.setVisibility(View.VISIBLE);
-                            editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
-                            Intent output = new Intent();
-                            setResult(RESULT_OK, output);
-                            finish();
-                        }
+                    }
 
                 }
             });
