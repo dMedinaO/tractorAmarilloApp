@@ -222,7 +222,7 @@ public class SessionHandler {
         boolean response=false;
 
         for (int i=0; i< listSession.size(); i++){
-            if (listSession.get(i).getSessionKind().equals("1")){
+            if (listSession.get(i).getSessionKind().equals("BOSS")){
                 response=true;
                 break;
             }

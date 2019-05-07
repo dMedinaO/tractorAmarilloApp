@@ -32,6 +32,7 @@ public class MainActivity_jefe extends AppCompatActivity {
     private ImageView imageComentario, imageSync, imageSignal;
 
     private SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
     private static ConnectivityManager manager;
     private SessionHandler sessionHandler;
 
@@ -60,8 +61,7 @@ public class MainActivity_jefe extends AppCompatActivity {
         View customActionBarView = actionBar.getCustomView();
 
         //SHARED PREFERENCES
-        SharedPreferences prefs =
-                getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         editor = prefs.edit();
 
         //VARIABLES INIT
@@ -98,11 +98,11 @@ public class MainActivity_jefe extends AppCompatActivity {
         imageSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isOnline(getApplicationContext())){
-                    alertSync("Sincronización exitosa.");
-                }else{
-                    alertSync("Error de sincronización, intente nuevamente.");
-                }
+            if(isOnline(getApplicationContext())){
+                alertSync("Sincronización exitosa.");
+            }else{
+                alertSync("Error de sincronización, intente nuevamente.");
+            }
             }
         });
 
@@ -119,13 +119,22 @@ public class MainActivity_jefe extends AppCompatActivity {
         if (!response.equalsIgnoreCase("VOID")){
 
             String[] arrayResponse = response.split(":");
+            String tagUsuarioBoss = prefs.getString("idUsuarioBoss","null");
             int responseSession = this.sessionHandler.createSession(response);
 
             Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
 
             if (arrayResponse[1].equalsIgnoreCase("1")){
-                Log.e("TAG TAG","TAG es un jefe de taller");
-                alertErrorLogin("Ya existe una sesión activa en este dispositivo...");
+                if (tagUsuarioBoss.equalsIgnoreCase(arrayResponse[2])){
+                    Log.e("TAG TAG","TAG es un jefe de taller");
+                    Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity.class);
+                    startActivity(intent2);
+                    finish();
+                }else{
+                    Log.e("TAG TAG","TAG es un jefe de taller pero no el mismo");
+                    alertErrorLogin("Ya existe una sesión activa en este dispositivo...");
+                }
+
             }
             if (arrayResponse[1].equalsIgnoreCase("2")) {
 

@@ -129,22 +129,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Log.e("TAG SYNC","activada sincronización");
+            Log.e("TAG SYNC","activada sincronización");
 
-                String currentDate = sdf_sync_date.format(new Date());
-                String currentTime = sdf_sync_time.format(new Date());
+            String currentDate = sdf_sync_date.format(new Date());
+            String currentTime = sdf_sync_time.format(new Date());
 
-                editor.putString("last_sync",currentDate+" a las "+currentTime);
-                editor.commit();
-                Log.e("TAG SYNC","Data: "+prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
-                textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+            editor.putString("last_sync",currentDate+" a las "+currentTime);
+            editor.commit();
+            Log.e("TAG SYNC","Data: "+prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+            textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
 
 
-                if(isOnline(getApplicationContext())){
-                    alertSync("Sincronización exitosa.");
-                }else{
-                    alertSync("Error de sincronización, intente nuevamente.");
-                }
+            if(isOnline(getApplicationContext())){
+                alertSync("Sincronización exitosa.");
+            }else{
+                alertSync("Error de sincronización, intente nuevamente.");
+            }
             }
         });
         textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             // BOSS LOGIN
             if (responseSession==0) {
                 editor.putString("modalidad","1");
-                editor.putString("idUsuario",arrayResponse[2]);
+                editor.putString("idUsuarioBoss",arrayResponse[2]);
                 editor.commit();
                 Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
                 startActivity(intent2);

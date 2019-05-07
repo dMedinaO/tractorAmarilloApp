@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.utils.FA;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
@@ -30,6 +31,7 @@ public class MainActivity_horometro extends AppCompatActivity {
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
+    private FA fa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,6 @@ public class MainActivity_horometro extends AppCompatActivity {
                 if (inputHorometro.getText().toString().equalsIgnoreCase("")){
                     Toast.makeText(MainActivity_horometro.this,"Debe ingresar horómetro para continuar.", Toast.LENGTH_LONG).show();
                 }else{
-
                     // INICIO DE HOROMETRO
                     if (bundle.getString("flagHorometro").equalsIgnoreCase("1")){
                         editor.putString("inicio_horometro",inputHorometro.getText().toString());
@@ -107,9 +108,7 @@ public class MainActivity_horometro extends AppCompatActivity {
 
                         new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_NORMAL");
 
-                        //modificar el informe con el ID actual
                         Intent output = new Intent();
-                        //output.putExtra("horometro", inputHorometro.getText().toString());
                         setResult(RESULT_OK, output);
                         finish();
                     }
@@ -123,9 +122,16 @@ public class MainActivity_horometro extends AppCompatActivity {
                         editor.commit();
 
                         if (modalidad.equalsIgnoreCase("1")) {
-                            Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefe.class);
-                            startActivity(intent);
-                            finish();
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefeSesiones.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.e("TAG:ERROR", "No se que carajos paso aqui :(");
+
+                            }
+
                         }
                         if (modalidad.equalsIgnoreCase("2")){
 

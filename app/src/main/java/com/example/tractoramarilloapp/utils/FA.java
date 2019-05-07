@@ -1,6 +1,8 @@
 package com.example.tractoramarilloapp.utils;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.tractoramarilloapp.model.UserSession;
@@ -16,7 +18,7 @@ import java.util.UUID;
  * Clase asociada al manejo de distintas funcionalidades y operaciones en procesos independientes
  * que permiten la manipulacion de la data y otras caracteristicas
  */
-public class FA {
+public class FA extends AppCompatActivity {
 
     /**
      * Metodo que permite generar el token de sesion en base al UUID del dispositivo y a la fecha actual
@@ -108,5 +110,33 @@ public class FA {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateandTime = sdf.format(new Date());
         return currentDateandTime;
+    }
+
+    /**
+     * Metodo que permite limpiar el Shared Preferences de la aplicación
+     * @return
+     */
+    public void clearShared(String namePreferences){
+        SharedPreferences prefs = getSharedPreferences(namePreferences,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.remove("idUsuario");
+        editor.remove("idPredio");
+        editor.remove("namePredio");
+        editor.remove("tagMaquinaria");
+        editor.remove("nameMaquinaria");
+        editor.remove("tagImplemento");
+        editor.remove("idFaena");
+        editor.remove("nameFaena");
+        editor.remove("inicio_horometro");
+        editor.remove("fin_horometro");
+        editor.remove("inicio_implemento");
+        editor.remove("fin_implemento");
+        editor.remove("flagImplemento");
+        editor.remove("comentarios");
+        editor.remove("idMaquina_comentario");
+        editor.remove("idImplemento_comentario");
+        editor.commit();
+
     }
 }

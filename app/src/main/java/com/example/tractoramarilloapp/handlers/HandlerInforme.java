@@ -137,7 +137,25 @@ public class HandlerInforme {
         Cursor cursor3 = this.handlerDBPersistence.consultarRegistros(query3);
 
 
-        String values = cursor1.getCount()+"-"+cursor2.getCount()+"-"+cursor3.getCount();
+        String values = "Informe Maquinaria:"+cursor1.getCount()+" - Informe Implemento: "+cursor2.getCount()+" - Informe Faena: "+cursor3.getCount();
+        Log.e("TAG-HANDLER", values);
+
+    }
+
+    public void showAllInformeDetail(){
+
+        String query1 = "SELECT * FROM informeMaquinaria";
+        String query2 = "SELECT * FROM informeUsoImplemento";
+        String query3 = "SELECT * FROM informeFaena";
+
+        Cursor cursor1 = this.handlerDBPersistence.consultarRegistros(query1);
+        Cursor cursor2 = this.handlerDBPersistence.consultarRegistros(query2);
+        Cursor cursor3 = this.handlerDBPersistence.consultarRegistros(query3);
+
+
+        String values = "Informe Maquinaria: "+cursor1+"\n"+
+                        "Informe Implemento: "+cursor2+"\n"+
+                        "Informe Faena: "+cursor3;
         Log.e("TAG-HANDLER", values);
 
     }

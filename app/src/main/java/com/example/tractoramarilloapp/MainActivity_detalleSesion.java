@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.utils.FA;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
     private SimpleDateFormat sdf;
+    private FA fa;
 
     //NFC VARIABLES
     NFCHandler nfcHandler;
@@ -141,6 +143,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         buttonInicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new HandlerInforme(getApplicationContext()).showInformeDetail();
 
                 String idInforme = prefs.getString("idInforme", "");
                 String idInformeImplemento = prefs.getString("idInformeImplemento", "");
@@ -153,17 +156,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 //Modalidad inicio sesión JEFE
                 if (modalidad.equalsIgnoreCase("1")){
 
-                    /*Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        public void run() {
-
-                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                            startActivity(intent);
-                            finish();
-
-                        }
-                    }, 2000);*/
-
+                    fa.clearShared("MisPreferencias");//Elimina los shared preferences
                     Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                     startActivity(intent);
                     finish();
@@ -267,17 +260,18 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         String currentDateandTime = sdf.format(new Date());
 
                         editor.putString("fin_implemento", currentDateandTime);
-                        editor.clear().commit();
 
                         //editor.clear().commit();
                         if (modalidad.equalsIgnoreCase("1")){
-                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
+                            fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                             startActivity(intent);
                             finish();
                         }
                         if (modalidad.equalsIgnoreCase("2")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                fa.clearShared("MisPreferencias");//Elimina los shared preferences
                                 Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();

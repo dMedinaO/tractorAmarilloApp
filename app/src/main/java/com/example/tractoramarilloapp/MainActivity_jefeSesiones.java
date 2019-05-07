@@ -1,16 +1,34 @@
 package com.example.tractoramarilloapp;
 
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerImplemento;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.utils.RecyclerAdapter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity_jefeSesiones extends AppCompatActivity {
@@ -20,11 +38,27 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+    private SessionHandler sessionHandler;
+
+    //NFC VARIABLES
+    NFCHandler nfcHandler;
+    NfcAdapter nfcAdapter;
+    PendingIntent pendingIntent;
+    IntentFilter writeTagFilters[];
+    Tag myTag;
+    Context context;
+    TextView tvNFCContent;
+    TextView message;
+    Button btnWrite;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_jefe_sesiones);
+        new HandlerInforme(getApplicationContext()).showInformeDetail();
 
         // ACTION BAR INIT
         ActionBar actionBar = getSupportActionBar();
@@ -32,6 +66,27 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         actionBar.setCustomView(R.layout.custom_action_bar_jefe);
 
         View customActionBarView = actionBar.getCustomView();
+
+        // SHARED PREFERENCES
+        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        editor = prefs.edit();
+
+        context = this;
+        this.sessionHandler = new SessionHandler(this.context);
+
+
+        // NFC CONFIGURATION
+
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+
+        //instanciamos al handler de
+        String text = this.nfcHandler.readerTAGNFC(getIntent());
 
         names = this.getAllNames();
 
@@ -57,10 +112,73 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
             add("Jose");
             add("Alejandro");
             add("Ricardo");
-            add("Carlos");
-            add("Jose");
-            add("Jose");
         }};
+    }
+
+    public void alertWriteNFC(String message){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle("Mensaje")
+                .setMessage(message)
+                .setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int arg1) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        String response = this.nfcHandler.readerTAGNFC(intent);
+
+        Log.e("TAG RESPONSE","response: "+response);
+
+        if (!response.equalsIgnoreCase("VOID")){
+
+            //SPLIT TO ARRAY THE VALUES OF TAG
+            String[] arrayResponse = response.split(":");
+            int responseSession = this.sessionHandler.createSession(response);
+            Log.e("TAG RESPONSE","response session: "+responseSession);
+            String modalidad = prefs.getString("modalidad", "null");
+
+            if (arrayResponse[1].equalsIgnoreCase("2")) {//operador
+
+                editor.putString("idUsuario",arrayResponse[2]);
+                editor.putString("modalidad","1");
+                editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+                editor.commit();
+
+                Intent intent2 = new Intent(MainActivity_jefeSesiones.this,MainActivity_predio.class);
+                startActivity(intent2);
+                finish();
+            }
+
+
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+        }
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+        }
+
     }
 
 }

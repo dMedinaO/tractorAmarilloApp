@@ -140,8 +140,8 @@ public class MainActivity_faena extends AppCompatActivity {
                 String tokenSession = prefs.getString("tokenSession", "null");
                 String currentDateandTime = sdf.format(new Date());
                 String idInforme = prefs.getString("idInforme", "null");
-                String idFaena = spinner.getSelectedItemPosition()+"";
-                String idFaenaV = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
+                //String idFaena = spinner.getSelectedItemPosition()+"";
+                String idFaena = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
                 String idUser = prefs.getString("idUsuario", "null");
 
                 int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);
@@ -241,7 +241,6 @@ public class MainActivity_faena extends AppCompatActivity {
                     editor.putString("idImplementCierreForzado", tagImplemento);//esto es un parche picante para que se usa para valorar el tag del implemento, si no tiene valores, realmente esta ocupado
                     //si dicho tag tiene valor, significa que fue ocupado pero su sesion fue cerrado forzado.
 
-                    //editor.clear().commit();
                     Intent intent2 = new Intent(MainActivity_faena.this, MainActivity_horometro.class);
                     intent2.putExtra("flagHorometro", "3");
                     startActivity(intent2);

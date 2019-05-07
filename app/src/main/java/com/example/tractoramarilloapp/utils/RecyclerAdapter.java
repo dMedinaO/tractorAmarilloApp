@@ -19,11 +19,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView textViewName;
+        public TextView textViewName,textViewMaqImple,textViewFaena;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             this.textViewName = (TextView) itemView.findViewById(R.id.textUsuario);
+            this.textViewMaqImple = (TextView) itemView.findViewById(R.id.textMaquinariaImplemento);
+            this.textViewFaena = (TextView) itemView.findViewById(R.id.textFaena);
         }
 
         public void bind(final String name, final OnItemClickListener listener){

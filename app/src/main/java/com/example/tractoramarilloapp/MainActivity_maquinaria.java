@@ -166,19 +166,15 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             //WRITE NFC OK
             if (responseHandler == 0){
 
-                Log.e("MAQUINARIA-HANDLER",  "response: "+responseHandler);
-                editor.putString("nameMaquinaria",arrayResponse[2]);
-                editor.putString("tagMaquinaria",arrayResponse[0]);
-                editor.commit();
-
                 levantarDialog(MainActivity_maquinaria.this,"Este proceso puede tardar un momento. Favor espere...");
 
                 HandlerInforme handlerInforme = new HandlerInforme(this.context);
                 String predio = prefs.getString("idPredio", "0");
                 String tokenSession = prefs.getString("tokenSession", "null");
-                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio);
+                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio,tokenSession);
 
                 final String [] tagRead = response.split(":");
+                Log.e("TAG TOKEN SESION",  "token: "+tokenSession);
                 String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
                 Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
