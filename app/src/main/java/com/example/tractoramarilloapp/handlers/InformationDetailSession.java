@@ -2,6 +2,7 @@ package com.example.tractoramarilloapp.handlers;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 import com.example.tractoramarilloapp.model.Faena;
 import com.example.tractoramarilloapp.model.Implemento;
@@ -28,6 +29,8 @@ public class InformationDetailSession {
 
     //atributos de la clase
     private String tokenSession;
+    private String idUser;
+    private String informeID;
     private UserSession userSession;
     private Predio predio;
     private Maquinaria maquinaria;
@@ -43,8 +46,9 @@ public class InformationDetailSession {
      * @param tokenSession
      * @param context
      */
-    public InformationDetailSession(String tokenSession, Context context){
+    public InformationDetailSession(String tokenSession, Context context, String idUser){
         this.tokenSession = tokenSession;
+        this.idUser = idUser;
         this.context = context;
         this.handlerDBPersistence = new HandlerDBPersistence(this.context);
         this.handlerInforme = new HandlerInforme(this.context);
@@ -61,12 +65,14 @@ public class InformationDetailSession {
     public void getDataUser(){
 
         //hacemos la consulta con respecto a la informacion de la data en base a la informacion de las tablas
-        String sqlInfoUser = "SELECT * FROM "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME+ " JOIN "
-                            + UserContract.UserContractEntry.TABLE_NAME + " ON "+ SessionClassContract.SessionClassContractEntry.USER_SESSION
-                            +" = " + UserContract.UserContractEntry.RUT_USER + " WHERE " + SessionClassContract.SessionClassContractEntry.TOKEN + " = '"+this.tokenSession+"'";
+        String sqlInfoUser = "SELECT * FROM "+ UserContract.UserContractEntry.TABLE_NAME
+                + " WHERE " + UserContract.UserContractEntry.ID_USER + " = '"+this.idUser+"'";
+
+        Log.e("QUERY-INFORME-USER", sqlInfoUser);
 
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlInfoUser);
 
+        Log.e("QUERY-INFORME-USER", cursor.getCount()+" cantidad de wns que vienen en la query");
         cursor.moveToFirst();
 
         int userID = cursor.getColumnIndex(UserContract.UserContractEntry.ID_USER);
@@ -112,6 +118,7 @@ public class InformationDetailSession {
         int patentMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.PATENT_MACHINE);
         int colorMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.COLOR_MACHINE);
         int tipoMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE);
+        int informeMaquinariaID = cursor.getColumnIndex(InformeMaquinariaContract.InformeMaquinariaContractEntry.ID_INFORME);
 
         String nameMaquina = cursor.getString(nameMaquinaria);
         String idMaquina = cursor.getString(idMaquinaria);
@@ -123,6 +130,7 @@ public class InformationDetailSession {
         String patentMachineV = cursor.getString(patentMachine);
         String colorMachineV = cursor.getString(colorMachine);
         String tipoMachineV = cursor.getString(tipoMachine);
+        this.informeID = cursor.getString(informeMaquinariaID);//esto es para obtener la informacion del informe
 
         this.maquinaria = new Maquinaria(nameMaquina, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, idMaquina, tipoMachineV);
     }
@@ -133,15 +141,18 @@ public class InformationDetailSession {
     public void getDataFaena(){
 
         //hacemos la consulta y obtenemos la data correspondiente
-        String sqlData = "SELECT * FROM "+ InformeMaquinariaContract.InformeMaquinariaContractEntry.TABLE_NAME + " join "+
-                        InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME + " on " + InformeFaenaContract.InformeFaenaContractEntry.INFORME_MAQUINARIA_ID +
-                        " = " + InformeMaquinariaContract.InformeMaquinariaContractEntry.ID_INFORME + " join " + FaenaContract.FaenaContractEntry.TABLE_NAME + " on "+
-                        FaenaContract.FaenaContractEntry.CODE_FAENA + " = " + InformeFaenaContract.InformeFaenaContractEntry.ID_FAENA + " where " + InformeMaquinariaContract.InformeMaquinariaContractEntry.SESSION_TOKEN +
-                        " = '"+this.tokenSession+"'";
+
+        String sqlData = "SELECT * FROM "+ InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME +
+                        " join " + FaenaContract.FaenaContractEntry.TABLE_NAME + " on "+
+                        FaenaContract.FaenaContractEntry.CODE_FAENA + " = " + InformeFaenaContract.InformeFaenaContractEntry.ID_FAENA + " where " + InformeFaenaContract.InformeFaenaContractEntry.INFORME_MAQUINARIA_ID +
+                        " = '"+this.informeID+"'";
+
+        Log.e("QUERY-FAENA-INFORME", sqlData);
 
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlData);
 
         cursor.moveToFirst();
+
         int faenaName = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.FAENA_NAME);
         int faenaID = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.CODE_FAENA);
         int codeImplemento = cursor.getColumnIndex(FaenaContract.FaenaContractEntry.CODE_IMPLEMENTO);
@@ -150,6 +161,7 @@ public class InformationDetailSession {
         String codeID = cursor.getString(codeImplemento);
 
         this.faena = new Faena(nameFaena, idFaena, codeID);
+
     }
 
     /**
@@ -157,14 +169,13 @@ public class InformationDetailSession {
      */
     public void getDataImplemento(){
 
-        String sqldata = "SELECT * FROM "+ InformeMaquinariaContract.InformeMaquinariaContractEntry.TABLE_NAME + " join " + InformeImplementoContract.InformeImplementoContractEntry.TABLE_NAME
-                        + " on " + InformeImplementoContract.InformeImplementoContractEntry.INFORME_MAQUINARIA_ID + " = " + InformeMaquinariaContract.InformeMaquinariaContractEntry.ID_INFORME
+        String sqldata = "SELECT * FROM "+ InformeImplementoContract.InformeImplementoContractEntry.TABLE_NAME
                         + " join "+ ImplementContract.ImplementContractEntry.TABLE_NAME + " on " + ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO + " = " + InformeImplementoContract.InformeImplementoContractEntry.ID_IMPLEMENTO
-                        + " where " + InformeMaquinariaContract.InformeMaquinariaContractEntry.SESSION_TOKEN + " = '"+this.tokenSession+"'";
+                        + " where " + InformeImplementoContract.InformeImplementoContractEntry.INFORME_MAQUINARIA_ID + " = '"+this.informeID+"'";
 
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqldata);
 
-        if (cursor == null){//trabajo sin implemento el mono ql
+        if (cursor == null || cursor.getCount()==0){//trabajo sin implemento el mono ql
             this.implemento = new Implemento("SIN IMPLEMENTO", "-", "-", "-", "-", "-", "-");
         }else{//trabajo con implemento
 

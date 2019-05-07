@@ -8,6 +8,7 @@ import com.example.tractoramarilloapp.model.InformeFaena;
 import com.example.tractoramarilloapp.model.InformeImplemento;
 import com.example.tractoramarilloapp.model.InformeMaquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.persistence.InformeFaenaContract;
 import com.example.tractoramarilloapp.persistence.SessionClass;
 
 import java.util.ArrayList;
@@ -103,8 +104,8 @@ public class HandlerInforme {
 
         int response = 0;
 
-        String sqlQueryInforme = "SELECT * FROM informeUsoImplemento";
-        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, "idinformeImplemento");
+        String sqlQueryInforme = "SELECT * FROM "+ InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME;
+        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, InformeFaenaContract.InformeFaenaContractEntry.ID_INFORME);
 
         if (lastID == -1){
             lastID = 1;

@@ -154,9 +154,15 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 buttonVolver.setVisibility(View.GONE);
 
                 //Modalidad inicio sesión JEFE
-                if (modalidad.equalsIgnoreCase("1")){
+                if (modalidad.equalsIgnoreCase("1")) {
 
                     fa.clearShared("MisPreferencias");//Elimina los shared preferences
+
+                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                    sessionHandler.ChangeStatusSession("ACTIVE");
+
+
                     Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                     startActivity(intent);
                     finish();
