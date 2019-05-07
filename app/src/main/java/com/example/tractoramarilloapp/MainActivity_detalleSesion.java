@@ -127,10 +127,11 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         editor = prefs.edit();
         modalidad = prefs.getString("modalidad","0");
 
-        /*
-        //SET VALUES TO LAYOUT
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
         nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
+
+        /*
+        //SET VALUES TO LAYOUT
 
         nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("nameMaquinaria",""));
         maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("model_machine",""));

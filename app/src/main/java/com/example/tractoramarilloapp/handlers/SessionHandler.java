@@ -276,13 +276,14 @@ public class SessionHandler {
 
     /**
      * Metodo que permite cerrar la sesion del usuario activo, recibe el token de la sesion activo, esto implica que se elimina la informacion del usuario en la base de datos
-     * @param tokenSession
+     * @param tokenSessionV
      * @return
      */
-    public boolean closeSession(String tokenSession){
+    public boolean closeSession(String tokenSessionV){
 
         boolean response = false;
-        String sqlExec = "DELETE FROM "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME + " WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
+        String sqlExec = "DELETE FROM "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME + " WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSessionV+"'";
+        Log.e("CLOSE-BOSS", sqlExec);
         int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
         if (responseDB ==0 ){
             Log.e(TAG, "SESSION REMOVE OK");
@@ -329,5 +330,29 @@ public class SessionHandler {
         }
 
         return userSession;
+    }
+
+    /**
+     * Metodo que permite cerrar la sesion del usuario en caso de que sea factible, retorna true si es factible y en caso contrario retorna un false
+     * @return
+     */
+    public boolean closeSessionBoss(String tokenSessionValues){
+
+        Log.e("CLOSE-BOSS", tokenSessionValues);
+        boolean response=false;
+        ArrayList<SessionClass> sessionActive = this.getSessionActive();
+
+        if (sessionActive.size()>0){
+            Log.e("CLOSE-BOSS", "NO PUEDE!!! ");
+            response = false;
+        }else{
+            Log.e("CLOSE-BOSS", "TE LA CIERRO TODA!!! ");
+
+            //le cerramos la sesion
+            this.closeSession(tokenSessionValues);//cierre de sesión
+            response = true;
+        }
+
+        return response;
     }
 }

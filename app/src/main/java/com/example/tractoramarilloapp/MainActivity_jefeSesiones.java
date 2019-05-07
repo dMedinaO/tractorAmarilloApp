@@ -183,6 +183,14 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
                 Intent intent2 = new Intent(MainActivity_jefeSesiones.this,MainActivity_predio.class);
                 startActivity(intent2);
                 finish();
+            }else{//
+                if (arrayResponse[1].equalsIgnoreCase("1")){//jefe
+
+                    this.alertWriteNFC("No puedes cerrar sesión, verifica que no existan operarios con sesión Activa");
+
+                }else{
+                    this.alertWriteNFC("No corresponde a una pulsera");
+                }
             }
 
 
@@ -216,6 +224,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         ArrayList<SessionClass> sessionActive = new SessionHandler(getApplicationContext()).getSessionActive();
 
         ArrayList<InformationDetailSession> listInforme = new ArrayList<>();
+
 
         for (int i=0; i<sessionActive.size(); i++){
             Log.e("ACTIVE-SESSION", sessionActive.get(i).getSessionToken());
