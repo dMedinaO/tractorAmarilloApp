@@ -129,8 +129,6 @@ public class MainActivity_horometro extends AppCompatActivity {
                         }
                         if (modalidad.equalsIgnoreCase("2")){
 
-                            //ACA DEBO DARLE FIN AL INFORME COMPLETANDO LA INFORMACION ASOCIADA A LA DATA CORRESPONDIENTE Y SE DEBEN ELIMINAR LOS ELEMENTOS DE LAS SHARED PREDERENCE ASOCIADOS AL INFORME
-
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
                                 Intent intent = new Intent(MainActivity_horometro.this, MainActivity.class);

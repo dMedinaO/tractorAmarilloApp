@@ -7,7 +7,9 @@ import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -95,5 +97,16 @@ public class FA {
         }
 
         return userSessionO;
+    }
+
+    /**
+     * Metodo que permite obtener la fecha actual del dispositivo
+     * @return
+     */
+    public static String getCurrentDate(){
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String currentDateandTime = sdf.format(new Date());
+        return currentDateandTime;
     }
 }

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.example.tractoramarilloapp.handlers.HandlerFallas;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 
@@ -67,7 +68,12 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
             //Comentarios modo maquinaria
             if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
                 relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
+                String descripcionFalla = editComentarios.getText().toString();
+                String userID = prefs.getString("idUser", "null");
+                String idElemento = "-";//debes pasarle el tag!!!
+                String tipoElemento="MAQUINARIA";
 
+                new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
 
                 /*editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
                 Intent output = new Intent();
@@ -77,6 +83,14 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
             }else
                 //Comentarios modo implemento
                 if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+
+                    String descripcionFalla = editComentarios.getText().toString();
+                    String userID = prefs.getString("idUser", "null");
+                    String idElemento = "-";//debes pasarle el tag!!!
+                    String tipoElemento="IMPLEMENTO";
+
+                    new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
+
                     relativeComentarioImplemento.setVisibility(View.VISIBLE);
                     editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
                     Intent output = new Intent();
