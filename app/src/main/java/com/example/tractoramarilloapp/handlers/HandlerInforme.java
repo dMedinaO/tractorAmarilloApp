@@ -1,9 +1,12 @@
 package com.example.tractoramarilloapp.handlers;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.util.Log;
 
-import com.example.tractoramarilloapp.model.InformeOperaciones;
+import com.example.tractoramarilloapp.model.InformeFaena;
+import com.example.tractoramarilloapp.model.InformeImplemento;
+import com.example.tractoramarilloapp.model.InformeMaquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
 
@@ -26,26 +29,24 @@ public class HandlerInforme {
         this.handlerDBPersistence = new HandlerDBPersistence(this.context);
     }
 
-    public int addElementToInforme(String idMaquinaria, String idUser, String predio){
+    public int addElementToInforme(String idMaquinaria, String idUser, String predio, String tokenSession){
 
         int response = 0;
 
-        //obtenemos la informacion de la sesion con respecto al usuario
-        ArrayList<SessionClass> listSession = this.handlerDBPersistence.getSessionActive("PENDING");//solo las que estan pendiente
-        String tokenSession = listSession.get(listSession.size()-1).getSessionToken();//obtenemos el token del ultimo registro del compadre
-
-        String sqlQueryInforme = "SELECT * FROM informeOperaciones";
-        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, "idinformeOperaciones");
+        String sqlQueryInforme = "SELECT * FROM informeMaquinaria";
+        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, "idinformeMaquinaria");
 
         if (lastID == -1){
             lastID = 1;
         }else{
             lastID++;
         }
-        InformeOperaciones informeOperaciones = new InformeOperaciones(lastID, idMaquinaria, "-", "-", idUser, tokenSession, "-", "-", "-", "-", "-", "-", predio);
 
-        if (this.handlerDBPersistence.saveInformeOperaciones(informeOperaciones) != -1){
-            Log.e("TAG-INFORME", "INSERT INFORME OK");
+        InformeMaquinaria informeMaquinaria = new InformeMaquinaria(lastID, idMaquinaria, "-", "-", idUser, tokenSession, "NOT_YET", "-", predio);
+
+
+        if (this.handlerDBPersistence.saveInformeMaquinaria(informeMaquinaria) != -1){
+            Log.e("TAG-INFORME", "INSERT INFORME OK "+lastID);
             response = lastID;
         }else{
             Log.e("TAG-INFORME", "INSERT INFORME ERROR");
@@ -61,19 +62,114 @@ public class HandlerInforme {
      * @param horoFinal
      * @param idInforme
      */
-    public void changeValuesHorometro(String horoInicial, String horoFinal, String idInforme, String idImplemento, String horarioInicio, String horarioFinal, String idFaena, String statusSend, String isActive){
+    public void changeValuesHorometro(String horoInicial, String horoFinal, String idInforme){
 
-        String sqlUpdate = "UPDATE informeOperaciones set"
+        String sqlUpdate = "UPDATE informeMaquinaria set "
                 + "horometroInicio = '"+horoInicial+"', "
-                + "horometroFinal ='"+ horoFinal+"', "
-                + "isImplementActive = '"+isActive+"', "
-                + "idImplemento = '"+idImplemento+"', "
-                + "horarioInicio = '"+horarioInicio+"', "
-                + "horarioFinal = '"+horarioFinal+"', "
-                + "idFaena ='"+idFaena+"', "
-                + "statusSend = '"+statusSend+"' "
-                + "WHERE idinformeOperaciones= "+idInforme;
+                + "horometroFinal = '"+ horoFinal+"' "
+                + "WHERE idinformeMaquinaria= "+idInforme;
 
         this.handlerDBPersistence.execSQLData(sqlUpdate);
     }
+
+    public int addElementToInformeImplemento(String idImplemento, String idUser, String tokenSession, String horarioInicial, String idInformeMaquinaria){
+
+        int response = 0;
+
+        String sqlQueryInforme = "SELECT * FROM informeUsoImplemento";
+        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, "idinformeImplemento");
+
+        if (lastID == -1){
+            lastID = 1;
+        }else{
+            lastID++;
+        }
+
+        InformeImplemento informeImplemento = new InformeImplemento(lastID, idImplemento, horarioInicial, "-", idUser, tokenSession, "NOT_YET", idInformeMaquinaria);
+
+        if (this.handlerDBPersistence.saveInformeImplemento(informeImplemento) != -1){
+            Log.e("TAG-INFORME", "INSERT INFORME OK "+ lastID);
+            response = lastID;
+        }else{
+            Log.e("TAG-INFORME", "INSERT INFORME ERROR");
+            response = -1;
+        }
+
+        return response;
+
+    }
+
+    public int addElementToInformeFaena(String idFaena, String idUser, String tokenSession, String horarioInicial, String idInformeMaquinaria){
+
+        int response = 0;
+
+        String sqlQueryInforme = "SELECT * FROM informeUsoImplemento";
+        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, "idinformeImplemento");
+
+        if (lastID == -1){
+            lastID = 1;
+        }else{
+            lastID++;
+        }
+
+        InformeFaena informeFaena = new InformeFaena(lastID, idFaena, horarioInicial, "-", idUser, tokenSession, "NOT_YET", idInformeMaquinaria);
+
+        if (this.handlerDBPersistence.saveInformeFaena(informeFaena) != -1){
+            Log.e("TAG-INFORME", "INSERT INFORME OK "+ lastID);
+            response = lastID;
+        }else{
+            Log.e("TAG-INFORME", "INSERT INFORME ERROR");
+            response = -1;
+        }
+
+        return response;
+
+    }
+
+    public void showInformeDetail(){
+
+        String query1 = "SELECT * FROM informeMaquinaria";
+        String query2 = "SELECT * FROM informeUsoImplemento";
+        String query3 = "SELECT * FROM informeFaena";
+
+        Cursor cursor1 = this.handlerDBPersistence.consultarRegistros(query1);
+        Cursor cursor2 = this.handlerDBPersistence.consultarRegistros(query2);
+        Cursor cursor3 = this.handlerDBPersistence.consultarRegistros(query3);
+
+
+        String values = cursor1.getCount()+"-"+cursor2.getCount()+"-"+cursor3.getCount();
+        Log.e("TAG-HANDLER", values);
+
+    }
+
+    /**
+     * Metodo que permite cerrar un informe del tipo Maquinaria
+     * @param idInforme
+     * @param horometroFinal
+     * @param closeSessionKind
+     * @return
+     */
+    public int closeInformeMaquinaria(String idInforme, String horometroFinal, String closeSessionKind){
+
+        //creamos el SQL y exportamos la data
+        String sqlQuery = "UPDATE informeMaquinaria SET horometroFinal= '"+horometroFinal+"', closeSessionKind = '"+ closeSessionKind+"' where idinformeMaquinaria = "+ idInforme;
+        int response = this.handlerDBPersistence.execSQLData(sqlQuery);
+
+        return response;
+    }
+
+    /**
+     * Metodo que permite cerrar el informe de implemento
+     * @param idInforme
+     * @return
+     */
+    public int closeInformeImplemento(String idInforme, String horaFinal){
+
+        //creamos el SQL y exportamos la data
+        String sqlQuery = "UPDATE informeUsoImplemento SET horaFinal= '"+horaFinal+"' where idinformeImplemento = "+ idInforme;
+        int response = this.handlerDBPersistence.execSQLData(sqlQuery);
+
+        return response;
+    }
+
 }

@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
@@ -63,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         new ValuesTempDB().addElements(this);
+
+        new HandlerInforme(getApplicationContext()).showInformeDetail();
+        int comment = new HandlerDBPersistence(getApplicationContext()).consultarRegistros("SELECT * FROM comentario").getCount();
+        Log.e("TAG-COMENTARIOS", comment+" values");
 
         HandlerDBPersistence handlerDBPersistence = new HandlerDBPersistence(this);
         ArrayList<Maquinaria> listMaquinaria = handlerDBPersistence.getMaquinariaList();
@@ -192,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
             // BOSS LOGIN
             if (responseSession==0) {
                 editor.putString("modalidad","1");
+                editor.putString("idUsuario",arrayResponse[2]);
                 editor.commit();
                 Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
                 startActivity(intent2);

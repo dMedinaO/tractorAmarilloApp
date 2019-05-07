@@ -224,6 +224,7 @@ public class MainActivity_predio extends AppCompatActivity {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
+        Log.e("TAG-HANDLER-PREDIO", response);
         if (!response.equalsIgnoreCase("VOID")){
 
             String[] arrayResponse = response.split(":");

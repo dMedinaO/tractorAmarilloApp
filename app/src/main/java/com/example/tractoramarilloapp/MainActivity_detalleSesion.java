@@ -141,6 +141,11 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         buttonInicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String idInforme = prefs.getString("idInforme", "");
+                String idInformeImplemento = prefs.getString("idInformeImplemento", "");
+                String idInformeFaena = prefs.getString("idInformeFaena", "null");
+
                 flagInicio = 1;
                 buttonInicio.setVisibility(View.GONE);
                 buttonVolver.setVisibility(View.GONE);
@@ -365,6 +370,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
                     if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
                         if (arrayResponse[3].equalsIgnoreCase(nombreUsuario)) {//si esta ocupada la maquina por mi
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            new SessionHandler(getApplicationContext()).closeSession(tokenSession);
                             Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
                             Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
                             intent2.putExtra("flagHorometro", "2");

@@ -1,12 +1,20 @@
 package com.example.tractoramarilloapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.tractoramarilloapp.model.Comentarios;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity_comentario extends AppCompatActivity {
 
@@ -33,6 +41,23 @@ public class MainActivity_comentario extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //obtenemos la informacion para almacenar el comentario en la BD
+                SharedPreferences prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+                String idUser = prefs.getString("idUsuario", "null");
+
+                HandlerDBPersistence handlerDBPersistence = new HandlerDBPersistence(getApplicationContext());
+
+                String sqlQueryInforme = "SELECT * FROM comentario";
+                int lastID = handlerDBPersistence.getLastID(sqlQueryInforme, "idComentario");
+
+                if (lastID == -1){
+                    lastID = 1;
+                }else{
+                    lastID++;
+                }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String currentDateandTime = sdf.format(new Date());
+                handlerDBPersistence.saveComentario(new Comentarios(lastID, idUser,  currentDateandTime, comentarioField.getText().toString()));
                 Intent output = new Intent();
                 output.putExtra("comentario", comentarioField.getText().toString());
                 setResult(RESULT_OK, output);

@@ -184,26 +184,27 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 
 
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                if (responseWrite == 0){
+                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                    if (responseWrite == 0){
 
-                    Handler handler = new Handler();
-                    if (dialog.isShowing()) {
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                dialog.dismiss();
-                                editor.putString("nameMaquinaria",tagRead[2]);
-                                editor.putString("tagMaquinaria",tagRead[0]);
-                                editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
+                        Handler handler = new Handler();
 
-                                editor.commit();
-                                Log.e("HANDLER", "OK");
-                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
-                                intent2.putExtra("flagHorometro", "1");
-                                startActivity(intent2);
-                                finish();
-                            }
-                        }, 2000);
+                        if (dialog.isShowing()) {
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    dialog.dismiss();
+                                    editor.putString("nameMaquinaria",tagRead[2]);
+                                    editor.putString("tagMaquinaria",tagRead[0]);
+                                    editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
+
+                                    editor.commit();
+                                    Log.e("HANDLER", "OK");
+                                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
+                                    intent2.putExtra("flagHorometro", "1");
+                                    startActivity(intent2);
+                                    finish();
+                                }
+                            }, 2000);
 
                     }
 
@@ -236,10 +237,16 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                         else{
                             editor.remove("idUsuario").commit();
                             Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
-                            Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
-                            intent2.putExtra("flagHorometro", "1");
-                            startActivity(intent2);
-                            finish();
+                            Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(this.context).closeSession(tokenSession)) {
+                                editor.clear().commit();
+                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
+                                startActivity(intent2);
+                                finish();
+                            }else{
+                                Log.e("TAG:ERROR", "No se que paso aquí!!!");
+                            }
                         }
 
 

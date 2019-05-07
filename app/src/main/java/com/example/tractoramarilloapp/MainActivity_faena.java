@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerFaena;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -131,9 +132,20 @@ public class MainActivity_faena extends AppCompatActivity {
 
                 editor.putString("nameFaena",spinner.getSelectedItem().toString());
                 editor.putString("idFaena",handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
-                editor.commit();
-                Log.e("TAG FAENA:","Faena seleccionada: "+spinner.getSelectedItem().toString()+" cod_interno: "+handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
 
+
+                //obtener la informacion necesaria para crear el informe
+                SimpleDateFormat sdf;
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String tokenSession = prefs.getString("tokenSession", "null");
+                String currentDateandTime = sdf.format(new Date());
+                String idInforme = prefs.getString("idInforme", "null");
+                String idFaena = spinner.getSelectedItemPosition()+"";
+                String idUser = prefs.getString("idUsuario", "null");
+
+                int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);
+                editor.putString("idInformeFaena", idInformeFaena+"");
+                editor.commit();
                 Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
                 startActivity(intent);
                 finish();
@@ -237,16 +249,18 @@ public class MainActivity_faena extends AppCompatActivity {
                     Log.e("TAG ERROR:", "Es maquina pero distinta a la mia.");
                     alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                 }
-
             } else {
-
                 if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
-
                     if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
 
                         if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
 
                             //ACA DEBOD HINCHAR LAS PELOTAS CON EL TAG DEL INFORME ACTUAL
+
+                            String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
+                            String currentDateandTime = sdf.format(new Date());
+                            new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
+
                             String[] tagRead = response.split(":");
                             String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
                             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);

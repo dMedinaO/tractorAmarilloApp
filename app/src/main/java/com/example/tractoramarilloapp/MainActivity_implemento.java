@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerImplemento;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import java.text.SimpleDateFormat;
@@ -228,7 +229,7 @@ public class MainActivity_implemento extends AppCompatActivity {
             //SPLIT TO ARRAY THE VALUES OF TAG
             String[] arrayResponse = response.split(":");
             String tagMaquina = prefs.getString("tagMaquinaria", "null");
-            String idUsuario = prefs.getString("idUsuario", "null");
+            final String idUsuario = prefs.getString("idUsuario", "null");
             String modalidad = prefs.getString("modalidad", "null");
 
             this.handlerImplemento = new HandlerImplemento(tagMaquina, response, this.context);
@@ -239,12 +240,15 @@ public class MainActivity_implemento extends AppCompatActivity {
 
                 levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
 
-                final String [] tagRead = response.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
-                Log.e("WRITE", newTag+" new text to NFC");
-                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                if (responseWrite == 0){
+                    final String tokenSession = prefs.getString("tokenSession", "null");
+
+                    final String [] tagRead = response.split(":");
+                    String newTag = tagRead[0]+":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
+
+                    Log.e("WRITE", newTag+" new text to NFC");
+                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                    if (responseWrite == 0){
 
                     Handler handler = new Handler();
 
@@ -253,17 +257,22 @@ public class MainActivity_implemento extends AppCompatActivity {
                             public void run() {
                                 dialog.dismiss();
 
-                                String currentDateandTime = sdf.format(new Date());
-                                editor.putString("inicio_implemento", currentDateandTime);
-                                editor.putString("nameImplemento",tagRead[2]);
-                                editor.putString("tagImplemento",tagRead[0]);
-                                editor.commit();
-                                Log.e("HANDLER", "OK");
-                                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                                startActivity(intent2);
-                                finish();
-                            }
-                        }, 2000);
+                                    String currentDateandTime = sdf.format(new Date());
+                                    editor.putString("inicio_implemento", currentDateandTime);
+                                    editor.putString("tagImplemento",tagRead[0]);
+
+                                    String idInforme = prefs.getString("idInforme", "null");
+                                    //creamos un informe del tipo implemento
+                                    int informeImplemento = new HandlerInforme(getApplicationContext()).addElementToInformeImplemento(tagRead[0], idUsuario, tokenSession, currentDateandTime, idInforme );
+                                    editor.putString("idInformeImplemento", informeImplemento+"");
+                                    editor.commit();
+
+                                    Log.e("HANDLER", "OK");
+                                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                                    startActivity(intent2);
+                                    finish();
+                                }
+                            }, 2000);
 
                     }
 
