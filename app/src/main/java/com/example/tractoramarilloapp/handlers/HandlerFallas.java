@@ -1,6 +1,7 @@
 package com.example.tractoramarilloapp.handlers;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.utils.FA;
@@ -44,6 +45,8 @@ public class HandlerFallas {
         String date = FA.getCurrentDate();
         String sqlInsert = "INSERT INTO fallaHerramienta VALUES("+lastID+", '"+descripcionFalla+"', '"+date+"', '"+userID+"', '"+tipoElemento+"', '"+idElemento+"')";
         int response = this.handlerDBPersistence.execSQLData(sqlInsert);
+
+        Log.e("INSERT-FALLA", "RESPONSE: "+response);
         return response;
     }
 }

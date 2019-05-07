@@ -23,7 +23,12 @@ import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.model.Faena;
+import com.example.tractoramarilloapp.model.Implemento;
+import com.example.tractoramarilloapp.model.Maquinaria;
+import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.utils.FA;
 
 import java.text.SimpleDateFormat;
@@ -134,7 +139,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             relativeInicio.setVisibility(View.VISIBLE);
         }
 
-
+        /*
         //SET VALUES TO LAYOUT
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
         nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
@@ -147,7 +152,12 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("capacidad_implemento",""));
 
         nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("nameUsuario",""));
-        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("rutUser",""));
+        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut",""));
+        */
+        this.completeInformationdataMaquinaria();
+        this.completeUsersInformation();
+        this.completeImplementsInformation();
+
 
         Log.e("TAG RESULT:",prefs.getAll().toString());
 
@@ -457,5 +467,84 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
         android.app.AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    /**
+     * Metodo que permite completar la informacion de la mquinaria
+     */
+    public void completeInformationdataMaquinaria(){
+
+        ArrayList<Maquinaria> maquinarias = new HandlerDBPersistence(getApplicationContext()).getMaquinariaList();
+
+        String codeMaquinaria = prefs.getString("tagMaquinaria", "null");
+
+        for(int i=0; i<maquinarias.size(); i++){
+            if (maquinarias.get(i).getCodeInternoMachine().equalsIgnoreCase(codeMaquinaria)){
+                TextView textMaquinariaDescripcion = findViewById(R.id.textMaquinariaDescripcion);
+                textMaquinariaDescripcion.setText("Descripción: "+maquinarias.get(i).getNameMachine());
+
+                TextView textMaquinariaModelo = findViewById(R.id.textMaquinariaModelo);
+                textMaquinariaModelo.setText("Modelo: "+maquinarias.get(i).getModelMachine());
+
+                TextView textMaquinariaCapacidad = findViewById(R.id.textMaquinariaCapacidad);
+                textMaquinariaCapacidad.setText("Capacidad: "+maquinarias.get(i).getPatentMachine());
+                break;
+            }
+        }
+
+    }
+
+    /**
+     * Metodo que permite completar la informacion del usuario
+     */
+    public void completeUsersInformation(){
+
+        ArrayList<UserSession> userSessions = new HandlerDBPersistence(getApplicationContext()).getUser();
+
+        for (int i =0; i< userSessions.size(); i++){
+            if (userSessions.get(i).getIDUser().equalsIgnoreCase(prefs.getString("idUsuario", ""))){
+
+                TextView textNombreUsuario = findViewById(R.id.textNombreUsuario);
+                textNombreUsuario.setText("Bienvenido: "+userSessions.get(i).getNameUser());
+
+                TextView textRUT = findViewById(R.id.textRUT);
+                textRUT.setText("RUR: "+userSessions.get(i).getRutUser());
+            }
+        }
+    }
+
+    public void completeImplementsInformation(){
+
+        ArrayList<Implemento> implementos = new HandlerDBPersistence(getApplicationContext()).getImplementos();
+
+        String codeImplemento = prefs.getString("tagImplemento", "NO");
+
+        if (codeImplemento.equalsIgnoreCase("NO")){//tag nulo
+            TextView textImplementoDescripcion = findViewById(R.id.textImplementoDescripcion);
+            textImplementoDescripcion.setText("Descripción: Sin Implemento");
+
+            TextView textImplementoTipo = findViewById(R.id.textImplementoTipo);
+            textImplementoTipo.setText("Tipo: --");
+
+            TextView textImplementoCapacidad = findViewById(R.id.textImplementoCapacidad);
+            textImplementoCapacidad.setText("Capacidad: --");
+
+        }else {
+            for (int i = 0; i < implementos.size(); i++) {
+                if (implementos.get(i).getCodeInternoImplemento().equalsIgnoreCase(codeImplemento)){
+
+                    TextView textImplementoDescripcion = findViewById(R.id.textImplementoDescripcion);
+                    textImplementoDescripcion.setText("Descripción: "+implementos.get(i).getNameImplement());
+
+                    TextView textImplementoTipo = findViewById(R.id.textImplementoTipo);
+                    textImplementoTipo.setText("Tipo: "+implementos.get(i).getFabricante());
+
+                    TextView textImplementoCapacidad = findViewById(R.id.textImplementoCapacidad);
+                    textImplementoCapacidad.setText("Capacidad: "+implementos.get(i).getCapacidad());
+                    break;
+                }
+            }
+        }
+
     }
 }
