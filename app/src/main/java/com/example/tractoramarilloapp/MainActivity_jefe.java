@@ -154,6 +154,7 @@ public class MainActivity_jefe extends AppCompatActivity {
             if (arrayResponse[1].equalsIgnoreCase("3")){
                 Log.e("TAG TAG","TAG es una maquinaria");
                 editor.putString("idMaquina_comentario",arrayResponse[0]);
+                editor.commit();
                 Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
                 intent2.putExtra("comentario_mode","1"); //modo maquinaria
                 startActivity(intent2);
@@ -163,6 +164,7 @@ public class MainActivity_jefe extends AppCompatActivity {
             if (arrayResponse[1].equalsIgnoreCase("4")){
                 Log.e("TAG TAG","TAG es un implemento");
                 editor.putString("idImplemento_comentario",arrayResponse[0]);
+                editor.commit();
                 Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
                 intent2.putExtra("comentario_mode","2"); //modo maquinaria
                 startActivity(intent2);
