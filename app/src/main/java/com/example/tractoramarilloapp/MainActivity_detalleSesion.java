@@ -131,6 +131,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         modalidad = prefs.getString("modalidad","0");
 
         if (prefs.getBoolean("fromSesiones",false)){//true
+            flagInicio=1;
             relativeSesiones.setVisibility(View.VISIBLE);
             relativeInicio.setVisibility(View.GONE);
 
@@ -138,6 +139,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             relativeSesiones.setVisibility(View.GONE);
             relativeInicio.setVisibility(View.VISIBLE);
         }
+
+        nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
+        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
 
         /*
         //SET VALUES TO LAYOUT
@@ -287,6 +291,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
         final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
         final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
+        final RelativeLayout relativeMensajeSesiones = findViewById(R.id.relativeMensajeSesiones);
 
         // Check which request we're responding to
         if (requestCode == HOROMETRO_REQUEST) {
@@ -296,6 +301,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 String data2 = data.getStringExtra("horometro");
 
                 relativeInicioSesion.setVisibility(View.GONE);
+                relativeMensajeSesiones.setVisibility(View.GONE);
                 relativeCierreSesion.setVisibility(View.VISIBLE);
 
                 Handler handler = new Handler();
@@ -310,10 +316,20 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         if (modalidad.equalsIgnoreCase("1")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                fa.clearShared("MisPreferencias");//Elimina los shared preferences
-                                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                                startActivity(intent);
-                                finish();
+                                if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){
+                                    Log.e("TAG OK","se cierra la sesión... CON SESIONES ACTIVAS");
+                                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                    Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                                    startActivity(intent);
+                                    finish();
+                                }else{
+                                    Log.e("TAG OK","se cierra la sesión... SIN SESIONES ACTIVAS");
+                                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                    Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
                             }else{
                                 Log.e("TAG-ERROR", "NO SE QUE MIERDA PASO :(");
                             }
@@ -323,7 +339,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         if (modalidad.equalsIgnoreCase("2")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                //fa.clearShared("MisPreferencias");//Elimina los shared preferences
                                 Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -334,7 +350,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
 
                     }
-                }, 3000);
+                }, 2000);
             }
             if (resultCode == RESULT_CANCELED){
 
@@ -417,7 +433,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                     if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
                         if (arrayResponse[3].equalsIgnoreCase(nombreUsuario)) {//si esta ocupada la maquina por mi
                             String tokenSession = prefs.getString("tokenSession", "null");
-                            new SessionHandler(getApplicationContext()).closeSession(tokenSession);
+                            //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
                             Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
                             Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
                             intent2.putExtra("flagHorometro", "2");
@@ -517,9 +533,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
         ArrayList<Implemento> implementos = new HandlerDBPersistence(getApplicationContext()).getImplementos();
 
-        String codeImplemento = prefs.getString("tagImplemento", "NO");
+        String codeImplemento = prefs.getString("tagImplemento", "0");
 
-        if (codeImplemento.equalsIgnoreCase("NO")){//tag nulo
+        if (codeImplemento.equalsIgnoreCase("0")){//tag nulo
             TextView textImplementoDescripcion = findViewById(R.id.textImplementoDescripcion);
             textImplementoDescripcion.setText("Descripción: Sin Implemento");
 

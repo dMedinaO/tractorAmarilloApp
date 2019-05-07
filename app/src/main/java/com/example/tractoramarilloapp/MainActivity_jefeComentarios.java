@@ -73,8 +73,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         editComentarios = (EditText) findViewById(R.id.editTextComentarios);
         cancelButton = (Button) findViewById(R.id.buttonCancel);
         acceptButton = (Button) findViewById(R.id.buttonAccept);
-        nombreJefe = (TextView) findViewById(R.id.textUsuarioJefe);
-        jefeRUT = (TextView) findViewById(R.id.textRUT);
+        nameUser = (TextView) findViewById(R.id.textUsuarioJefe);
+        rutUser = (TextView) findViewById(R.id.textRUT);
 
         handlerDB = new HandlerDBPersistence(MainActivity_jefeComentarios.this);
 

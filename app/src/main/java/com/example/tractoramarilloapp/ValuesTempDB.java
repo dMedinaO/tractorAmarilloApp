@@ -36,9 +36,9 @@ public class ValuesTempDB {
         handlerDBPersistence.saveUsuario(new UserSession("18228843", "DMedina", "18228843-8", "1"));
 
         //MAQUINARIA
-        long response1 = handlerDBPersistence.saveMaquina(new Maquinaria("M2", "patito", "patito", "2019", "0", "---", "BLACK", "124ra", "1"));//
-        long response2 = handlerDBPersistence.saveMaquina(new Maquinaria("M1", "patito2", "patito2", "2018", "0", "---", "BLACK", "aqse", "2"));
-        long response3 = handlerDBPersistence.saveMaquina(new Maquinaria("M3", "patito", "patito", "2019", "0", "---", "BLACK", "124qa", "1"));
+        long response1 = handlerDBPersistence.saveMaquina(new Maquinaria("M2", "patito", "patito", "2019", "0", "--", "BLACK", "124ra", "1"));//
+        long response2 = handlerDBPersistence.saveMaquina(new Maquinaria("M1", "patito2", "patito2", "2018", "0", "--", "BLACK", "aqse", "2"));
+        long response3 = handlerDBPersistence.saveMaquina(new Maquinaria("M3", "patito", "patito", "2019", "0", "--", "BLACK", "124qa", "1"));
 
         //implementos
         handlerDBPersistence.saveImplemento(new Implemento("I3", "0", "2018", "f1", "color1", "12345", "aqws"));

@@ -176,7 +176,7 @@ public class InformationDetailSession {
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqldata);
 
         if (cursor == null || cursor.getCount()==0){//trabajo sin implemento el mono ql
-            this.implemento = new Implemento("SIN IMPLEMENTO", "-", "-", "-", "-", "-", "-");
+            this.implemento = new Implemento("SIN IMPLEMENTO", "--", "--", "--", "--", "--", "0");
         }else{//trabajo con implemento
 
             cursor.moveToFirst();
