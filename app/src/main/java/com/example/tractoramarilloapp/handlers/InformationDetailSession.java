@@ -272,4 +272,20 @@ public class InformationDetailSession {
     public void setHandlerDBPersistence(HandlerDBPersistence handlerDBPersistence) {
         this.handlerDBPersistence = handlerDBPersistence;
     }
+
+    public String getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(String idUser) {
+        this.idUser = idUser;
+    }
+
+    public String getInformeID() {
+        return informeID;
+    }
+
+    public void setInformeID(String informeID) {
+        this.informeID = informeID;
+    }
 }

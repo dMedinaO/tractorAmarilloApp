@@ -8,18 +8,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.tractoramarilloapp.R;
+import com.example.tractoramarilloapp.handlers.InformationDetailSession;
 
 import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
 
     private List<String> names;
+    private List<InformationDetailSession> informationDetailSessions;
     private int layout;
     private OnItemClickListener listener;
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         public TextView textViewName,textViewMaqImple,textViewFaena;
+        public String idInforme;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -28,20 +31,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             this.textViewFaena = (TextView) itemView.findViewById(R.id.textFaena);
         }
 
-        public void bind(final String name, final OnItemClickListener listener){
+        public void bind(final String name, final String line2, final String line3, final String idInforme, final OnItemClickListener listener){
             this.textViewName.setText(name);
+            this.textViewMaqImple.setText(line2);
+            this.textViewFaena.setText(line3);
+            this.idInforme = idInforme;
+
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(name, getAdapterPosition());
+                    listener.onItemClick(idInforme, getAdapterPosition());
                 }
             });
         }
     }
 
-    public RecyclerAdapter(List<String> names, int layout, OnItemClickListener listener){
+    public RecyclerAdapter(List<InformationDetailSession> detailesInformationValues, int layout, OnItemClickListener listener){
 
-        this.names = names;
+        this.informationDetailSessions = detailesInformationValues;//monton de info de la wea XD
         this.layout = layout;
         this.listener = listener;
 
@@ -63,12 +70,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.bind(names.get(i), listener);
+        String line2 = this.informationDetailSessions.get(i).getMaquinaria().getNameMachine()+" / "+ this.informationDetailSessions.get(i).getImplemento().getNameImplement();
+
+        viewHolder.bind(this.informationDetailSessions.get(i).getUserSession().getNameUser(),line2, this.informationDetailSessions.get(i).getFaena().getNameFaena(), this.informationDetailSessions.get(i).getInformeID(), listener);
     }
 
     @Override
     public int getItemCount() {
-        return names.size();
+        return informationDetailSessions.size();
     }
 
 

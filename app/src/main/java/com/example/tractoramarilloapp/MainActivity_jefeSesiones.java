@@ -110,7 +110,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         myRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         myRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RecyclerAdapter(names, R.layout.listasesiones_recycler, new RecyclerAdapter.OnItemClickListener() {
+        mAdapter = new RecyclerAdapter(this.getListInformationDetail(), R.layout.listasesiones_recycler, new RecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(String name, int position) {
                 Toast.makeText(MainActivity_jefeSesiones.this,name + " - "+ position,Toast.LENGTH_SHORT).show();
@@ -171,7 +171,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
             String[] arrayResponse = response.split(":");
             int responseSession = this.sessionHandler.createSession(response);
             Log.e("TAG RESPONSE","response session: "+responseSession);
-            String modalidad = prefs.getString("modalidad", "null");
+            //String modalidad = prefs.getString("modalidad", "null");
 
             if (arrayResponse[1].equalsIgnoreCase("2")) {//operador
 
