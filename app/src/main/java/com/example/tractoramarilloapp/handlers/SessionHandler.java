@@ -289,4 +289,24 @@ public class SessionHandler {
         }
         return response;
     }
+
+    /**
+     * Metodo que permite poder obtener todas las sesiones activas del tipo
+     * @return
+     */
+    public ArrayList<SessionClass> getSessionActive(){
+
+        ArrayList<SessionClass> listSession = this.handlerDBPersistence.getSessionActive("ACTIVE");//obtenemos solo las sesiones activas
+        ArrayList<SessionClass> listWorker = new ArrayList<>();
+
+        //hacemos la busqueda de la data asociada a los datos del tipo Worker
+        for (int i=0; i< listSession.size(); i++){
+
+            if (listSession.get(i).getSessionKind().equalsIgnoreCase("WORKER")){
+                listWorker.add(listSession.get(i));
+            }
+        }
+
+        return listWorker;
+    }
 }

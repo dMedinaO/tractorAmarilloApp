@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 
+import com.example.tractoramarilloapp.handlers.HandlerFallas;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 
@@ -71,35 +72,66 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
                 if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
                     relativeComentarioImplemento.setVisibility(View.VISIBLE);
 
+            //Comentarios modo maquinaria
+            if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
+                relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
+                String descripcionFalla = editComentarios.getText().toString();
+                String userID = prefs.getString("idUser", "null");
+                String idElemento = "-";//debes pasarle el tag!!!
+                String tipoElemento="MAQUINARIA";
+
+                new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
+
+                /*editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
+                Intent output = new Intent();
+                setResult(RESULT_OK, output);
+                finish();*/
+
+            }else
+                //Comentarios modo implemento
+                if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+
+                    String descripcionFalla = editComentarios.getText().toString();
+                    String userID = prefs.getString("idUser", "null");
+                    String idElemento = "-";//debes pasarle el tag!!!
+                    String tipoElemento="IMPLEMENTO";
+
+                    new HandlerFallas(getApplicationContext()).addFallasInDevice(descripcionFalla, userID, idElemento, tipoElemento);
+
+                    relativeComentarioImplemento.setVisibility(View.VISIBLE);
+                    editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
+                    Intent output = new Intent();
+                    setResult(RESULT_OK, output);
+                    finish();
                 }
 
         }
 
-        acceptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Comentarios modo maquinaria
-                if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
-                    relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Comentarios modo maquinaria
+                    if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
+                        relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
 
 
-                    editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
-                    Intent output = new Intent();
-                    setResult(RESULT_OK, output);
-                    finish();
-
-                }else
-                    //Comentarios modo implemento
-                    if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
-                        relativeComentarioImplemento.setVisibility(View.VISIBLE);
-                        editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
+                        editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
                         Intent output = new Intent();
                         setResult(RESULT_OK, output);
                         finish();
-                    }
 
-            }
-        });
+                    }else
+                        //Comentarios modo implemento
+                        if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+                            relativeComentarioImplemento.setVisibility(View.VISIBLE);
+                            editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
+                            Intent output = new Intent();
+                            setResult(RESULT_OK, output);
+                            finish();
+                        }
+
+                }
+            });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
