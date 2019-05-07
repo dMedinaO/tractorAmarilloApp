@@ -23,8 +23,11 @@ import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerImplemento;
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
+import com.example.tractoramarilloapp.handlers.InformationDetailSession;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.persistence.SessionClass;
 import com.example.tractoramarilloapp.utils.RecyclerAdapter;
 
 import java.util.ArrayList;
