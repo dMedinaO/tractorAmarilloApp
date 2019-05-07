@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
     private SessionHandler sessionHandler;
+    private InformationDetailSession informationDetailSession;
 
     //NFC VARIABLES
     NFCHandler nfcHandler;
@@ -100,35 +102,52 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
         writeTagFilters = new IntentFilter[] { tagDetected };
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
-
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-
-        names = this.getAllNames();
 
         myRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         myRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         myRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new RecyclerAdapter(this.getListInformationDetail(), R.layout.listasesiones_recycler, new RecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(String name, int position) {
-                Toast.makeText(MainActivity_jefeSesiones.this,name + " - "+ position,Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        if (this.getListInformationDetail().size()==0){
+            Log.e("TAG ERROR","Lista de sesiones viene vacía "+this.getListInformationDetail().isEmpty());
+        }else{
+            mAdapter = new RecyclerAdapter(this.getListInformationDetail(), R.layout.listasesiones_recycler, new RecyclerAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(String idInforme,String tokenSession,String idUser, int position) {
+
+                    //Toast.makeText(MainActivity_jefeSesiones.this, idInforme + " - " + tokenSession + " - " + idUser + " - " + position, Toast.LENGTH_SHORT).show();
+                    informationDetailSession = new InformationDetailSession(tokenSession, getApplicationContext(), idUser);
+
+                    //SET VALUES TO DETALLE SESION
+                    editor.putString("tokenSession",tokenSession);
+                    editor.putString("tagMaquinaria",informationDetailSession.getMaquinaria().getCodeInternoMachine());
+                    editor.putString("tagImplemento",informationDetailSession.getImplemento().getCodeInternoImplemento());
+                    editor.putString("idUsuario",informationDetailSession.getUserSession().getIDUser());
+                    editor.putString("idPredio",informationDetailSession.getPredio().getCode_internoPredio());
+                    editor.putString("idFaena",informationDetailSession.getFaena().getCodeInternoFaena());
+                    editor.putString("namePredio",informationDetailSession.getPredio().getNamePredio());
+                    editor.putString("nameFaena",informationDetailSession.getFaena().getNameFaena());
+                    editor.commit();
+
+                    //Toast.makeText(MainActivity_jefeSesiones.this, "Usuario: " + informationDetailSession.getUserSession().getNameUser(), Toast.LENGTH_SHORT).show();
+
+                    Intent intent2 = new Intent(MainActivity_jefeSesiones.this, MainActivity_detalleSesion.class);
+                    editor.putBoolean("fromSesiones",true);
+                    editor.commit();
+                    startActivity(intent2);
+                    finish();
+                }
+            });
+        }
+
+
+
 
 
         myRecyclerView.setAdapter(mAdapter);
 
-    }
-
-
-    private List<String> getAllNames(){
-        return new ArrayList<String>(){{
-            add("Jose");
-            add("Alejandro");
-            add("Ricardo");
-        }};
     }
 
     public void alertWriteNFC(String message){

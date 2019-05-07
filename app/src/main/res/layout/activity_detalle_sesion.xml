@@ -345,10 +345,12 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/relativeInicio"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="190dp"
         android:padding="5dp"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         >
 
         <Button
@@ -379,6 +381,60 @@
             android:background="@color/colorPrimaryDark"
             android:text="Volver a la lista"
             android:visibility="gone"/>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeMensajeSesiones"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        >
+
+        <TextView
+            android:id="@+id/textMensajeSesiones"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center"
+            android:layout_marginTop="-5dp"
+            android:text="Sesión iniciada"
+            android:textAlignment="center"
+            android:textSize="25dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/textMensajeSesiones"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@mipmap/baseline_check_circle"/>
+
+        <TextView
+            android:id="@+id/textMensajeSesiones2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Para finalizar la sesión debe acercar el dispositivo a la maquinaria seleccionada."
+            android:textAlignment="center"
+            android:textSize="14dp"
+            android:layout_below="@+id/imageView7"/>
+
+        <Button
+            android:id="@+id/buttonVolverListaSesiones"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_centerHorizontal="true"
+            android:background="@color/colorPrimaryDark"
+            android:text="Volver a la lista"
+            android:layout_below="@+id/textMensajeSesiones2"/>
 
 
     </RelativeLayout>

@@ -35,7 +35,7 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_detalleSesion extends AppCompatActivity {
 
     private ImageView imageCheck,imageSync,imageSignal,imageComentario;
-    private Button buttonInicio,buttonVolver,buttonVolverLista;
+    private Button buttonInicio,buttonVolver,buttonVolverLista,buttonVolverListaSesiones;
     private TextView mensajeAlert,nombreUsuario,usuarioRUT,nombrePredio,nombreFaena;
     private TextView nombreMaquina,maquinaModelo,maquinaCapacidad;
     private TextView nombreImplemento,implementoTipo,implementoCapacidad;
@@ -77,11 +77,14 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
         final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
         final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
+        final RelativeLayout relativeSesiones = findViewById(R.id.relativeMensajeSesiones);
+        final RelativeLayout relativeInicio = findViewById(R.id.relativeInicio);
 
         //VARIABLES INIT
         buttonInicio = (Button) findViewById(R.id.buttonIniciarJornada);
         buttonVolver = (Button) findViewById(R.id.buttonVolver);
         buttonVolverLista = (Button) findViewById(R.id.buttonVolverLista);
+        buttonVolverListaSesiones = (Button) findViewById(R.id.buttonVolverListaSesiones);
         imageCheck = (ImageView) findViewById(R.id.imageView5);
         mensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
@@ -122,6 +125,15 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         editor = prefs.edit();
         modalidad = prefs.getString("modalidad","0");
 
+        if (prefs.getBoolean("fromSesiones",false)){//true
+            relativeSesiones.setVisibility(View.VISIBLE);
+            relativeInicio.setVisibility(View.GONE);
+
+        }else{
+            relativeSesiones.setVisibility(View.GONE);
+            relativeInicio.setVisibility(View.VISIBLE);
+        }
+
 
         //SET VALUES TO LAYOUT
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
@@ -135,7 +147,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("capacidad_implemento",""));
 
         nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("nameUsuario",""));
-        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut",""));
+        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("rutUser",""));
 
         Log.e("TAG RESULT:",prefs.getAll().toString());
 
@@ -143,56 +155,56 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         buttonInicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HandlerInforme(getApplicationContext()).showInformeDetail();
+            new HandlerInforme(getApplicationContext()).showInformeDetail();
 
-                String idInforme = prefs.getString("idInforme", "");
-                String idInformeImplemento = prefs.getString("idInformeImplemento", "");
-                String idInformeFaena = prefs.getString("idInformeFaena", "null");
+            String idInforme = prefs.getString("idInforme", "");
+            String idInformeImplemento = prefs.getString("idInformeImplemento", "");
+            String idInformeFaena = prefs.getString("idInformeFaena", "null");
 
-                flagInicio = 1;
-                buttonInicio.setVisibility(View.GONE);
-                buttonVolver.setVisibility(View.GONE);
+            flagInicio = 1;
+            buttonInicio.setVisibility(View.GONE);
+            buttonVolver.setVisibility(View.GONE);
 
-                //Modalidad inicio sesión JEFE
-                if (modalidad.equalsIgnoreCase("1")) {
+            //Modalidad inicio sesión JEFE
+            if (modalidad.equalsIgnoreCase("1")) {
 
-                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                //fa.clearShared("MisPreferencias");//Elimina los shared preferences
 
-                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
-                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
-                    sessionHandler.ChangeStatusSession("ACTIVE");
+                //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                sessionHandler.ChangeStatusSession("ACTIVE");
 
 
-                    Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                    startActivity(intent);
-                    finish();
+                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                startActivity(intent);
+                finish();
 
+            }else{
+
+                relativeInicioSesion.setVisibility(View.VISIBLE);
+
+                //cambios necesarios
+
+                //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                sessionHandler.ChangeStatusSession("ACTIVE");
+
+                //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
+                String idImplemento = prefs.getString("tagImplemento","-");
+
+                String isImplementActive = "";
+
+                if (idImplemento.equalsIgnoreCase("-")){
+                    isImplementActive="NO";
                 }else{
-
-                    relativeInicioSesion.setVisibility(View.VISIBLE);
-
-                    //cambios necesarios
-
-                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
-                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
-                    sessionHandler.ChangeStatusSession("ACTIVE");
-
-                    //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
-                    String idImplemento = prefs.getString("tagImplemento","-");
-
-                    String isImplementActive = "";
-
-                    if (idImplemento.equalsIgnoreCase("-")){
-                        isImplementActive="NO";
-                    }else{
-                        isImplementActive="TES";
-                    }
-
-                    String statusSend = "NOT_YET";
-
-                    //hacemos la instancia a la adicion de informacion al informe generado previamente
-                    //new HandlerInforme(getApplicationContext()).changeValuesHorometro(horometroInicio,horometroFinal,  idInforme, idImplemento, horarioInicio, horarioFinal, idFaena, statusSend, isImplementActive);
+                    isImplementActive="TES";
                 }
+
+                String statusSend = "NOT_YET";
+
+                //hacemos la instancia a la adicion de informacion al informe generado previamente
+                //new HandlerInforme(getApplicationContext()).changeValuesHorometro(horometroInicio,horometroFinal,  idInforme, idImplemento, horarioInicio, horarioFinal, idFaena, statusSend, isImplementActive);
+            }
 
             }
         });
@@ -202,14 +214,31 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //limipia los datos de faena obtenidos anteriormente
-                editor.remove("nameFaena");
-                editor.remove("idFaena");
-                editor.commit();
+            //limipia los datos de faena obtenidos anteriormente
+            editor.remove("nameFaena");
+            editor.remove("idFaena");
+            editor.commit();
 
-                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_faena.class);
-                startActivity(intent);
-                finish();
+            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_faena.class);
+            startActivity(intent);
+            finish();
+
+            }
+        });
+
+        // BOTON VOLVER A LA LISTA SESIONES
+        buttonVolverListaSesiones.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            //limipia los datos de faena obtenidos anteriormente
+            editor.remove("nameFaena");
+            editor.remove("idFaena");
+            editor.commit();
+
+            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+            startActivity(intent);
+            finish();
 
             }
         });
@@ -269,10 +298,17 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
                         //editor.clear().commit();
                         if (modalidad.equalsIgnoreCase("1")){
-                            fa.clearShared("MisPreferencias");//Elimina los shared preferences
-                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                            startActivity(intent);
-                            finish();
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Log.e("TAG-ERROR", "NO SE QUE MIERDA PASO :(");
+                            }
+
+
                         }
                         if (modalidad.equalsIgnoreCase("2")){
                             String tokenSession = prefs.getString("tokenSession", "null");
@@ -375,8 +411,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                             Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
                             Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
                             intent2.putExtra("flagHorometro", "2");
-                            startActivity(intent2);
-                            finish();
+                            startActivityForResult(intent2, HOROMETRO_REQUEST);
+
                         }else{//UN WN ME CAGO
                             Log.e("TAG-ERROR", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
                         }

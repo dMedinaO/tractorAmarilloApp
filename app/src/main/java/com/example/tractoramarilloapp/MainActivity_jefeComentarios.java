@@ -11,9 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.tractoramarilloapp.handlers.HandlerFallas;
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Maquinaria;
+import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
 
     private EditText editComentarios;
     private Button cancelButton,acceptButton;
+    private TextView nombreJefe, jefeRUT;
+    private String idJefe;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -48,6 +53,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         editComentarios = (EditText) findViewById(R.id.editTextComentarios);
         cancelButton = (Button) findViewById(R.id.buttonCancel);
         acceptButton = (Button) findViewById(R.id.buttonAccept);
+        nombreJefe = (TextView) findViewById(R.id.textUsuarioJefe);
+        jefeRUT = (TextView) findViewById(R.id.textRUT);
 
         handlerDB = new HandlerDBPersistence(MainActivity_jefeComentarios.this);
 
@@ -58,6 +65,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         editor = prefs.edit();
 
+        //Completa los datos del jefe de taller
+        this.getValuesUser();
 
         final Bundle bundle = getIntent().getExtras();
 
@@ -99,8 +108,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
                 if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
 
                     editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
-                    Intent output = new Intent();
-                    setResult(RESULT_OK, output);
+                    Intent intent = new Intent(MainActivity_jefeComentarios.this, MainActivity_jefe.class);
+                    startActivity(intent);
                     finish();
 
                 }else
@@ -108,8 +117,8 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
                     if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
 
                         editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
-                        Intent output = new Intent();
-                        setResult(RESULT_OK, output);
+                        Intent intent = new Intent(MainActivity_jefeComentarios.this, MainActivity_jefe.class);
+                        startActivity(intent);
                         finish();
                     }
 
@@ -127,6 +136,14 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    public void getValuesUser(){
+
+        UserSession userSession = new SessionHandler(getApplicationContext()).getInformationBoss(this.idJefe);
+        this.nombreJefe.setText("Bienvenido " + userSession.getNameUser());
+        this.jefeRUT.setText("RUT: "+userSession.getRutUser());
 
     }
 }

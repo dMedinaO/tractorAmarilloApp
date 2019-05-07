@@ -31,7 +31,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             this.textViewFaena = (TextView) itemView.findViewById(R.id.textFaena);
         }
 
-        public void bind(final String name, final String line2, final String line3, final String idInforme, final OnItemClickListener listener){
+        public void bind(final String name, final String line2, final String line3, final String idInforme,final String idUser, final String tokensesion, final OnItemClickListener listener){
             this.textViewName.setText(name);
             this.textViewMaqImple.setText(line2);
             this.textViewFaena.setText(line3);
@@ -40,7 +40,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(idInforme, getAdapterPosition());
+                    listener.onItemClick(idInforme,tokensesion,idUser, getAdapterPosition());
                 }
             });
         }
@@ -55,7 +55,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     }
 
     public interface OnItemClickListener{
-        void onItemClick(String name, int position);
+        void onItemClick(String idInforme,String tokenSesion,String idUser, int position);
     }
 
 
@@ -70,9 +70,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        String line2 = this.informationDetailSessions.get(i).getMaquinaria().getNameMachine()+" / "+ this.informationDetailSessions.get(i).getImplemento().getNameImplement();
+        String nameUser = this.informationDetailSessions.get(i).getUserSession().getNameUser();
+        String idUser = this.informationDetailSessions.get(i).getUserSession().getIDUser();
+        String MaqImplem = this.informationDetailSessions.get(i).getMaquinaria().getNameMachine()+" / "+ this.informationDetailSessions.get(i).getImplemento().getNameImplement();
+        String nameFaena = this.informationDetailSessions.get(i).getFaena().getNameFaena();
+        String idInforme = this.informationDetailSessions.get(i).getInformeID();
+        String tokensesion = this.informationDetailSessions.get(i).getTokenSession();
 
-        viewHolder.bind(this.informationDetailSessions.get(i).getUserSession().getNameUser(),line2, this.informationDetailSessions.get(i).getFaena().getNameFaena(), this.informationDetailSessions.get(i).getInformeID(), listener);
+
+        viewHolder.bind(nameUser,MaqImplem,nameFaena,idInforme,idUser,tokensesion,listener);
     }
 
     @Override
