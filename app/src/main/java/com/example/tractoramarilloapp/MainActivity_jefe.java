@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import org.w3c.dom.Text;
@@ -34,6 +35,7 @@ public class MainActivity_jefe extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private static ConnectivityManager manager;
     private SessionHandler sessionHandler;
+    private String idJefe;
 
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -62,6 +64,7 @@ public class MainActivity_jefe extends AppCompatActivity {
         //SHARED PREFERENCES
         SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        this.idJefe = prefs.getString("idUsuarioBoss", "null");
         editor = prefs.edit();
 
         //VARIABLES INIT
@@ -70,9 +73,10 @@ public class MainActivity_jefe extends AppCompatActivity {
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
 
-        nombreJefe.setText(nombreJefe.getText().toString()+""+prefs.getString("usuario_jefe",""));
-        jefeRUT.setText(jefeRUT.getText().toString()+""+prefs.getString("usuario_jefe_rut",""));
+        //nombreJefe.setText(nombreJefe.getText().toString()+""+prefs.getString("usuario_jefe",""));
+        //jefeRUT.setText(jefeRUT.getText().toString()+""+prefs.getString("usuario_jefe_rut",""));
 
+        this.getValuesUser();
 
         // NFC CONFIGURATION
         context = this;
@@ -209,5 +213,13 @@ public class MainActivity_jefe extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
+    }
+
+    public void getValuesUser(){
+
+        UserSession userSession = new SessionHandler(getApplicationContext()).getInformationBoss(this.idJefe);
+        this.nombreJefe.setText("Bienvenido " + userSession.getNameUser());
+        this.jefeRUT.setText("RUT: "+userSession.getRutUser());
+
     }
 }

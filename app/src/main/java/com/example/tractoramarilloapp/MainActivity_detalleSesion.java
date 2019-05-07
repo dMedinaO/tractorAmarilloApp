@@ -153,6 +153,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 //Modalidad inicio sesión JEFE
                 if (modalidad.equalsIgnoreCase("1")){
 
+                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                    sessionHandler.ChangeStatusSession("ACTIVE");
+
                     /*Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         public void run() {

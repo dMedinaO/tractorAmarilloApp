@@ -140,8 +140,8 @@ public class MainActivity_faena extends AppCompatActivity {
                 String tokenSession = prefs.getString("tokenSession", "null");
                 String currentDateandTime = sdf.format(new Date());
                 String idInforme = prefs.getString("idInforme", "null");
-                String idFaena = spinner.getSelectedItemPosition()+"";
-                String idFaenaV = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
+                //String idFaena = spinner.getSelectedItemPosition()+"";
+                String idFaena = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
                 String idUser = prefs.getString("idUsuario", "null");
 
                 int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);

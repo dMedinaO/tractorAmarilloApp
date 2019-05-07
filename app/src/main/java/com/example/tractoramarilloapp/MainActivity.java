@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
             // BOSS LOGIN
             if (responseSession==0) {
                 editor.putString("modalidad","1");
-                editor.putString("idUsuario",arrayResponse[2]);
+                editor.putString("idUsuarioBoss",arrayResponse[2]);
                 editor.commit();
                 Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
                 startActivity(intent2);

@@ -222,7 +222,7 @@ public class SessionHandler {
         boolean response=false;
 
         for (int i=0; i< listSession.size(); i++){
-            if (listSession.get(i).getSessionKind().equals("1")){
+            if (listSession.get(i).getSessionKind().equals("BOSS")){
                 response=true;
                 break;
             }
@@ -265,7 +265,8 @@ public class SessionHandler {
         ArrayList<SessionClass> listSession = this.handlerDBPersistence.getSessionActive("PENDING");//solo las que estan pendiente
         String tokenSession = listSession.get(listSession.size()-1).getSessionToken();//obtenemos el token del ultimo registro del compadre
 
-        String sqlExec = "UPDATE "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME +" "+SessionClassContract.SessionClassContractEntry.STATUS+ "= '"+status + "' WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
+        String sqlExec = "UPDATE "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME +" SET "+SessionClassContract.SessionClassContractEntry.STATUS+ "= '"+status + "' WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
+        Log.e("CHANGE-SESSION", sqlExec);
         int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
         if (responseDB ==0 ){
             response=true;
@@ -308,5 +309,25 @@ public class SessionHandler {
         }
 
         return listWorker;
+    }
+
+    /**
+     * Metodo que permite consultar la informacion de un usuario con el ID de este, retorna un objeto del tipo usuario
+     * @return
+     */
+    public UserSession getInformationBoss(String idData){
+
+        ArrayList<UserSession> listUser = this.handlerDBPersistence.getUser();
+
+        UserSession userSession = null;
+        for (int i=0; i< listUser.size(); i++){
+
+            if (listUser.get(i).getIDUser().equalsIgnoreCase(idData)){
+                userSession = listUser.get(i);
+                break;
+            }
+        }
+
+        return userSession;
     }
 }

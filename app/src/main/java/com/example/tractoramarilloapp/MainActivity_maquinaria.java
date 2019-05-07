@@ -176,7 +176,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 HandlerInforme handlerInforme = new HandlerInforme(this.context);
                 String predio = prefs.getString("idPredio", "0");
                 String tokenSession = prefs.getString("tokenSession", "null");
-                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio);
+                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio, tokenSession);
 
                 final String [] tagRead = response.split(":");
                 String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
