@@ -63,28 +63,43 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         if (bundle != null){
 
             Log.e("TAG COMMENT MODE","valor: "+bundle.getString("comentario_mode"));
-
-            //Comentarios modo maquinaria
             if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
                 relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
-
-
-                /*editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
-                Intent output = new Intent();
-                setResult(RESULT_OK, output);
-                finish();*/
 
             }else
                 //Comentarios modo implemento
                 if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
                     relativeComentarioImplemento.setVisibility(View.VISIBLE);
-                    editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
-                    Intent output = new Intent();
-                    setResult(RESULT_OK, output);
-                    finish();
+
                 }
 
         }
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Comentarios modo maquinaria
+                if (bundle.getString("comentario_mode").equalsIgnoreCase("1")){
+                    relativeComentarioMaquinaria.setVisibility(View.VISIBLE);
+
+
+                    editor.putString("comentarios_maquinaria_jefe",editComentarios.getText().toString());
+                    Intent output = new Intent();
+                    setResult(RESULT_OK, output);
+                    finish();
+
+                }else
+                    //Comentarios modo implemento
+                    if(bundle.getString("comentario_mode").equalsIgnoreCase("2")){
+                        relativeComentarioImplemento.setVisibility(View.VISIBLE);
+                        editor.putString("comentarios_implemento_jefe",editComentarios.getText().toString());
+                        Intent output = new Intent();
+                        setResult(RESULT_OK, output);
+                        finish();
+                    }
+
+            }
+        });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override

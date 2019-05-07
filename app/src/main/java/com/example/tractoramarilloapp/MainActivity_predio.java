@@ -38,11 +38,11 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_predio extends AppCompatActivity {
 
     //atributo para representar el valor obtenido desde la activity previa
-    private String [] predioString;//para almacenar los predios a mostrar en la lista
-    private String [] predioCodeInterno; // para almacenar la informacion de los codigo interno del predio, esto se hace por si los locos son wns y ponen un predio  repetido
+    private String[] predioString;//para almacenar los predios a mostrar en la lista
+    private String[] predioCodeInterno; // para almacenar la informacion de los codigo interno del predio, esto se hace por si los locos son wns y ponen un predio  repetido
 
-    private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert,textComentarioLink,msjMotivacional;
-    private ImageView imageComentario,imageSync,imageSignal;
+    private TextView textUsuario, textRut, textPredioNombre, textMensajeAlert, textComentarioLink, msjMotivacional;
+    private ImageView imageComentario, imageSync, imageSignal;
     private Button buttonPredio;
     private int flagLogin;
 
@@ -72,7 +72,7 @@ public class MainActivity_predio extends AppCompatActivity {
         setContentView(R.layout.activity_predio);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -92,10 +92,10 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // SHARED PREFERENCES
-        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         editor = prefs.edit();
-        String nombreUsuario = prefs.getString("usuario","null");
-        String rutUsuario = prefs.getString("usuario_rut","null");
+        String nombreUsuario = prefs.getString("usuario", "null");
+        String rutUsuario = prefs.getString("usuario_rut", "null");
 
 
         //NFC
@@ -124,7 +124,7 @@ public class MainActivity_predio extends AppCompatActivity {
 
 
         // STATE PROGRESS BAR CREATE
-        String[] descriptionData = {" "," ", " ", " "};
+        String[] descriptionData = {" ", " ", " ", " "};
         final StateProgressBar stateProgressBar = (StateProgressBar) findViewById(R.id.stateProgressBar);
         stateProgressBar.setMaxStateNumber(StateProgressBar.StateNumber.FOUR);
         stateProgressBar.setStateDescriptionData(descriptionData);
@@ -139,7 +139,7 @@ public class MainActivity_predio extends AppCompatActivity {
         //String[] letra = {"MARIA","CARLOS","RICARDO","LUIS","FRANCISCO"};
         //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this.predioString));
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,R.layout.spinner_item,this.predioString);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, R.layout.spinner_item, this.predioString);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_item);
         spinner.setAdapter(spinnerArrayAdapter);
         //spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, letra));
@@ -157,16 +157,15 @@ public class MainActivity_predio extends AppCompatActivity {
         //<\ SPINNER CREATE
 
 
-
         buttonPredio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                editor.putString("namePredio",spinner.getSelectedItem().toString());
-                editor.putInt("idPredio",spinner.getSelectedItemPosition());
+                editor.putString("namePredio", spinner.getSelectedItem().toString());
+                editor.putString("idPredio", predioCodeInterno[spinner.getSelectedItemPosition()]);
                 editor.commit();
 
-                Intent intent = new Intent(MainActivity_predio.this,MainActivity_maquinaria.class);
+                Intent intent = new Intent(MainActivity_predio.this, MainActivity_maquinaria.class);
                 startActivity(intent);
                 finish();
 
@@ -176,27 +175,30 @@ public class MainActivity_predio extends AppCompatActivity {
         imageComentario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity_predio.this,MainActivity_comentario.class);
-                startActivityForResult(intent,COMENTARIO_REQUEST);
+                Intent intent = new Intent(MainActivity_predio.this, MainActivity_comentario.class);
+                startActivityForResult(intent, COMENTARIO_REQUEST);
             }
         });
 
         textComentarioLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity_predio.this,MainActivity_comentario.class);
-                startActivityForResult(intent,COMENTARIO_REQUEST);
+                Intent intent = new Intent(MainActivity_predio.this, MainActivity_comentario.class);
+                startActivityForResult(intent, COMENTARIO_REQUEST);
             }
         });
 
         // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
+        if (isOnline(getApplicationContext())) {
             imageSignal.setImageResource(R.mipmap.signal);
-        }else{
+        } else {
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
 
     }
+
+    @Override
+    public void onBackPressed() { }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -217,9 +219,6 @@ public class MainActivity_predio extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() { }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         this.context = getApplicationContext();
         setIntent(intent);
@@ -232,64 +231,39 @@ public class MainActivity_predio extends AppCompatActivity {
             String modalidad = prefs.getString("modalidad","null");
 
 
-            if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")){
+            if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")) {
 
-            if (idUsuario.equalsIgnoreCase(""+arrayResponse[0])){
+                if (arrayResponse[1].equalsIgnoreCase("2")) {
 
-                if (flagLogin == 1){
+                    if (idUsuario.equalsIgnoreCase(arrayResponse[2])) {
+                        String tokenSession = prefs.getString("tokenSession", "null");
+                        if (flagLogin == 1 && new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
 
-                    Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                    startActivity(intent2);
-                    finish();
+                            Log.e("TAG OK:", "Misma pulcera, mismo usuario... SE CIERRA LA SESIÓN");
+                            editor.clear().commit();
+                            Intent intent2 = new Intent(MainActivity_predio.this, MainActivity.class);
+                            startActivity(intent2);
+                            finish();
 
-                }else{
-                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
-                }
-
-
-            }
-
-
-        }else if (modalidad.equalsIgnoreCase("2")){//MODALIDAD TRABAJADOR PERRO ESCLAVO
+                        } else {
+                            Toast.makeText(MainActivity_predio.this, "Debes esperar al menos 5 segundos para cerrar la sesión...", Toast.LENGTH_SHORT).show();
+                        }
 
 
-            if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){//PARA COMPARAR CON EL ID DEL USUARIO
+                    } else {
 
-                if (flagLogin == 1){
+                        Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
+                        Toast.makeText(MainActivity_predio.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
 
-                    //CERRAMOS SESION
-                    String tokenSession = prefs.getString("tokenSession", "null");
-                    if (new SessionHandler(this.context).closeSession(tokenSession)){
-                        Log.e("TAG 2","Pulsera nuevamente: "+response+" usuario: "+idUsuario);
-                        editor.clear().commit();//SE BORRA TODA LA DATA DEL SHARED QUE HA ESTADO ALMACENADA
-                        Intent intent2 = new Intent(MainActivity_predio.this,MainActivity.class);
-                        startActivity(intent2);
-                        finish();
-                    }else{
-                        Log.e("TAG:ERROR", "No se que paso :(");
                     }
 
-
-                }else{
-                    Toast.makeText(MainActivity_predio.this,"Debes esperar al menos 5 segundos para cerrar la sesión...",Toast.LENGTH_SHORT).show();
-                }
-
-                if (arrayResponse[1].equalsIgnoreCase("3") || arrayResponse[1].equalsIgnoreCase("4")){
-                    Log.e("TAG INVALIDO ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
-                    alertWriteNFC("TAG invalido. No esta permitido est");
+                } else {
+                    Log.e("TAG ERROR", "TAG invalido, no es una pulcera");
+                    alertNFC("TAG invalido. Favor acerque el dispositivo a un TAG válido.");
                 }
 
 
             }
-
-            }else{
-                Log.e("VALIDACION: ","Pulsera: "+arrayResponse[0]+" Usuario: "+idUsuario);
-                Toast.makeText(MainActivity_predio.this,"Existe una sesión activa en este equipo...",Toast.LENGTH_SHORT).show();
-            }
-
-
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
@@ -330,7 +304,7 @@ public class MainActivity_predio extends AppCompatActivity {
         handlerDBPersistence.close();
     }
 
-    public void alertWriteNFC(String message){
+    public void alertNFC(String message){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Mensaje")
                 .setMessage(message)

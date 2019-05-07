@@ -235,73 +235,82 @@ public class MainActivity_implemento extends AppCompatActivity {
 
             int responseHandler = this.handlerImplemento.applyFluxeCheck();
 
-            if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {//CIERRE POR MAQUINARIA: CERRAR SESION Y TERMINAR REGISTRO DE INFORME, NOTA: ESTO SE REALIZA EN LA VENTANA DE HOROMETRO
+            if (responseHandler == 0){//todos los procesos fueron OK
 
-                Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+                levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
 
-                String [] tagRead = response.split(":");
-                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
-
+                final String [] tagRead = response.split(":");
+                String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
+                Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
-                //editor.clear().commit();
-                Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
-                intent2.putExtra("flagHorometro", "3");
-                startActivity(intent2);
-                finish();
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                if (responseWrite == 0){
 
-            }
+                    Handler handler = new Handler();
 
-            if (modalidad.equalsIgnoreCase("2")) {
+                    if (dialog.isShowing()) {
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                dialog.dismiss();
 
+                                String currentDateandTime = sdf.format(new Date());
+                                editor.putString("inicio_implemento", currentDateandTime);
+                                editor.putString("nameImplemento",tagRead[2]);
+                                editor.putString("tagImplemento",tagRead[0]);
+                                editor.commit();
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
+                                startActivity(intent2);
+                                finish();
+                            }
+                        }, 2000);
 
-                if (responseHandler == 0 || responseHandler == -3){//todos los procesos fueron OK
-
-                    levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
-
-                    final String [] tagRead = response.split(":");
-                    String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:"+idUsuario;
-                    Log.e("WRITE", newTag+" new text to NFC");
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                    if (responseWrite == 0){
-
-                        Handler handler = new Handler();
-
-                        if (dialog.isShowing()) {
-                            handler.postDelayed(new Runnable() {
-                                public void run() {
-                                    dialog.dismiss();
-
-                                    String currentDateandTime = sdf.format(new Date());
-                                    editor.putString("inicio_implemento", currentDateandTime);
-                                    editor.putString("nameImplemento",tagRead[2]);
-                                    editor.putString("tagImplemento",tagRead[0]);
-                                    editor.commit();
-                                    Log.e("HANDLER", "OK");
-                                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                                    startActivity(intent2);
-                                    finish();
-                                }
-                            }, 2000);
-
-                        }
-
-                    }else{
-                        Log.e("HANDLER", "ERROR");
-                        alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
                     }
 
-                } else if (responseHandler == -1) {
-                    alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
-                } else if (responseHandler == -2) {
-                    alertWriteNFC("Implemento no se encuentra registrado.");
-                }else if (responseHandler == -4) {
-                    Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
-                    alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
+                }else{
+                    Log.e("HANDLER", "ERROR");
+                    alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
                 }
 
+            } else if (responseHandler == -1) {
+                Log.e("HANDLER", "ERROR TAG INVALIDO. NO ES IMPLEMENTO");
+
+                if (arrayResponse[1].equalsIgnoreCase("3")) {
+
+                    if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {//CIERRE POR MAQUINARIA: CERRAR SESION Y TERMINAR REGISTRO DE INFORME, NOTA: ESTO SE REALIZA EN LA VENTANA DE HOROMETRO
+
+                        Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
+
+                        String [] tagRead = response.split(":");
+                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+
+                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                        int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+                        //editor.clear().commit();
+                        Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_horometro.class);
+                        intent2.putExtra("flagHorometro", "3");
+                        startActivity(intent2);
+                        finish();
+
+                    }else{
+                        Log.e("TAG ERROR:", "Es maquina pero distinta a la mia.");
+                        alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
+                    }
+
+
+                }else{
+                    alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
+                }
+
+            } else if (responseHandler == -2) {
+                Log.e("HANDLER", "ERROR IMPLEMENTO NO REGISTRADO");
+                alertWriteNFC("Implemento no se encuentra registrado.");
+            }else if (responseHandler == -4) {
+                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
+                alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
             }
+
+
 
         }else{
             Log.e("TAG ERROR:","response VOID: "+response);

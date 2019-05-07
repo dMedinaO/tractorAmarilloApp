@@ -196,31 +196,23 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent2 = new Intent(MainActivity.this,MainActivity_jefe.class);
                 startActivity(intent2);
                 finish();
-
-                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                }
             }
             // WORKER LOGIN
             if (responseSession==1){
 
-            editor.putString("idUsuario",arrayResponse[2]);
-            editor.putString("modalidad","2");
-            editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
-            editor.commit();
+                editor.putString("idUsuario",arrayResponse[2]);
+                editor.putString("modalidad","2");
+                editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+                editor.commit();
 
-            Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
-            startActivity(intent2);
-            finish();
-
-                if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                }
+                Intent intent2 = new Intent(MainActivity.this,MainActivity_predio.class);
+                startActivity(intent2);
+                finish();
             }
             if (responseSession== -1){
 
                 Log.e("TAG ERROR:","response INVALID: "+response);
-                alertErrorLogin("Error al leer el TAG. Debe acerca la pulsera al dispositivo.");
+                alertErrorLogin("TAG invalido. Favor acerque su pulcera...");
             }
 
 
@@ -228,6 +220,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Log.e("TAG ERROR:","response VOID: "+response);
             alertErrorLogin("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+        }
+
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
+            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
     }

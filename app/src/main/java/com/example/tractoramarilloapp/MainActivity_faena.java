@@ -130,8 +130,9 @@ public class MainActivity_faena extends AppCompatActivity {
             public void onClick(View v) {
 
                 editor.putString("nameFaena",spinner.getSelectedItem().toString());
-                editor.putInt("idFaena",spinner.getSelectedItemPosition());
+                editor.putString("idFaena",handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
                 editor.commit();
+                Log.e("TAG FAENA:","Faena seleccionada: "+spinner.getSelectedItem().toString()+" cod_interno: "+handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
 
                 Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
                 startActivity(intent);
@@ -232,12 +233,15 @@ public class MainActivity_faena extends AppCompatActivity {
                     intent2.putExtra("flagHorometro", "3");
                     startActivity(intent2);
                     finish();
-                } else {
-
-                    Log.e("TAG-MAQUINARIA", "MAQUINARIA LEIDA NO CORRESPONDE");
+                } else{
+                    Log.e("TAG ERROR:", "Es maquina pero distinta a la mia.");
+                    alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                 }
+
             } else {
+
                 if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
+
                     if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
 
                         if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
@@ -252,10 +256,11 @@ public class MainActivity_faena extends AppCompatActivity {
                         } else {
 
                             Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO CORRESPONDE AL ACTUAL");
+                            alertWriteNFC("Este implemento no corresponde al seleccionado...");
                         }
 
                     } else {//ACA ES CUANDO NO CORRESPONDE A NINGUN CASO
-
+                        alertWriteNFC("El TAG no corresponde a un implemento o maquinaria. Favor acercar el dispositivo a un TAG válido.");
                     }
                 } else {
                     Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");

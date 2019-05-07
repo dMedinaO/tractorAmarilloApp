@@ -148,6 +148,17 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 //Modalidad inicio sesión JEFE
                 if (modalidad.equalsIgnoreCase("1")){
 
+                    /*Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+
+                            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                            startActivity(intent);
+                            finish();
+
+                        }
+                    }, 2000);*/
+
                     Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                     startActivity(intent);
                     finish();
@@ -241,11 +252,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
                 String data2 = data.getStringExtra("horometro");
 
-
                 relativeInicioSesion.setVisibility(View.GONE);
                 relativeCierreSesion.setVisibility(View.VISIBLE);
-
-
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -309,20 +317,22 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
         //SPLIT TO ARRAY THE VALUES OF TAG
         String[] arrayResponse = response.split(":");
-        String nombreImplemento = prefs.getString("tagImplemento","null");
+        String tagImplemento = prefs.getString("tagImplemento","null");
         String nombreMaquina = prefs.getString("tagMaquinaria","null");
         String nombreUsuario = prefs.getString("idUsuario","null");
 
 
         if (flagInicio == 1) {//boton ya se encuentra pulsado
+
+
             if (arrayResponse[1].equalsIgnoreCase("4")){//corresponde a implemento
 
-                if (nombreImplemento.equalsIgnoreCase("null")){//el loco trabaja sin implemento
+                if (tagImplemento.equalsIgnoreCase("null")){//el loco trabaja sin implemento
                     Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
                     startActivity(intent2);
                     finish();
                 }else{//el loco esta trabajando con implemento
-                    if (nombreImplemento.equalsIgnoreCase(arrayResponse[0])){
+                    if (tagImplemento.equalsIgnoreCase(arrayResponse[0])){
 
                         String [] tagRead = response.split(":");
                         String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
@@ -347,8 +357,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         finish();
                     }else{
                         Log.e("TAG-ERROR", "ESTE NO ES MI IMPLEMENTO");
+                        alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
                     }
                 }
+
             }else{
                 if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
                     if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
@@ -363,12 +375,16 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         }
                     }else{
                         Log.e("TAG-ERROR", "NO ES MI MAQUINA");
+                        alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                     }
                 }else{//corresponde a cualquier otra wea
                     Log.e("TAG-ERROR", "ES CUALQUIER OTRA WEA QUE NO SEA MAQUINA NI IMPLEMENTO");
-
+                    alertWriteNFC("El TAG invalido. Favor acerque el dispositivo a una maquinaria o implemento.");
                 }
             }
+        }else if (flagInicio==0){ // AUN NO HA INICIADO SESION
+            Log.e("TAG-ERROR", "NO HA APRETADO BOTON DE INICIO SESIÓN");
+            alertWriteNFC("Debe iniciar sesión primero para poder realizar esta operación.");
         }
     }
 

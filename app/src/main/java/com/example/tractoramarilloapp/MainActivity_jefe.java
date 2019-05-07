@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import org.w3c.dom.Text;
@@ -32,6 +33,7 @@ public class MainActivity_jefe extends AppCompatActivity {
 
     private SharedPreferences.Editor editor;
     private static ConnectivityManager manager;
+    private SessionHandler sessionHandler;
 
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -52,6 +54,8 @@ public class MainActivity_jefe extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar_jefe);
+
+        this.sessionHandler = new SessionHandler(getApplicationContext());
 
         View customActionBarView = actionBar.getCustomView();
 
@@ -109,46 +113,54 @@ public class MainActivity_jefe extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        //tvNFCContent.setText("NFC Content: " + response);
-        //Toast.makeText(MainActivity.this,"USUARIO: "+response,Toast.LENGTH_SHORT).show();
 
-        //editor.putString("usuario",response);
-        //editor.putString("usuario_rut","24858868-3");
-        //editor.commit();
+        Log.e("TAG READ:", "response: "+response);
 
-        String[] arrayResponse = response.split(":");
+        if (!response.equalsIgnoreCase("VOID")){
 
-        Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
+            String[] arrayResponse = response.split(":");
+            int responseSession = this.sessionHandler.createSession(response);
 
-        if (arrayResponse[1].equalsIgnoreCase("1")){
-            alertErrorLogin("Ya existe una sesión activa en este dispositivo...");
+            Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
+
+            if (arrayResponse[1].equalsIgnoreCase("1")){
+                Log.e("TAG TAG","TAG es un jefe de taller");
+                alertErrorLogin("Ya existe una sesión activa en este dispositivo...");
+            }
+            if (arrayResponse[1].equalsIgnoreCase("2")) {
+
+                Log.e("TAG TAG","TAG es un operador");
+                editor.putString("idUsuario",arrayResponse[2]);
+                editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+                editor.commit();
+
+                Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_predio.class);
+                startActivity(intent2);
+                finish();
+            }
+            if (arrayResponse[1].equalsIgnoreCase("3")){
+                Log.e("TAG TAG","TAG es una maquinaria");
+                editor.putString("idMaquina_comentario",arrayResponse[0]);
+                Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
+                intent2.putExtra("comentario_mode","1"); //modo maquinaria
+                startActivity(intent2);
+                finish();
+
+            }
+            if (arrayResponse[1].equalsIgnoreCase("4")){
+                Log.e("TAG TAG","TAG es un implemento");
+                editor.putString("idImplemento_comentario",arrayResponse[0]);
+                Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
+                intent2.putExtra("comentario_mode","2"); //modo maquinaria
+                startActivity(intent2);
+                finish();
+            }
+
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertErrorLogin("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
-        if (arrayResponse[1].equalsIgnoreCase("2")) {
 
-            editor.putString("idUsuario",arrayResponse[0]);
-            editor.commit();
-
-            Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_predio.class);
-            startActivity(intent2);
-            finish();
-        }
-        if (arrayResponse[1].equalsIgnoreCase("3")){
-
-            editor.putString("idMaquina_comentario",arrayResponse[0]);
-            Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
-            intent2.putExtra("comentario_mode","1"); //modo maquinaria
-            startActivity(intent2);
-            finish();
-
-        }
-        if (arrayResponse[1].equalsIgnoreCase("4")){
-
-            editor.putString("idImplemento_comentario",arrayResponse[0]);
-            Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity_jefeComentarios.class);
-            intent2.putExtra("comentario_mode","2"); //modo maquinaria
-            startActivity(intent2);
-            finish();
-        }
 
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){

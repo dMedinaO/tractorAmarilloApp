@@ -155,61 +155,30 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             String[] arrayResponse = response.split(":");
             String idUsuario = prefs.getString("idUsuario","null");
             String modalidad = prefs.getString("modalidad","null");
-
-
             Log.e("RESPONSE-TAG",  "response: "+response);
-            editor.putString("nameMaquinaria",arrayResponse[2]);
-            editor.putString("tagMaquinaria",arrayResponse[0]);
-            editor.commit();
 
-            //NFC CONFIGURATION
-        /*nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
-
-        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);*/
-            String text = this.nfcHandler.readerTAGNFC(getIntent());
             this.context = getApplicationContext();
-            this.handlerMaquinaria = new HandlerMaquinaria(idUsuario, text, this.context);
-
+            this.handlerMaquinaria = new HandlerMaquinaria(idUsuario, response, this.context);
             final int responseHandler = this.handlerMaquinaria.applyFluxe();
             Log.e("RESPONSE-HANDLER", responseHandler + " response");
 
+            //WRITE NFC OK
+            if (responseHandler == 0){
 
-            if (modalidad.equalsIgnoreCase("2")){
+                Log.e("MAQUINARIA-HANDLER",  "response: "+responseHandler);
+                editor.putString("nameMaquinaria",arrayResponse[2]);
+                editor.putString("tagMaquinaria",arrayResponse[0]);
+                editor.commit();
 
-                if (idUsuario.equalsIgnoreCase(""+arrayResponse[2])){
-
-
-                Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
-                String tokenSession = prefs.getString("tokenSession", "null");
-                if (new SessionHandler(this.context).closeSession(tokenSession)) {
-                    editor.clear().commit();
-                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
-                    startActivity(intent2);
-                    finish();
-                }else{
-                    Log.e("TAG:ERROR", "No se que paso aquí!!!");
-                }
-
-                }
-
-                //WRITE NFC OK
-                if (responseHandler == 0 || responseHandler == -3){
-
-                    levantarDialog(MainActivity_maquinaria.this,"Este proceso puede tardar un momento. Favor espere...");
+                levantarDialog(MainActivity_maquinaria.this,"Este proceso puede tardar un momento. Favor espere...");
 
                 HandlerInforme handlerInforme = new HandlerInforme(this.context);
-                String predio = prefs.getInt("idPredio", 0)+"";
+                String predio = prefs.getString("idPredio", "0");
                 String tokenSession = prefs.getString("tokenSession", "null");
-                final int idInforme = handlerInforme.addElementToInforme(text.split(":")[0], idUsuario, predio);
+                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio);
 
-                final String [] tagRead = text.split(":");
-                //String newTag = tagRead[0]+tagRead[2]+":1:"+idUsuario;
-
+                final String [] tagRead = response.split(":");
                 String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
                 Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -218,8 +187,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
                 if (responseWrite == 0){
 
-                        Handler handler = new Handler();
-
+                    Handler handler = new Handler();
                     if (dialog.isShowing()) {
                         handler.postDelayed(new Runnable() {
                             public void run() {
@@ -237,27 +205,64 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                             }
                         }, 2000);
 
-                        }
-
-                    }else{
-                        Log.e("HANDLER", "ERROR");
-                        alertWriteNFC("Error al escribir NFC. Favor intente nuevamente...");
                     }
 
-                }else if(responseHandler == -1){
-                    Log.e("HANDLER", "ERROR MACHINE OCUPADA");
-                    alertWriteNFC("El TAG no corresponde a una maquina. Favor acercar el dispositivo a una maquina");
-                }else if(responseHandler == -2){
-                    Log.e("HANDLER", "ERROR MACHINE OCUPADA");
-                    alertWriteNFC("La maquinaria no se encuentra registrada...");
-                }else if(responseHandler == -3){
-                    Log.e("HANDLER", "ERROR MACHINE OCUPADA");
-                    alertWriteNFC("Esta maquina ya se encuentra ocupada por otra operador...");
-                }else if(responseHandler == -4){
-                    Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
-                    alertWriteNFC("Actualmente no está habilitado para operar la maquinaria seleccionada...");
+                }else{
+                    Log.e("HANDLER", "ERROR");
+                    alertWriteNFC("Error al escribir NFC. Favor intente nuevamente...");
                 }
+
+
+            }else if(responseHandler == -1){// Pueden ser varios tipos de TAG
+
+                Log.e("HANDLER", "ERROR IS NOT MACHINE");
+                if (arrayResponse[1].equalsIgnoreCase("1")){
+                    alertWriteNFC("El TAG no corresponde a una maquina. Favor acercar el dispositivo a una maquinaria");
+                }
+                if (arrayResponse[1].equalsIgnoreCase("2")){
+
+                    if (idUsuario.equalsIgnoreCase(arrayResponse[2])) {
+
+                        //modalidad BOSS
+                        if (modalidad.equalsIgnoreCase("1")){
+                            editor.remove("idUsuario").commit();
+                            Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
+                            Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
+                            intent2.putExtra("flagHorometro", "1");
+                            startActivity(intent2);
+                            finish();
+                        }
+                        //modalidad WORKER
+                        else{
+                            editor.remove("idUsuario").commit();
+                            Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
+                            Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
+                            intent2.putExtra("flagHorometro", "1");
+                            startActivity(intent2);
+                            finish();
+                        }
+
+
+                    }else{
+                        Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
+                        Toast.makeText(MainActivity_maquinaria.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
+                    }
+
+
+
+                }
+                if (arrayResponse[1].equalsIgnoreCase("4")){
+                    alertWriteNFC("El TAG no corresponde a una maquina. Favor acercar el dispositivo a una maquina");
+                }
+
+            }else if(responseHandler == -2){
+                Log.e("HANDLER", "ERROR MACHINE OCUPADA");
+                alertWriteNFC("La maquinaria no se encuentra registrada...");
+            }else if(responseHandler == -4){
+                Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
+                alertWriteNFC("Actualmente no está habilitado para operar la maquinaria seleccionada...");
             }
+
 
             if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -265,7 +270,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
         }else{
             Log.e("TAG ERROR:","response VOID: "+response);
-            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo a la maquinaria.");
         }
 
 
