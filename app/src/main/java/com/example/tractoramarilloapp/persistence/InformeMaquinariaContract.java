@@ -18,6 +18,7 @@ public class InformeMaquinariaContract {
         public static final String USER_ID = "userID";
         public static final String SESSION_TOKEN = "sessionTAG";
         public static final String CLOSE_SESSION_KIND = "closeSessionKind";
+        public static final String TOKEN_PRE = "tokenPrevio";
         public static final String STATUS_SEND = "statusSend";
 
     }

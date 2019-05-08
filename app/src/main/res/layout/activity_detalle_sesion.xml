@@ -464,7 +464,7 @@
             android:id="@+id/imageView8"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_below="@+id/textMensajeSesiones"
+            android:layout_below="@+id/textMensajeSesionesExpirado"
             android:layout_centerHorizontal="true"
             app:srcCompat="@mipmap/baseline_warning"/>
 

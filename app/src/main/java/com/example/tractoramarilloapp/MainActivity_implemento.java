@@ -291,7 +291,7 @@ public class MainActivity_implemento extends AppCompatActivity {
                         Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
                         String [] tagRead = response.split(":");
-                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
+                        String newTag = tagRead[0]+":"+tagRead[1]+":"+":0:-:-";
 
                         myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                         int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia

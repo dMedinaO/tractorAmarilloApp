@@ -119,6 +119,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "sessionTAG TEXT NOT NULL, "
                 + "closeSessionKind TEXT NOT NULL, "
                 + "statusSend TEXT NOT NULL, "
+                + "tokenPrevio TEXT NOT NULL, "
                 + "UNIQUE (idinformeMaquinaria))");
 
         /*demo tabla informe implementos, se asocia a la informacion del uso de implementos en un implemento con respecto a una maquinaria

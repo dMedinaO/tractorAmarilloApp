@@ -105,7 +105,7 @@ public class MainActivity_horometro extends AppCompatActivity {
                         //modificar el informe con el ID actual
                         String idInforme = prefs.getString("idInforme", "null");
 
-                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_NORMAL");
+                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_NORMAL", prefs.getString("tokenSession", "null"));
 
                         Intent output = new Intent();
                         setResult(RESULT_OK, output);
@@ -116,7 +116,7 @@ public class MainActivity_horometro extends AppCompatActivity {
 
                         //cerramos el informe de maquinaria
                         String idInforme = prefs.getString("idInforme", "null");
-                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_FORZADO");
+                        new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInforme,inputHorometro.getText().toString(),  "CLOSE_FORZADO", prefs.getString("tokenSession", "null"));
                         editor.putString("fin_horometro",inputHorometro.getText().toString());
                         editor.commit();
 
@@ -157,7 +157,7 @@ public class MainActivity_horometro extends AppCompatActivity {
                             //modificar el informe con el ID actual
                             String idInformeV = prefs.getString("idInforme", "null");
 
-                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,inputHorometro.getText().toString(),  "CLOSE_NORMAL");
+                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,inputHorometro.getText().toString(),  "CLOSE_NORMAL", prefs.getString("tokenSession", "null"));
 
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
