@@ -143,24 +143,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
         nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
 
-        /*
-        //SET VALUES TO LAYOUT
-        nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
-        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
-
-        /*
-        //SET VALUES TO LAYOUT
-
-        nombreMaquina.setText(nombreMaquina.getText().toString()+""+prefs.getString("nameMaquinaria",""));
-        maquinaModelo.setText(maquinaModelo.getText().toString()+""+prefs.getString("model_machine",""));
-
-        nombreImplemento.setText(nombreImplemento.getText().toString()+""+prefs.getString("nameImplemento","Sin implemento"));
-        implementoTipo.setText(implementoTipo.getText().toString()+""+prefs.getString("modeL_implemento",""));
-        implementoCapacidad.setText(implementoCapacidad.getText().toString()+""+prefs.getString("capacidad_implemento",""));
-
-        nombreUsuario.setText(nombreUsuario.getText().toString()+""+prefs.getString("nameUsuario",""));
-        usuarioRUT.setText(usuarioRUT.getText().toString()+""+prefs.getString("usuario_rut",""));
-        */
         this.completeInformationdataMaquinaria();
         this.completeUsersInformation();
         this.completeImplementsInformation();
@@ -207,7 +189,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 sessionHandler.ChangeStatusSession("ACTIVE");
 
                 //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
-                String idImplemento = prefs.getString("tagImplemento","-");
+                String idImplemento = prefs.getString("tagImplemento","0");
 
                 String isImplementActive = "";
 
@@ -312,22 +294,20 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                     public void run() {
 
                         String currentDateandTime = sdf.format(new Date());
-
                         editor.putString("fin_implemento", currentDateandTime);
 
-                        //editor.clear().commit();
                         if (modalidad.equalsIgnoreCase("1")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
                                 if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){
                                     Log.e("TAG OK","se cierra la sesión... CON SESIONES ACTIVAS");
-                                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                    clearShared("MisPreferencias");//Elimina los shared preferences
                                     Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                                     startActivity(intent);
                                     finish();
                                 }else{
                                     Log.e("TAG OK","se cierra la sesión... SIN SESIONES ACTIVAS");
-                                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                    clearShared("MisPreferencias");//Elimina los shared preferences
                                     Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
                                     startActivity(intent);
                                     finish();
@@ -342,7 +322,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         if (modalidad.equalsIgnoreCase("2")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                                clearShared("MisPreferencias");//Elimina los shared preferences
                                 Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -350,7 +330,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                                 Log.e("TAG-ERROR", "NO SE QUE MIERDA PASO :(");
                             }
                         }
-
 
                     }
                 }, 2000);
@@ -564,6 +543,34 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 }
             }
         }
+
+    }
+
+    /**
+     * Metodo que permite limpiar el Shared Preferences de la aplicación
+     * @return
+     */
+    public void clearShared(String namePreferences){
+        SharedPreferences prefs = getSharedPreferences(namePreferences,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.remove("idUsuario");
+        editor.remove("idPredio");
+        editor.remove("namePredio");
+        editor.remove("tagMaquinaria");
+        editor.remove("nameMaquinaria");
+        editor.remove("tagImplemento");
+        editor.remove("idFaena");
+        editor.remove("nameFaena");
+        editor.remove("inicio_horometro");
+        editor.remove("fin_horometro");
+        editor.remove("inicio_implemento");
+        editor.remove("fin_implemento");
+        editor.remove("flagImplemento");
+        editor.remove("comentarios");
+        editor.remove("idMaquina_comentario");
+        editor.remove("idImplemento_comentario");
+        editor.commit();
 
     }
 }

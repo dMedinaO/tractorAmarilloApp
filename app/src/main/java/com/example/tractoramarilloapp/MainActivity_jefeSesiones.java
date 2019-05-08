@@ -194,21 +194,29 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
 
             if (arrayResponse[1].equalsIgnoreCase("2")) {//operador
 
-                editor.putString("idUsuario",arrayResponse[2]);
-                editor.putString("modalidad","1");
-                editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
-                editor.commit();
+                if (checkUserExist(arrayResponse[2])){ //Usuario ya esta activo
+                    Log.e("TAG ERROR",arrayResponse[2] + " Este usuario se encuentra activo");
+                    alertWriteNFC("Usuario ya se encuentra activo. Favor cierre la sesión primero.");
+                }else{
+                    Log.e("TAG OK","No existen sesiones activas para el usuario. OK");
+                    editor.putString("idUsuario",arrayResponse[2]);
+                    editor.putString("modalidad","1");
+                    editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+                    editor.commit();
 
-                Intent intent2 = new Intent(MainActivity_jefeSesiones.this,MainActivity_predio.class);
-                startActivity(intent2);
-                finish();
-            }else{//
+                    Intent intent2 = new Intent(MainActivity_jefeSesiones.this,MainActivity_predio.class);
+                    startActivity(intent2);
+                    finish();
+                }
+
+
+            }else{
                 if (arrayResponse[1].equalsIgnoreCase("1")){//jefe
 
-                    this.alertWriteNFC("No puedes cerrar sesión, verifica que no existan operarios con sesión Activa");
+                    this.alertWriteNFC("No puedes cerrar sesión, verifica que no existan operarios con sesiones activas");
 
                 }else{
-                    this.alertWriteNFC("No corresponde a una pulsera");
+                    this.alertWriteNFC("TAG invalido. No corresponde a una pulsera");
                 }
             }
 
@@ -261,5 +269,20 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
             Log.e("ACTIVE-SESSION", listInforme.get(i).getFaena().getNameFaena());
         }
         return listInforme;
+    }
+
+    public boolean checkUserExist(String idUser){
+
+        Boolean response=false;
+        ArrayList<SessionClass> actives = new SessionHandler(getApplicationContext()).getSessionActive();
+
+        for (int i=0; i< actives.size(); i++){
+            if (actives.get(i).getUserAssociated().equalsIgnoreCase(idUser)){
+                response=true;
+                break;
+            }
+        }
+
+        return response;
     }
 }

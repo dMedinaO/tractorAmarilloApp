@@ -188,17 +188,17 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                         if (dialog.isShowing()) {
                             handler.postDelayed(new Runnable() {
                                 public void run() {
-                                    dialog.dismiss();
-                                    editor.putString("nameMaquinaria",tagRead[2]);
-                                    editor.putString("tagMaquinaria",tagRead[0]);
-                                    editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
+                                dialog.dismiss();
+                                editor.putString("nameMaquinaria",tagRead[2]);
+                                editor.putString("tagMaquinaria",tagRead[0]);
+                                editor.putString("idInforme",idInforme+"");//se adiciona el ID del informe generado
 
-                                    editor.commit();
-                                    Log.e("HANDLER", "OK");
-                                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
-                                    intent2.putExtra("flagHorometro", "1");
-                                    startActivity(intent2);
-                                    finish();
+                                editor.commit();
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_horometro.class);
+                                intent2.putExtra("flagHorometro", "1");
+                                startActivity(intent2);
+                                finish();
                                 }
                             }, 2000);
 
@@ -222,21 +222,28 @@ public class MainActivity_maquinaria extends AppCompatActivity {
 
                         //modalidad BOSS
                         if (modalidad.equalsIgnoreCase("1")){
-                            editor.remove("idUsuario").commit();
                             Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
-                            Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
-                            intent2.putExtra("flagHorometro", "1");
-                            startActivity(intent2);
-                            finish();
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(this.context).closeSession(tokenSession)) {
+                                editor.remove("idUsuario");
+                                editor.remove("tokenSession");
+                                editor.commit();
+                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
+                                startActivity(intent2);
+                                finish();
+                            }else{
+                                Log.e("TAG:ERROR", "No se que paso aquí!!!");
+                            }
                         }
                         //modalidad WORKER
                         else{
-                            editor.remove("idUsuario").commit();
                             Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
-                            Log.e("TAG 3","Pulsera nuevamente: "+arrayResponse[2]+" usuario: "+idUsuario);
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(this.context).closeSession(tokenSession)) {
-                                editor.clear().commit();
+                                editor.remove("idUsuario");
+                                editor.remove("tokenSession");
+                                editor.remove("modalidad");
+                                editor.commit();
                                 Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity.class);
                                 startActivity(intent2);
                                 finish();

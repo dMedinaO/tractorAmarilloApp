@@ -231,40 +231,47 @@ public class MainActivity_predio extends AppCompatActivity {
             String idUsuario = prefs.getString("idUsuario","null");
             String modalidad = prefs.getString("modalidad","null");
 
+            if (arrayResponse[1].equalsIgnoreCase("2")) {
 
-            if (modalidad.equalsIgnoreCase("1") || modalidad.equalsIgnoreCase("2")) {
+                if (idUsuario.equalsIgnoreCase(arrayResponse[2])) {
+                    String tokenSession = prefs.getString("tokenSession", "null");
+                    if (flagLogin == 1 && new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
 
-                if (arrayResponse[1].equalsIgnoreCase("2")) {
-
-                    if (idUsuario.equalsIgnoreCase(arrayResponse[2])) {
-                        String tokenSession = prefs.getString("tokenSession", "null");
-                        if (flagLogin == 1 && new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-
+                        if (modalidad.equalsIgnoreCase("1")){
                             Log.e("TAG OK:", "Misma pulcera, mismo usuario... SE CIERRA LA SESIÓN");
-                            editor.clear().commit();
+                            editor.remove("idUsuario");
+                            editor.remove("tokenSession");
+                            editor.commit();
+                            Intent intent2 = new Intent(MainActivity_predio.this, MainActivity_jefe.class);
+                            startActivity(intent2);
+                            finish();
+                        }else{
+                            Log.e("TAG OK:", "Misma pulcera, mismo usuario... SE CIERRA LA SESIÓN");
+                            editor.remove("idUsuario");
+                            editor.remove("tokenSession");
+                            editor.commit();
                             Intent intent2 = new Intent(MainActivity_predio.this, MainActivity.class);
                             startActivity(intent2);
                             finish();
-
-                        } else {
-                            Toast.makeText(MainActivity_predio.this, "Debes esperar al menos 5 segundos para cerrar la sesión...", Toast.LENGTH_SHORT).show();
                         }
 
-
                     } else {
-
-                        Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
-                        Toast.makeText(MainActivity_predio.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(MainActivity_predio.this, "Debes esperar al menos 5 segundos para cerrar la sesión...", Toast.LENGTH_SHORT).show();
                     }
 
+
                 } else {
-                    Log.e("TAG ERROR", "TAG invalido, no es una pulcera");
-                    alertNFC("TAG invalido. Favor acerque el dispositivo a un TAG válido.");
+
+                    Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
+                    Toast.makeText(MainActivity_predio.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
+
                 }
 
-
+            } else {
+                Log.e("TAG ERROR", "TAG invalido, no es una pulcera");
+                alertNFC("TAG invalido. Favor acerque el dispositivo a un TAG válido.");
             }
+
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){

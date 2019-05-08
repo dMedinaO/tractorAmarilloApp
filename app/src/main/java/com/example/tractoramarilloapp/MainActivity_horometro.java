@@ -79,7 +79,6 @@ public class MainActivity_horometro extends AppCompatActivity {
         buttonHorometro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(MainActivity_horometro.this,"Horómetro: "+inputHorometro.getText().toString(),Toast.LENGTH_SHORT).show();
 
                 Log.e("TAG MODALIDAD:","modalidad: "+modalidad+"  horometro: "+inputHorometro.getText().toString());
 
@@ -124,9 +123,29 @@ public class MainActivity_horometro extends AppCompatActivity {
                         if (modalidad.equalsIgnoreCase("1")) {
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefeSesiones.class);
-                                startActivity(intent);
-                                finish();
+
+                                if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){
+                                    Log.e("TAG OK","se cierra la sesión... CON SESIONES ACTIVAS");
+                                    editor.remove("idUsuario");
+                                    editor.remove("tagMaquinaria");
+                                    editor.remove("nameMaquinaria");
+                                    editor.remove("tokenSession");
+                                    editor.commit();
+                                    Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefeSesiones.class);
+                                    startActivity(intent);
+                                    finish();
+                                }else{
+                                    Log.e("TAG OK","se cierra la sesión... SIN SESIONES ACTIVAS");
+                                    editor.remove("idUsuario");
+                                    editor.remove("tagMaquinaria");
+                                    editor.remove("nameMaquinaria");
+                                    editor.remove("tokenSession");
+                                    editor.commit();
+                                    Intent intent = new Intent(MainActivity_horometro.this,MainActivity_jefe.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
                             }else{
                                 Log.e("TAG:ERROR", "No se que carajos paso aqui :(");
 
@@ -137,6 +156,11 @@ public class MainActivity_horometro extends AppCompatActivity {
 
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                editor.remove("idUsuario");
+                                editor.remove("tagMaquinaria");
+                                editor.remove("nameMaquinaria");
+                                editor.remove("tokenSession");
+                                editor.commit();
                                 Intent intent = new Intent(MainActivity_horometro.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
