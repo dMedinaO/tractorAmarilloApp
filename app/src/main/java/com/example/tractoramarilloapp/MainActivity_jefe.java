@@ -124,6 +124,8 @@ public class MainActivity_jefe extends AppCompatActivity {
 
             String[] arrayResponse = response.split(":");
             String tagUsuarioBoss = prefs.getString("idUsuarioBoss","null");
+            String tokenUsuario = prefs.getString("tokenSessionB","null");
+
             int responseSession = this.sessionHandler.createSession(response);
 
             Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
@@ -131,9 +133,13 @@ public class MainActivity_jefe extends AppCompatActivity {
             if (arrayResponse[1].equalsIgnoreCase("1")){
                 if (tagUsuarioBoss.equalsIgnoreCase(arrayResponse[2])){
                     Log.e("TAG TAG","TAG es un jefe de taller");
-                    Intent intent2 = new Intent(MainActivity_jefe.this,MainActivity.class);
-                    startActivity(intent2);
-                    finish();
+                    if (this.sessionHandler.closeSessionBoss(tokenUsuario)) {
+                        Intent intent2 = new Intent(MainActivity_jefe.this, MainActivity.class);
+                        startActivity(intent2);
+                        finish();
+                    }else{
+                        alertErrorLogin("No puedes cerrar sesión, verifica que no existan operarios con sesión Activa");
+                    }
                 }else{
                     Log.e("TAG TAG","TAG es un jefe de taller pero no el mismo");
                     alertErrorLogin("Ya existe una sesión activa en este dispositivo...");
