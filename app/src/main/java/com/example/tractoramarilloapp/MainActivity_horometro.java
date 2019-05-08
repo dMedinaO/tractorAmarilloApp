@@ -154,6 +154,11 @@ public class MainActivity_horometro extends AppCompatActivity {
                         }
                         if (modalidad.equalsIgnoreCase("2")){
 
+                            //modificar el informe con el ID actual
+                            String idInformeV = prefs.getString("idInforme", "null");
+
+                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,inputHorometro.getText().toString(),  "CLOSE_NORMAL");
+
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
                                 editor.remove("idUsuario");
