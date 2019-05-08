@@ -455,7 +455,7 @@
             android:background="@color/colorPrimaryLight"
             android:gravity="center"
             android:layout_marginTop="-5dp"
-            android:text="Sesión Expirada"
+            android:text="Sesión expirada."
             android:textAlignment="center"
             android:textSize="25dp"
             android:textStyle="bold"/>

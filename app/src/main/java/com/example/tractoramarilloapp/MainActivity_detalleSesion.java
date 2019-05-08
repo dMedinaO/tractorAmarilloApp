@@ -531,7 +531,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 textNombreUsuario.setText("Bienvenido: "+userSessions.get(i).getNameUser());
 
                 TextView textRUT = findViewById(R.id.textRUT);
-                textRUT.setText("RUR: "+userSessions.get(i).getRutUser());
+                textRUT.setText("RUT: "+userSessions.get(i).getRutUser());
             }
         }
     }

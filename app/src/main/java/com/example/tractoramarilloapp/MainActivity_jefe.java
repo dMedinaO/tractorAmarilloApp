@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,13 +18,17 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 
 import org.w3c.dom.Text;
+
+import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
@@ -37,6 +42,9 @@ public class MainActivity_jefe extends AppCompatActivity {
     private static ConnectivityManager manager;
     private SessionHandler sessionHandler;
     private String idJefe;
+
+    private RelativeLayout relativeInicioJefe;
+    private RelativeLayout relativeFinJefe;
 
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -72,6 +80,9 @@ public class MainActivity_jefe extends AppCompatActivity {
         jefeRUT = (TextView) findViewById(R.id.textRUT);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
+
+        relativeInicioJefe = (RelativeLayout) findViewById(R.id.relativeInicioJefe);
+        relativeFinJefe = (RelativeLayout) findViewById(R.id.relativeFinJefe);
 
         //nombreJefe.setText(nombreJefe.getText().toString()+""+prefs.getString("usuario_jefe",""));
         //jefeRUT.setText(jefeRUT.getText().toString()+""+prefs.getString("usuario_jefe_rut",""));
@@ -134,9 +145,20 @@ public class MainActivity_jefe extends AppCompatActivity {
                 if (tagUsuarioBoss.equalsIgnoreCase(arrayResponse[2])){
                     Log.e("TAG TAG","TAG es un jefe de taller");
                     if (this.sessionHandler.closeSessionBoss(tokenUsuario)) {
-                        Intent intent2 = new Intent(MainActivity_jefe.this, MainActivity.class);
-                        startActivity(intent2);
-                        finish();
+
+                        relativeInicioJefe.setVisibility(View.GONE);
+                        relativeFinJefe.setVisibility(View.VISIBLE);
+
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_jefe.this, MainActivity.class);
+                                startActivity(intent2);
+                                finish();
+                            }
+                        }, 2000);
                     }else{
                         alertErrorLogin("No puedes cerrar sesión, verifica que no existan operarios con sesión Activa");
                     }

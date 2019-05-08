@@ -272,7 +272,7 @@ public class MainActivity_implemento extends AppCompatActivity {
                                     startActivity(intent2);
                                     finish();
                                 }
-                            }, 2000);
+                        }, 2000);
 
                     }
 

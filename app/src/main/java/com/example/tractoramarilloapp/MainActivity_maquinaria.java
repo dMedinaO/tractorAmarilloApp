@@ -183,7 +183,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                     newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":-";
                 }else{
 
-                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":"+tagRead[4];
+                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":"+tagRead[3];
                     Log.e("TOKEN-ERROR", newTag);
                 }
 
