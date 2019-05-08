@@ -68,22 +68,31 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
     TextView message;
     Button btnWrite;
 
+    RelativeLayout relativeInicioSesion;
+    RelativeLayout relativeCierreSesion;
+    RelativeLayout relativeImplemento;
+    RelativeLayout relativeSesiones;
+    RelativeLayout relativeInicio;
+    RelativeLayout relativeExpirada;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_sesion);
+        relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
+        relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
+        relativeImplemento = findViewById(R.id.relativeImplemento);
+        relativeSesiones = findViewById(R.id.relativeMensajeSesiones);
+        relativeInicio = findViewById(R.id.relativeInicio);
+        relativeExpirada = findViewById(R.id.relativeMensajeSesionesExpirada);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
-
-        final RelativeLayout relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
-        final RelativeLayout relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
-        final RelativeLayout relativeImplemento = findViewById(R.id.relativeImplemento);
-        final RelativeLayout relativeSesiones = findViewById(R.id.relativeMensajeSesiones);
-        final RelativeLayout relativeInicio = findViewById(R.id.relativeInicio);
 
         //VARIABLES INIT
         buttonInicio = (Button) findViewById(R.id.buttonIniciarJornada);
@@ -95,7 +104,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
-
 
         nombreUsuario = (TextView) findViewById(R.id.textNombreUsuario);
         usuarioRUT = (TextView) findViewById(R.id.textRUT);
@@ -442,8 +450,24 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                             intent2.putExtra("flagHorometro", "2");
                             startActivityForResult(intent2, HOROMETRO_REQUEST);
 
-                        }else{//UN WN ME CAGO
-                            Log.e("TAG-ERROR", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+                        }else{//UN WN ME CAGO, CIERRE DE SESIÓN EXPIRADA
+                            Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+
+                            //modificar el informe con el ID actual
+                            String idInformeV = prefs.getString("idInforme", "null");
+                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED");
+
+                            String tokenSession = prefs.getString("tokenSession", "null");
+                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+                            }else{
+                                Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                            }
+
+                            //Manipulamos la visualizacion de las vistas... REVISAR!!!!
+                            relativeInicioSesion.setVisibility(View.GONE);
+                            relativeExpirada.setVisibility(View.VISIBLE);
                         }
                     }else{
                         Log.e("TAG-ERROR", "NO ES MI MAQUINA");

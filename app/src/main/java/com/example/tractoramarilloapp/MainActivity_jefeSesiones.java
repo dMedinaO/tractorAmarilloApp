@@ -194,14 +194,20 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
 
             if (arrayResponse[1].equalsIgnoreCase("2")) {//operador
 
-                editor.putString("idUsuario",arrayResponse[2]);
-                editor.putString("modalidad","1");
-                editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
-                editor.commit();
+                if (this.checkUserExist(arrayResponse[2])==1){
 
-                Intent intent2 = new Intent(MainActivity_jefeSesiones.this,MainActivity_predio.class);
-                startActivity(intent2);
-                finish();
+                    this.alertWriteNFC("Usuario ya se enecuentra activo, debe cerrar sesión");
+                }else {
+
+                    editor.putString("idUsuario", arrayResponse[2]);
+                    editor.putString("modalidad", "1");
+                    editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
+                    editor.commit();
+
+                    Intent intent2 = new Intent(MainActivity_jefeSesiones.this, MainActivity_predio.class);
+                    startActivity(intent2);
+                    finish();
+                }
             }else{//
                 if (arrayResponse[1].equalsIgnoreCase("1")){//jefe
 
@@ -261,5 +267,20 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
             Log.e("ACTIVE-SESSION", listInforme.get(i).getFaena().getNameFaena());
         }
         return listInforme;
+    }
+
+    public int checkUserExist(String idUser){
+
+        int response=0;
+        ArrayList<SessionClass> actives = new SessionHandler(getApplicationContext()).getSessionActive();
+
+        for (int i=0; i< actives.size(); i++){
+            if (actives.get(i).getUserAssociated().equalsIgnoreCase(idUser)){
+                response=1;
+                break;
+            }
+        }
+
+        return response;
     }
 }

@@ -439,5 +439,38 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/relativeMensajeSesionesExpirada"
+        android:layout_width="match_parent"
+        android:layout_height="190dp"
+        android:padding="5dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/textMensajeSesionesExpirado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryLight"
+            android:gravity="center"
+            android:layout_marginTop="-5dp"
+            android:text="Sesión Expirada"
+            android:textAlignment="center"
+            android:textSize="25dp"
+            android:textStyle="bold"/>
+
+        <ImageView
+            android:id="@+id/imageView8"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_below="@+id/textMensajeSesiones"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@mipmap/baseline_warning"/>
+
+
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
