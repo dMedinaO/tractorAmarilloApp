@@ -30,7 +30,7 @@ public class HandlerInforme {
         this.handlerDBPersistence = new HandlerDBPersistence(this.context);
     }
 
-    public int addElementToInforme(String idMaquinaria, String idUser, String predio, String tokenSession){
+    public int addElementToInforme(String idMaquinaria, String idUser, String predio, String tokenSession, String tokenPreview){
 
         int response = 0;
 
@@ -43,7 +43,7 @@ public class HandlerInforme {
             lastID++;
         }
 
-        InformeMaquinaria informeMaquinaria = new InformeMaquinaria(lastID, idMaquinaria, "-", "-", idUser, tokenSession, "NOT_YET", "-", predio);
+        InformeMaquinaria informeMaquinaria = new InformeMaquinaria(lastID, idMaquinaria, "-", "-", idUser, tokenSession, "NOT_YET", "-", predio, tokenPreview);
 
 
         if (this.handlerDBPersistence.saveInformeMaquinaria(informeMaquinaria) != -1){
@@ -168,10 +168,10 @@ public class HandlerInforme {
      * @param closeSessionKind
      * @return
      */
-    public int closeInformeMaquinaria(String idInforme, String horometroFinal, String closeSessionKind){
+    public int closeInformeMaquinaria(String idInforme, String horometroFinal, String closeSessionKind, String tokenPreview){
 
         //creamos el SQL y exportamos la data
-        String sqlQuery = "UPDATE informeMaquinaria SET horometroFinal= '"+horometroFinal+"', closeSessionKind = '"+ closeSessionKind+"' where idinformeMaquinaria = "+ idInforme;
+        String sqlQuery = "UPDATE informeMaquinaria SET horometroFinal= '"+horometroFinal+"', closeSessionKind = '"+ closeSessionKind+"', tokenPrevio ='"+tokenPreview+"' where idinformeMaquinaria = "+ idInforme;
         int response = this.handlerDBPersistence.execSQLData(sqlQuery);
 
         return response;

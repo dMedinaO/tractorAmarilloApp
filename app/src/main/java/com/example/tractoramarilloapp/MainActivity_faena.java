@@ -232,7 +232,7 @@ public class MainActivity_faena extends AppCompatActivity {
                 if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
 
                     String[] tagRead = response.split(":");
-                    String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
+                    String newTag = tagRead[0] + ":" + tagRead[1] + ":" + ":0:-:-";
 
                     myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                     int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia

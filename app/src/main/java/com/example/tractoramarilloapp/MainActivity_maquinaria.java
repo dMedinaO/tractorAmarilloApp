@@ -171,11 +171,22 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 HandlerInforme handlerInforme = new HandlerInforme(this.context);
                 String predio = prefs.getString("idPredio", "0");
                 String tokenSession = prefs.getString("tokenSession", "null");
-                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio,tokenSession);
+                final int idInforme = handlerInforme.addElementToInforme(response.split(":")[0], idUsuario, predio, tokenSession, arrayResponse[4]);
 
                 final String [] tagRead = response.split(":");
+
                 Log.e("TAG TOKEN SESION",  "token: "+tokenSession);
-                String newTag = tagRead[0] + ":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
+
+                //FORMAMOS EL STRING DEL NEW TAG CON RESPECTO A SI LA MAQUINARIA SE ENCUENTRA HABILITADA O NO
+                String newTag = "";
+                if (tagRead[2].equalsIgnoreCase("0")){//Maquina desocupada
+                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":-";
+                }else{
+
+                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":"+tagRead[4];
+                    Log.e("TOKEN-ERROR", newTag);
+                }
+
                 Log.e("WRITE", newTag+" new text to NFC");
                 myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
 

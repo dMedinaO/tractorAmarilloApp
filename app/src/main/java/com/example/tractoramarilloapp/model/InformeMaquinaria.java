@@ -20,8 +20,9 @@ public class InformeMaquinaria {
     private String statusSend;
     private String closeSessionKind;
     private String predio;
+    private String tokenPrevio;
 
-    public InformeMaquinaria(int idinformeOperaciones, String idMaquinaria, String horometroInicio, String horometroFinal, String userID, String sessionTAG, String statusSend, String closeSessionKind, String predio) {
+    public InformeMaquinaria(int idinformeOperaciones, String idMaquinaria, String horometroInicio, String horometroFinal, String userID, String sessionTAG, String statusSend, String closeSessionKind, String predio, String tokenPrevio) {
         this.idinformeOperaciones = idinformeOperaciones;
         this.idMaquinaria = idMaquinaria;
         this.horometroInicio = horometroInicio;
@@ -31,6 +32,7 @@ public class InformeMaquinaria {
         this.statusSend = statusSend;
         this.closeSessionKind = closeSessionKind;
         this.predio = predio;
+        this.tokenPrevio = tokenPrevio;
     }
 
     public String getPredio() {
@@ -105,6 +107,14 @@ public class InformeMaquinaria {
         this.closeSessionKind = closeSessionKind;
     }
 
+    public String getTokenPrevio() {
+        return tokenPrevio;
+    }
+
+    public void setTokenPrevio(String tokenPrevio) {
+        this.tokenPrevio = tokenPrevio;
+    }
+
     public ContentValues toContentValues(){
 
         ContentValues contentValues = new ContentValues();
@@ -118,6 +128,7 @@ public class InformeMaquinaria {
         contentValues.put(InformeMaquinariaContract.InformeMaquinariaContractEntry.SESSION_TOKEN, this.sessionTAG);
         contentValues.put(InformeMaquinariaContract.InformeMaquinariaContractEntry.CLOSE_SESSION_KIND, this.closeSessionKind);
         contentValues.put(InformeMaquinariaContract.InformeMaquinariaContractEntry.STATUS_SEND, this.statusSend);
+        contentValues.put(InformeMaquinariaContract.InformeMaquinariaContractEntry.TOKEN_PRE, this.tokenPrevio);
 
         return  contentValues;
     }

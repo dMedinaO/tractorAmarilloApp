@@ -377,7 +377,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         String tagImplemento = prefs.getString("tagImplemento","null");
         String nombreMaquina = prefs.getString("tagMaquinaria","null");
         String nombreUsuario = prefs.getString("idUsuario","null");
-
+        String tokenSession = prefs.getString("tokenSession", "null");
 
         if (flagInicio == 1) {//boton ya se encuentra pulsado
 
@@ -421,8 +421,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
             }else{
                 if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
                     if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
-                        if (arrayResponse[3].equalsIgnoreCase(nombreUsuario)) {//si esta ocupada la maquina por mi
-                            String tokenSession = prefs.getString("tokenSession", "null");
+
+                        if (arrayResponse[2].equalsIgnoreCase(tokenSession)) {//si esta ocupada la maquina por mi, revisando el token
+
                             //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
                             Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
                             Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
@@ -434,9 +435,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
                             //modificar el informe con el ID actual
                             String idInformeV = prefs.getString("idInforme", "null");
-                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED");
+                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
 
-                            String tokenSession = prefs.getString("tokenSession", "null");
+                            tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
                                 Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
                             }else{
