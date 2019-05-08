@@ -164,6 +164,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "tipoInforme TEXT NOT NULL, "
                 + "idElementoAsociado TEXT NOT NULL, "
                 + "UNIQUE (idFallaHerramienta))");
+
     }
 
     @Override
