@@ -207,6 +207,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 }else{
                     Log.e("HANDLER", "ERROR");
                     alertWriteNFC("Error al escribir NFC. Favor intente nuevamente...");
+                        if (dialog.isShowing()) {
+                            dialog.cancel();
+                        }
                 }
 
 

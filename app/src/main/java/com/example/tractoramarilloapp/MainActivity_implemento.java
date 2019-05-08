@@ -279,6 +279,9 @@ public class MainActivity_implemento extends AppCompatActivity {
                 }else{
                     Log.e("HANDLER", "ERROR");
                     alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
+                    if (dialog.isShowing()) {
+                        dialog.cancel();
+                    }
                 }
 
             } else if (responseHandler == -1) {
