@@ -33,7 +33,7 @@ public class ValuesTempDB {
         handlerDBPersistence.saveUsuario(new UserSession("15993323", "JMedina", "15993323-7", "2"));
         handlerDBPersistence.saveUsuario(new UserSession("24858868", "REtcheverry", "24858868-3", "2"));
         handlerDBPersistence.saveUsuario(new UserSession("17609672", "LRojas", "17609672-1", "1"));
-        handlerDBPersistence.saveUsuario(new UserSession("18228843", "DMedina", "18228843-8", "1"));
+        handlerDBPersistence.saveUsuario(new UserSession("18228843", "DMedina", "18228843-8", "2"));
 
         //MAQUINARIA
         long response1 = handlerDBPersistence.saveMaquina(new Maquinaria("M2", "patito", "patito", "2019", "0", "--", "BLACK", "124ra", "1"));//

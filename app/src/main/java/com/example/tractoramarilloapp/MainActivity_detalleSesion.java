@@ -181,6 +181,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
                 sessionHandler.ChangeStatusSession("ACTIVE");
 
+                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
 
                 Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
                 startActivity(intent);
@@ -199,18 +200,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
                 String idImplemento = prefs.getString("tagImplemento","0");
 
-                String isImplementActive = "";
-
-                if (idImplemento.equalsIgnoreCase("-")){
-                    isImplementActive="NO";
-                }else{
-                    isImplementActive="TES";
-                }
-
-                String statusSend = "NOT_YET";
-
-                //hacemos la instancia a la adicion de informacion al informe generado previamente
-                //new HandlerInforme(getApplicationContext()).changeValuesHorometro(horometroInicio,horometroFinal,  idInforme, idImplemento, horarioInicio, horarioFinal, idFaena, statusSend, isImplementActive);
+                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
             }
 
             }

@@ -2,11 +2,15 @@ package com.example.tractoramarilloapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.persistence.InformeFaenaContract;
+import com.example.tractoramarilloapp.persistence.InformeImplementoContract;
+import com.example.tractoramarilloapp.persistence.InformeMaquinariaContract;
 import com.example.tractoramarilloapp.persistence.SessionClass;
 
 import java.text.SimpleDateFormat;
@@ -138,5 +142,41 @@ public class FA extends AppCompatActivity {
         editor.remove("idImplemento_comentario");
         editor.commit();
 
+    }
+
+    public static void showInformationInforme(HandlerDBPersistence handlerDBPersistence){
+
+        String sqlMaquina = "SELECT * FROM "+ InformeMaquinariaContract.InformeMaquinariaContractEntry.TABLE_NAME;
+        String sqlImplemento = "SELECT * FROM "+ InformeImplementoContract.InformeImplementoContractEntry.TABLE_NAME;
+        String sqlFaena = "SELECT * FROM "+ InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME;
+
+        Cursor c1 = handlerDBPersistence.consultarRegistros(sqlMaquina);
+        Cursor c2 = handlerDBPersistence.consultarRegistros(sqlImplemento);
+        Cursor c3 = handlerDBPersistence.consultarRegistros(sqlFaena);
+
+        showCursor(c1);
+        showCursor(c2);
+        showCursor(c3);
+
+    }
+
+    public static void showCursor(Cursor c1){
+
+        if (c1!= null && c1.getCount()>0){
+            c1.moveToFirst();
+
+            while (!c1.isAfterLast()) {
+                String[] colNames = c1.getColumnNames();
+                String response = "";
+
+                for (int i=0; i<colNames.length; i++){
+                    int index = c1.getColumnIndex(colNames[i]);
+                    String value = c1.getString(index);
+                    response = response+"Name:"+colNames[i]+"-Value:"+value+" ";
+                }
+                Log.e("TAG-QUERY-VIEW", response);
+                c1.moveToNext();
+            }
+        }
     }
 }
