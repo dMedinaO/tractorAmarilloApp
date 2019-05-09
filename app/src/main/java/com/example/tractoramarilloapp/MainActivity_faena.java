@@ -278,6 +278,7 @@ public class MainActivity_faena extends AppCompatActivity {
                     }
                 } else {
                     Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
+                    alertWriteNFC("Debe seleccionar una faena para continuar...");
                 }
             }
         }

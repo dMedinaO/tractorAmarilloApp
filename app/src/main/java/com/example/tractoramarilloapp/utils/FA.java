@@ -160,6 +160,22 @@ public class FA extends AppCompatActivity {
 
     }
 
+    public static void showInformationInformeSessionTAG(HandlerDBPersistence handlerDBPersistence,String sessionTAG){
+
+        String sqlMaquina = "SELECT * FROM "+ InformeMaquinariaContract.InformeMaquinariaContractEntry.TABLE_NAME + " WHERE sessionTAG='"+sessionTAG+"'";
+        String sqlImplemento = "SELECT * FROM "+ InformeImplementoContract.InformeImplementoContractEntry.TABLE_NAME + " WHERE sessionTAG='"+sessionTAG+"'";
+        String sqlFaena = "SELECT * FROM "+ InformeFaenaContract.InformeFaenaContractEntry.TABLE_NAME + " WHERE sessionTAG='"+sessionTAG+"'";
+
+        Cursor c1 = handlerDBPersistence.consultarRegistros(sqlMaquina);
+        Cursor c2 = handlerDBPersistence.consultarRegistros(sqlImplemento);
+        Cursor c3 = handlerDBPersistence.consultarRegistros(sqlFaena);
+
+        showCursor(c1);
+        showCursor(c2);
+        showCursor(c3);
+
+    }
+
     public static void showCursor(Cursor c1){
 
         if (c1!= null && c1.getCount()>0){

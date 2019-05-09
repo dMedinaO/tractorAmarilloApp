@@ -28,7 +28,9 @@ import com.example.tractoramarilloapp.handlers.InformationDetailSession;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.utils.FA;
 import com.example.tractoramarilloapp.utils.RecyclerAdapter;
 
 import java.util.ArrayList;
@@ -119,6 +121,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
 
                     //Toast.makeText(MainActivity_jefeSesiones.this, idInforme + " - " + tokenSession + " - " + idUser + " - " + position, Toast.LENGTH_SHORT).show();
                     informationDetailSession = new InformationDetailSession(tokenSession, getApplicationContext(), idUser);
+                    FA.showInformationInformeSessionTAG(new HandlerDBPersistence(getApplicationContext()),tokenSession);
 
                     //SET VALUES TO DETALLE SESION
                     editor.putString("tokenSession",tokenSession);
@@ -130,8 +133,6 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
                     editor.putString("namePredio",informationDetailSession.getPredio().getNamePredio());
                     editor.putString("nameFaena",informationDetailSession.getFaena().getNameFaena());
                     editor.commit();
-
-                    //Toast.makeText(MainActivity_jefeSesiones.this, "Usuario: " + informationDetailSession.getUserSession().getNameUser(), Toast.LENGTH_SHORT).show();
 
                     Intent intent2 = new Intent(MainActivity_jefeSesiones.this, MainActivity_detalleSesion.class);
                     editor.putBoolean("fromSesiones",true);

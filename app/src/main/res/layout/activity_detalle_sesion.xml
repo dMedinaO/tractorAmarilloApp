@@ -350,7 +350,6 @@
         android:layout_height="190dp"
         android:padding="5dp"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"
         >
 
         <Button
@@ -391,6 +390,7 @@
         android:layout_height="190dp"
         android:padding="5dp"
         android:layout_alignParentBottom="true"
+        android:visibility="gone"
         >
 
         <TextView

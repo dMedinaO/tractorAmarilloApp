@@ -1,9 +1,13 @@
 package com.example.tractoramarilloapp;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.utils.FA;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
@@ -32,6 +37,16 @@ public class MainActivity_horometro extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
     private FA fa;
+
+    NFCHandler nfcHandler;
+    NfcAdapter nfcAdapter;
+    PendingIntent pendingIntent;
+    IntentFilter writeTagFilters[];
+    Tag myTag;
+    Context context;
+    TextView tvNFCContent;
+    TextView message;
+    Button btnWrite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +75,19 @@ public class MainActivity_horometro extends AppCompatActivity {
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
         final String modalidad = prefs.getString("modalidad","null");
+
+        // NFC CONFIGURATION
+        context = this;
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+
+        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+        writeTagFilters = new IntentFilter[] { tagDetected };
+        this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
+
+        //instanciamos al handler de
+        String text = this.nfcHandler.readerTAGNFC(getIntent());
 
         final Bundle bundle = getIntent().getExtras();
 
@@ -193,6 +221,19 @@ public class MainActivity_horometro extends AppCompatActivity {
 
     @Override
     public void onBackPressed() { }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
+
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+    }
 
 
 }

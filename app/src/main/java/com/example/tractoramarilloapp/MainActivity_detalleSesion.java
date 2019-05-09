@@ -77,16 +77,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalle_sesion);
-        relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
-        relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
-        relativeImplemento = findViewById(R.id.relativeImplemento);
-        relativeSesiones = findViewById(R.id.relativeMensajeSesiones);
-        relativeInicio = findViewById(R.id.relativeInicio);
-        relativeExpirada = findViewById(R.id.relativeMensajeSesionesExpirada);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -95,6 +87,13 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         View customActionBarView = actionBar.getCustomView();
 
         //VARIABLES INIT
+        relativeInicioSesion = findViewById(R.id.relativeMensajeSesión);
+        relativeCierreSesion = findViewById(R.id.relativeMensajeSesionOff);
+        relativeImplemento = findViewById(R.id.relativeImplemento);
+        relativeSesiones = findViewById(R.id.relativeMensajeSesiones);
+        relativeInicio = findViewById(R.id.relativeInicio);
+        relativeExpirada = findViewById(R.id.relativeMensajeSesionesExpirada);
+
         buttonInicio = (Button) findViewById(R.id.buttonIniciarJornada);
         buttonVolver = (Button) findViewById(R.id.buttonVolver);
         buttonVolverLista = (Button) findViewById(R.id.buttonVolverLista);
@@ -371,10 +370,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
         if (flagInicio == 1) {//boton ya se encuentra pulsado
 
-
             if (arrayResponse[1].equalsIgnoreCase("4")){//corresponde a implemento
 
                 if (tagImplemento.equalsIgnoreCase("null")){//el loco trabaja sin implemento
+                    Log.e("TAG OK","TAG implemento con estado sin implemento...");
                     Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
                     startActivity(intent2);
                     finish();
@@ -389,6 +388,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
                         nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_detalleSesion.this);
 
+
+
                         pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_detalleSesion.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
                         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
                         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
@@ -399,12 +400,16 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         Log.e("TAG-FAENA", newTag+" TAG a escribir");
 
                         int responseWrite = nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+
+                        String currentDateandTime = sdf.format(new Date());
+                        editor.putString("fin_implemento", currentDateandTime);
+
                         Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
                         startActivity(intent2);
                         finish();
                     }else{
                         Log.e("TAG-ERROR", "ESTE NO ES MI IMPLEMENTO");
-                        alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
+                        alertWriteNFC("El implemento no corresponde al seleccionado...");
                     }
                 }
 
@@ -421,23 +426,86 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                             startActivityForResult(intent2, HOROMETRO_REQUEST);
 
                         }else{//UN WN ME CAGO, CIERRE DE SESIÓN EXPIRADA
-                            Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
 
-                            //modificar el informe con el ID actual
-                            String idInformeV = prefs.getString("idInforme", "null");
-                            new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
+                            if (modalidad.equalsIgnoreCase("1")){
 
-                            tokenSession = prefs.getString("tokenSession", "null");
-                            if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+                                Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+
+                                //modificar el informe con el ID actual
+                                String idInformeV = prefs.getString("idInforme", "null");
+                                new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
+
+                                tokenSession = prefs.getString("tokenSession", "null");
+                                if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                    Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+                                    //Manipulamos la visualizacion de las vistas... REVISAR!!!!
+                                    relativeSesiones.setVisibility(View.GONE);
+                                    relativeExpirada.setVisibility(View.VISIBLE);
+
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){ //valida si hay sesiones activas
+                                                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
+                                                startActivity(intent2);
+                                                finish();
+                                            }else{
+                                                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
+                                                startActivity(intent2);
+                                                finish();
+                                            }
+
+
+                                        }
+                                    }, 2000);
+
+
+                                }else{
+                                    Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                                }
+
+
+
                             }else{
-                                Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                                Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+
+                                //modificar el informe con el ID actual
+                                String idInformeV = prefs.getString("idInforme", "null");
+                                new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
+
+                                tokenSession = prefs.getString("tokenSession", "null");
+                                if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                    Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+
+                                    //Manipulamos la visualizacion de las vistas... REVISAR!!!!
+                                    relativeInicioSesion.setVisibility(View.GONE);
+                                    relativeExpirada.setVisibility(View.VISIBLE);
+
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+
+                                            Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
+                                            startActivity(intent2);
+                                            finish();
+
+                                        }
+                                    }, 2000);
+
+                                }else{
+                                    Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                                }
+
+
 
                             }
 
-                            //Manipulamos la visualizacion de las vistas... REVISAR!!!!
-                            relativeInicioSesion.setVisibility(View.GONE);
-                            relativeExpirada.setVisibility(View.VISIBLE);
                         }
                     }else{
                         Log.e("TAG-ERROR", "NO ES MI MAQUINA");

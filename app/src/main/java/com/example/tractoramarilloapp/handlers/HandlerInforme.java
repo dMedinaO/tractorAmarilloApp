@@ -73,6 +73,23 @@ public class HandlerInforme {
         this.handlerDBPersistence.execSQLData(sqlUpdate);
     }
 
+
+    /**
+     * Metodo que permite poder editar informacion asociada a los valores de inicio del implemento
+     * @param horoInicial
+     * @param horoFinal
+     * @param idInforme
+     */
+    public void changeValuesHoraImplemento(String horoInicial, String horoFinal, String idInforme){
+
+        String sqlUpdate = "UPDATE informeUsoImplemento set "
+                + "horaInicio = '"+horoInicial+"', "
+                + "horaFinal = '"+ horoFinal+"' "
+                + "WHERE idinformeImplemento= "+idInforme;
+
+        this.handlerDBPersistence.execSQLData(sqlUpdate);
+    }
+
     public int addElementToInformeImplemento(String idImplemento, String idUser, String tokenSession, String horarioInicial, String idInformeMaquinaria){
 
         int response = 0;

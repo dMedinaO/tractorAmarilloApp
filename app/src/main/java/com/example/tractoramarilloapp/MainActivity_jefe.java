@@ -154,6 +154,9 @@ public class MainActivity_jefe extends AppCompatActivity {
                             public void run() {
 
                                 Log.e("HANDLER", "OK");
+                                editor.remove("idUsuarioBoss");
+                                editor.remove("modalidad");
+                                editor.commit();
                                 Intent intent2 = new Intent(MainActivity_jefe.this, MainActivity.class);
                                 startActivity(intent2);
                                 finish();
