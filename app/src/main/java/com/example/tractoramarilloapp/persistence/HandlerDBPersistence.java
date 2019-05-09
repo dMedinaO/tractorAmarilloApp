@@ -15,6 +15,7 @@ import com.example.tractoramarilloapp.model.InformeMaquinaria;
 import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.model.TipoMaquinaria;
+import com.example.tractoramarilloapp.model.UnityLocal;
 import com.example.tractoramarilloapp.model.UserSession;
 
 import java.util.ArrayList;
@@ -165,6 +166,26 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "idElementoAsociado TEXT NOT NULL, "
                 + "UNIQUE (idFallaHerramienta))");
 
+        /*demo tabla unidades locales en el dispositivo*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS unidadLocal ("
+                + "idUnidad INTEGER  NOT NULL, "
+                + "idUsuario TEXT NOT NULL, "
+                + "tokenSession TEXT NOT NULL, "
+                + "tokenSessionPre TEXT NOT NULL, "
+                + "startSession TEXT NOT NULL, "
+                + "closeSession TEXT NOT NULL, "
+                + "clseSessionKind INTEGER  NOT NULL, "
+                + "idMaquinaria TEXT NOT NULL, "
+                + "horometroInicial TEXT NOT NULL, "
+                + "horometroFinal TEXT NOT NULL, "
+                + "idPredio TEXT NOT NULL, "
+                + "isAvailableImplement TEXT NOT NULL, "
+                + "idImplemento TEXT NOT NULL, "
+                + "inicioImplemento TEXT NOT NULL, "
+                + "finImplemento TEXT NOT NULL, "
+                + "idFaena TEXT NOT NULL, "
+                + "statusSend TEXT NOT NULL, "
+                + "UNIQUE (idUnidad))");
     }
 
     @Override
@@ -582,6 +603,17 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
+    public long saveUnidadLocal(UnityLocal unityLocal){
+
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+
+        return sqLiteDatabase.insert(
+                UnityLocalContract.UnityLocalContractEntry.TABLE_NAME,
+                null,
+                unityLocal.toContentValues()
+        );
+    }
+
     //<SQL SELECT GENERICO>
     public Cursor consultarRegistros(String sql_select) {
 
@@ -654,6 +686,4 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
 
         return lastID;
     }
-
-
 }

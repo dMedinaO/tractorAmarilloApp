@@ -294,15 +294,10 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
                         String [] tagRead = response.split(":");
                         String newTag;
                         String tokenSession = prefs.getString("tokenSession", "null");
-                        if (tagRead[2].equalsIgnoreCase("0")){//Maquina desocupada
-                            //id maquina, maquinaria, estado uso, token actual, token previo, el token previo puede venir un -
-                            newTag = tagRead[0] + ":"+tagRead[1]+":0:"+tokenSession.split("_")[1]+":"+tagRead[4];
-                        }else{
+                        //id maquina, tipo maquinaria, estado uso, token actual, token previo
+                        newTag = tagRead[0] + ":"+tagRead[1]+":0:-:"+tagRead[3];
+                        Log.e("TOKEN-ERROR", newTag);
 
-                            //id maquina, tipo maquinaria, estado uso, token actual, token previo
-                            newTag = tagRead[0] + ":"+tagRead[1]+":0:"+tokenSession.split("_")[1]+":"+tagRead[3];
-                            Log.e("TOKEN-ERROR", newTag);
-                        }
 
                         myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                         int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia

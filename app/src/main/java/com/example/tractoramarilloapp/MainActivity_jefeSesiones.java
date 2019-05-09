@@ -72,7 +72,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity implements Conn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_jefe_sesiones);
         new HandlerInforme(getApplicationContext()).showInformeDetail();
-
+        Log.e("TAG-UNIDAD-LOCAL", new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber()+" Cantidad de unidades locales");
         SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         this.idJefe = prefs.getString("idUsuarioBoss", "null");
