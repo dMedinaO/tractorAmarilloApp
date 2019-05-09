@@ -180,9 +180,11 @@ public class MainActivity_maquinaria extends AppCompatActivity {
                 //FORMAMOS EL STRING DEL NEW TAG CON RESPECTO A SI LA MAQUINARIA SE ENCUENTRA HABILITADA O NO
                 String newTag = "";
                 if (tagRead[2].equalsIgnoreCase("0")){//Maquina desocupada
-                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":-";
+                    //id maquina, maquinaria, estado uso, token actual, token previo, el token previo puede venir un -
+                    newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":"+tagRead[4];
                 }else{
 
+                    //id maquina, tipo maquinaria, estado uso, token actual, token previo
                     newTag = tagRead[0] + ":"+tagRead[1]+":1:"+tokenSession.split("_")[1]+":"+tagRead[3];
                     Log.e("TOKEN-ERROR", newTag);
                 }

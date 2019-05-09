@@ -139,6 +139,8 @@ public class MainActivity_jefe extends AppCompatActivity {
 
             int responseSession = this.sessionHandler.createSession(response);
 
+            Log.e("TAG-RESPONSE-SESSION", "RETURN HANDLER SESSION "+ responseSession);
+            Log.e("TAG-RESPONSE-SESSION", "RETURN HANDLER SESSION "+ this.sessionHandler.getTokenSession());
             Log.e("TAG 1","Pulsera: "+arrayResponse[0]);
 
             if (arrayResponse[1].equalsIgnoreCase("1")){
@@ -175,6 +177,7 @@ public class MainActivity_jefe extends AppCompatActivity {
 
                 Log.e("TAG TAG","TAG es un operador");
                 editor.putString("idUsuario",arrayResponse[2]);
+                Log.e("TAG-RESPONSE-SESSION","Token activo " + this.sessionHandler.getTokenSession());
                 editor.putString("tokenSession", this.sessionHandler.getTokenSession());//agregamos el token de la sesion del usuario
                 editor.commit();
 

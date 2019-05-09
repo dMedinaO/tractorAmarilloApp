@@ -380,6 +380,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 }else{//el loco esta trabajando con implemento
                     if (tagImplemento.equalsIgnoreCase(arrayResponse[0])){
 
+                        String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
+                        String currentDateandTime = sdf.format(new Date());
+                        new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
+
                         String [] tagRead = response.split(":");
                         String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
                         myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -387,8 +391,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                         Log.e("TAG-ERROR", "ESTE ES MI IMPLEMENTO");
 
                         nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_detalleSesion.this);
-
-
 
                         pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_detalleSesion.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
                         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
@@ -401,7 +403,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
 
                         int responseWrite = nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
 
-                        String currentDateandTime = sdf.format(new Date());
+                        currentDateandTime = sdf.format(new Date());
                         editor.putString("fin_implemento", currentDateandTime);
 
                         Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
@@ -417,7 +419,9 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
                 if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
                     if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
 
-                        if (arrayResponse[2].equalsIgnoreCase(tokenSession)) {//si esta ocupada la maquina por mi, revisando el token
+                        Log.e("TAG-ERROR-PUL", arrayResponse[3]+" tag maquina ");
+                        Log.e("TAG-ERROR-PUL",tokenSession+"token session");
+                        if (arrayResponse[3].equalsIgnoreCase(tokenSession.split("_")[1])) {//si esta ocupada la maquina por mi, revisando el token
 
                             //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
                             Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
@@ -653,6 +657,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity {
         editor.remove("comentarios");
         editor.remove("idMaquina_comentario");
         editor.remove("idImplemento_comentario");
+        editor.remove("fromSesiones");
         editor.commit();
 
     }
