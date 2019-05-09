@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Handler;
@@ -83,7 +84,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         setContentView(R.layout.activity_detalle_sesion);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayOptions( ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(R.layout.custom_action_bar);
 
         View customActionBarView = actionBar.getCustomView();
@@ -118,11 +119,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         implementoCapacidad = (TextView) findViewById(R.id.textImplementoCapacidad);
         textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
 
-        // Chequea constantemente si hay internet o no
-        checkConnection();
-
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        flagInicio=0;
+        flagInicio = 0;
 
         //NFC CONFIGURATION
         context = this;
@@ -131,81 +129,83 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-        writeTagFilters = new IntentFilter[] { tagDetected };
+        writeTagFilters = new IntentFilter[]{tagDetected};
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
 
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
 
         // SHARED PREFERENCES
-        prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
+        prefs = getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
         editor = prefs.edit();
-        modalidad = prefs.getString("modalidad","0");
+        modalidad = prefs.getString("modalidad", "0");
 
-        if (prefs.getBoolean("fromSesiones",false)){//true
-            flagInicio=1;
+        if (prefs.getBoolean("fromSesiones", false)) {//true
+            flagInicio = 1;
             relativeSesiones.setVisibility(View.VISIBLE);
             relativeInicio.setVisibility(View.GONE);
+            imageComentario.setColorFilter(Color.rgb(206, 206, 206));
+            textComentarioLink.setTextColor(Color.rgb(206, 206, 206));
 
-        }else{
+        } else {
             relativeSesiones.setVisibility(View.GONE);
             relativeInicio.setVisibility(View.VISIBLE);
         }
 
-        nombrePredio.setText(nombrePredio.getText().toString()+""+prefs.getString("namePredio",""));
-        nombreFaena.setText(nombreFaena.getText().toString()+""+prefs.getString("nameFaena",""));
+        nombrePredio.setText(nombrePredio.getText().toString() + "" + prefs.getString("namePredio", ""));
+        nombreFaena.setText(nombreFaena.getText().toString() + "" + prefs.getString("nameFaena", ""));
 
         this.completeInformationdataMaquinaria();
         this.completeUsersInformation();
         this.completeImplementsInformation();
 
 
-        Log.e("TAG RESULT:",prefs.getAll().toString());
+        Log.e("TAG RESULT:", prefs.getAll().toString());
 
         // BOTON INICIO DE SESION
         buttonInicio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            new HandlerInforme(getApplicationContext()).showInformeDetail();
+                new HandlerInforme(getApplicationContext()).showInformeDetail();
 
-            String idInforme = prefs.getString("idInforme", "");
-            String idInformeImplemento = prefs.getString("idInformeImplemento", "");
-            String idInformeFaena = prefs.getString("idInformeFaena", "null");
+                String idInforme = prefs.getString("idInforme", "");
+                String idInformeImplemento = prefs.getString("idInformeImplemento", "");
+                String idInformeFaena = prefs.getString("idInformeFaena", "null");
 
-            flagInicio = 1;
-            buttonInicio.setVisibility(View.GONE);
-            buttonVolver.setVisibility(View.GONE);
+                flagInicio = 1;
+                buttonInicio.setVisibility(View.GONE);
+                buttonVolver.setVisibility(View.GONE);
 
-            //Modalidad inicio sesión JEFE
-            if (modalidad.equalsIgnoreCase("1")) {
+                //Modalidad inicio sesión JEFE
+                if (modalidad.equalsIgnoreCase("1")) {
 
-                //fa.clearShared("MisPreferencias");//Elimina los shared preferences
+                    //fa.clearShared("MisPreferencias");//Elimina los shared preferences
 
-                //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
-                SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
-                sessionHandler.ChangeStatusSession("ACTIVE");
+                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                    sessionHandler.ChangeStatusSession("ACTIVE");
 
-                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
 
-                Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                startActivity(intent);
-                finish();
+                    Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity_jefeSesiones.class);
+                    startActivity(intent);
+                    finish();
 
-            }else{
+                } else {
 
-                relativeInicioSesion.setVisibility(View.VISIBLE);
+                    relativeInicioSesion.setVisibility(View.VISIBLE);
 
-                //cambios necesarios
+                    //cambios necesarios
 
-                //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
-                SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
-                sessionHandler.ChangeStatusSession("ACTIVE");
+                    //1. modificar el estado de la sesion en caso de que la modalidad sea operador y se cambie a ACTIVE
+                    SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
+                    sessionHandler.ChangeStatusSession("ACTIVE");
 
-                //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
-                String idImplemento = prefs.getString("tagImplemento","0");
+                    //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
+                    String idImplemento = prefs.getString("tagImplemento", "0");
 
-                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
-            }
+                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+                }
 
             }
         });
@@ -215,14 +215,14 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
             @Override
             public void onClick(View v) {
 
-            //limipia los datos de faena obtenidos anteriormente
-            editor.remove("nameFaena");
-            editor.remove("idFaena");
-            editor.commit();
+                //limipia los datos de faena obtenidos anteriormente
+                editor.remove("nameFaena");
+                editor.remove("idFaena");
+                editor.commit();
 
-            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_faena.class);
-            startActivity(intent);
-            finish();
+                Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity_faena.class);
+                startActivity(intent);
+                finish();
 
             }
         });
@@ -232,19 +232,19 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
             @Override
             public void onClick(View v) {
 
-            //limipia los datos de faena obtenidos anteriormente
-            editor.remove("nameFaena");
-            editor.remove("idFaena");
-            editor.commit();
+                //limipia los datos de faena obtenidos anteriormente
+                editor.remove("nameFaena");
+                editor.remove("idFaena");
+                editor.commit();
 
-            Intent intent = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-            startActivity(intent);
-            finish();
+                Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity_jefeSesiones.class);
+                startActivity(intent);
+                finish();
 
             }
         });
 
-        //go to comment window
+
         imageComentario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,6 +263,10 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
 
 
 
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
+
     }
 
     private void checkConnection() {
@@ -278,11 +282,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
             //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
-    }
-
-    @Override
-    public void onNetworkConnectionChanged(boolean isConnected) {
-        showSnack(isConnected);
     }
 
     @Override
@@ -377,170 +376,172 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         String response = this.nfcHandler.readerTAGNFC(intent);
-        Log.e("TAG TAG","response: "+response);
+        Log.e("TAG TAG", "response: " + response);
 
-        //SPLIT TO ARRAY THE VALUES OF TAG
-        String[] arrayResponse = response.split(":");
-        String tagImplemento = prefs.getString("tagImplemento","null");
-        String nombreMaquina = prefs.getString("tagMaquinaria","null");
-        String nombreUsuario = prefs.getString("idUsuario","null");
-        String tokenSession = prefs.getString("tokenSession", "null");
+        if (!response.equalsIgnoreCase("VOID")) {
 
-        if (flagInicio == 1) {//boton ya se encuentra pulsado
+            //SPLIT TO ARRAY THE VALUES OF TAG
+            String[] arrayResponse = response.split(":");
+            String tagImplemento = prefs.getString("tagImplemento", "null");
+            String nombreMaquina = prefs.getString("tagMaquinaria", "null");
+            String nombreUsuario = prefs.getString("idUsuario", "null");
+            String tokenSession = prefs.getString("tokenSession", "null");
 
-            if (arrayResponse[1].equalsIgnoreCase("4")){//corresponde a implemento
-
-                if (tagImplemento.equalsIgnoreCase("null")){//el loco trabaja sin implemento
-                    Log.e("TAG OK","TAG implemento con estado sin implemento...");
-                    Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
-                    startActivity(intent2);
-                    finish();
-                }else{//el loco esta trabajando con implemento
-                    if (tagImplemento.equalsIgnoreCase(arrayResponse[0])){
-
-                        String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
-                        String currentDateandTime = sdf.format(new Date());
-                        new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
-
-                        String [] tagRead = response.split(":");
-                        String newTag = tagRead[0]+":"+tagRead[1]+":"+tagRead[2]+":0:-";
-                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-                        Log.e("TAG-ERROR", "ESTE ES MI IMPLEMENTO");
-
-                        nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_detalleSesion.this);
-
-                        pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_detalleSesion.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-                        IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
-                        tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
-                        writeTagFilters = new IntentFilter[]{tagDetected};
-
-                        nfcHandler = new NFCHandler(MainActivity_detalleSesion.this, context, nfcAdapter);
-
-                        Log.e("TAG-FAENA", newTag+" TAG a escribir");
-
-                        int responseWrite = nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
-
-                        currentDateandTime = sdf.format(new Date());
-                        editor.putString("fin_implemento", currentDateandTime);
-
-                        Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_implemento.class);
+            if (flagInicio == 1) {//boton ya se encuentra pulsado
+                Log.e("TAG FLAG", "flagInicio: "+flagInicio);
+                if (arrayResponse[1].equalsIgnoreCase("4")) {//corresponde a implemento
+                    Log.e("TAG OKK", "ES UN IMPLEMENTO: "+arrayResponse[1]+ " implemento seleccionado: "+tagImplemento);
+                    if (tagImplemento.equalsIgnoreCase("null") || tagImplemento.equalsIgnoreCase("0")) {//el loco trabaja sin implemento
+                        Log.e("TAG OK", "TAG implemento con estado sin implemento... "+tagImplemento);
+                        Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_implemento.class);
                         startActivity(intent2);
                         finish();
-                    }else{
-                        Log.e("TAG-ERROR", "ESTE NO ES MI IMPLEMENTO");
-                        alertWriteNFC("El implemento no corresponde al seleccionado...");
+                    } else {//el loco esta trabajando con implemento
+                        if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
+
+                            String[] tagRead = response.split(":");
+                            String newTag = tagRead[0] + ":" + tagRead[1] + ":" + tagRead[2] + ":0:-";
+                            myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+
+                            Log.e("TAG-ERROR", "ESTE ES MI IMPLEMENTO");
+
+                            nfcAdapter = NfcAdapter.getDefaultAdapter(MainActivity_detalleSesion.this);
+
+                            pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, new Intent(MainActivity_detalleSesion.this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                            IntentFilter tagDetected = new IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED);
+                            tagDetected.addCategory(Intent.CATEGORY_DEFAULT);
+                            writeTagFilters = new IntentFilter[]{tagDetected};
+
+                            nfcHandler = new NFCHandler(MainActivity_detalleSesion.this, context, nfcAdapter);
+
+                            Log.e("TAG-FAENA", newTag + " TAG a escribir");
+
+                            int responseWrite = nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+
+                            // UPDATE la hora final del implemento seleccionado
+                            String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
+                            String currentDateandTime = sdf.format(new Date());
+                            new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
+
+                            Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_implemento.class);
+                            startActivity(intent2);
+                            finish();
+                        } else {
+                            Log.e("TAG-ERROR", "ESTE NO ES MI IMPLEMENTO");
+                            alertWriteNFC("El implemento no corresponde al seleccionado...");
+                        }
                     }
-                }
 
-            }else{
-                if (arrayResponse[1].equalsIgnoreCase("3")){//corresponde a una maquinaria
-                    if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
+                } else {
+                    if (arrayResponse[1].equalsIgnoreCase("3")) {//corresponde a una maquinaria
+                        if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
 
-                        Log.e("TAG-ERROR-PUL", arrayResponse[3]+" tag maquina ");
-                        Log.e("TAG-ERROR-PUL",tokenSession+"token session");
-                        if (arrayResponse[3].equalsIgnoreCase(tokenSession.split("_")[1])) {//si esta ocupada la maquina por mi, revisando el token
+                            Log.e("TAG-ERROR-PUL", arrayResponse[3] + " tag maquina ");
+                            Log.e("TAG-ERROR-PUL", tokenSession + "token session");
+                            if (arrayResponse[3].equalsIgnoreCase(tokenSession.split("_")[1])) {//si esta ocupada la maquina por mi, revisando el token
 
-                            //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
-                            Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
-                            Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
-                            intent2.putExtra("flagHorometro", "2");
-                            startActivityForResult(intent2, HOROMETRO_REQUEST);
+                                //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
+                                Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");
+                                Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_horometro.class);
+                                intent2.putExtra("flagHorometro", "2");
+                                startActivityForResult(intent2, HOROMETRO_REQUEST);
 
-                        }else{//UN WN ME CAGO, CIERRE DE SESIÓN EXPIRADA
+                            } else {//UN WN ME CAGO, CIERRE DE SESIÓN EXPIRADA
 
-                            if (modalidad.equalsIgnoreCase("1")){
+                                if (modalidad.equalsIgnoreCase("1")) {
 
-                                Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+                                    Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
 
-                                //modificar el informe con el ID actual
-                                String idInformeV = prefs.getString("idInforme", "null");
-                                new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
+                                    //modificar el informe con el ID actual
+                                    String idInformeV = prefs.getString("idInforme", "null");
+                                    new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV, "--", "CLOSE_EXPIRED", arrayResponse[2]);
 
-                                tokenSession = prefs.getString("tokenSession", "null");
-                                if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                    Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
-                                    //Manipulamos la visualizacion de las vistas... REVISAR!!!!
-                                    relativeSesiones.setVisibility(View.GONE);
-                                    relativeExpirada.setVisibility(View.VISIBLE);
+                                    tokenSession = prefs.getString("tokenSession", "null");
+                                    if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                        Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+                                        //Manipulamos la visualizacion de las vistas... REVISAR!!!!
+                                        relativeSesiones.setVisibility(View.GONE);
+                                        relativeExpirada.setVisibility(View.VISIBLE);
 
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
 
-                                            if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){ //valida si hay sesiones activas
-                                                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_jefeSesiones.class);
-                                                startActivity(intent2);
-                                                finish();
-                                            }else{
-                                                Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity_jefe.class);
-                                                startActivity(intent2);
-                                                finish();
+                                                if (new SessionHandler(getApplicationContext()).getSessionActive().size() > 0) { //valida si hay sesiones activas
+                                                    Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_jefeSesiones.class);
+                                                    startActivity(intent2);
+                                                    finish();
+                                                } else {
+                                                    Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity_jefe.class);
+                                                    startActivity(intent2);
+                                                    finish();
+                                                }
+
+
                                             }
+                                        }, 2000);
 
 
-                                        }
-                                    }, 2000);
+                                    } else {
+                                        Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                                    }
 
 
-                                }else{
-                                    Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+                                } else {
+
+                                    Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
+
+                                    //modificar el informe con el ID actual
+                                    String idInformeV = prefs.getString("idInforme", "null");
+                                    new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV, "--", "CLOSE_EXPIRED", arrayResponse[2]);
+
+                                    tokenSession = prefs.getString("tokenSession", "null");
+                                    if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
+                                        Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
+
+                                        //Manipulamos la visualizacion de las vistas... REVISAR!!!!
+                                        relativeInicioSesion.setVisibility(View.GONE);
+                                        relativeExpirada.setVisibility(View.VISIBLE);
+
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+
+                                                Intent intent2 = new Intent(MainActivity_detalleSesion.this, MainActivity.class);
+                                                startActivity(intent2);
+                                                finish();
+
+                                            }
+                                        }, 2000);
+
+                                    } else {
+                                        Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
+
+                                    }
+
 
                                 }
-
-
-
-                            }else{
-
-                                Log.e("TAG-EXPIRED", "UN WN ME QUITO LA MAQUINA, CIERRE SESION EXPIRADA");
-
-                                //modificar el informe con el ID actual
-                                String idInformeV = prefs.getString("idInforme", "null");
-                                new HandlerInforme(getApplicationContext()).closeInformeMaquinaria(idInformeV,"--",  "CLOSE_EXPIRED", arrayResponse[2]);
-
-                                tokenSession = prefs.getString("tokenSession", "null");
-                                if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
-                                    Log.e("TAG:EXPIRED", "Se le expiró toooodaaaaa");
-
-                                    //Manipulamos la visualizacion de las vistas... REVISAR!!!!
-                                    relativeInicioSesion.setVisibility(View.GONE);
-                                    relativeExpirada.setVisibility(View.VISIBLE);
-
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-
-                                            Intent intent2 = new Intent(MainActivity_detalleSesion.this,MainActivity.class);
-                                            startActivity(intent2);
-                                            finish();
-
-                                        }
-                                    }, 2000);
-
-                                }else{
-                                    Log.e("TAG:EXPIRED", "No se que carajos paso aqui :(");
-
-                                }
-
-
 
                             }
-
+                        } else {
+                            Log.e("TAG-ERROR", "NO ES MI MAQUINA");
+                            alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                         }
-                    }else{
-                        Log.e("TAG-ERROR", "NO ES MI MAQUINA");
-                        alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
+                    } else {//corresponde a cualquier otra wea
+                        Log.e("TAG-ERROR", "ES CUALQUIER OTRA WEA QUE NO SEA MAQUINA NI IMPLEMENTO");
+                        alertWriteNFC("El TAG invalido. Favor acerque el dispositivo a una maquinaria o implemento.");
                     }
-                }else{//corresponde a cualquier otra wea
-                    Log.e("TAG-ERROR", "ES CUALQUIER OTRA WEA QUE NO SEA MAQUINA NI IMPLEMENTO");
-                    alertWriteNFC("El TAG invalido. Favor acerque el dispositivo a una maquinaria o implemento.");
                 }
+            } else if (flagInicio == 0) { // AUN NO HA INICIADO SESION
+                Log.e("TAG-ERROR", "NO HA APRETADO BOTON DE INICIO SESIÓN");
+                alertWriteNFC("Debe iniciar sesión primero para poder realizar esta operación.");
             }
-        }else if (flagInicio==0){ // AUN NO HA INICIADO SESION
-            Log.e("TAG-ERROR", "NO HA APRETADO BOTON DE INICIO SESIÓN");
-            alertWriteNFC("Debe iniciar sesión primero para poder realizar esta operación.");
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
     }
 
@@ -556,6 +557,11 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
         ConnectivityApplication.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     public void alertWriteNFC(String message){

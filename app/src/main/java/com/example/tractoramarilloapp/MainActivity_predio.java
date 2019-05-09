@@ -254,14 +254,26 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
                     String tokenSession = prefs.getString("tokenSession", "null");
                     if (flagLogin == 1 && new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
 
+
                         if (modalidad.equalsIgnoreCase("1")){
-                            Log.e("TAG OK:", "Misma pulcera, mismo usuario... SE CIERRA LA SESIÓN");
-                            editor.remove("idUsuario");
-                            editor.remove("tokenSession");
-                            editor.commit();
-                            Intent intent2 = new Intent(MainActivity_predio.this, MainActivity_jefe.class);
-                            startActivity(intent2);
-                            finish();
+                            if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){
+                                Log.e("TAG OK","se cierra la sesión... CON SESIONES ACTIVAS");
+                                editor.remove("idUsuario");
+                                editor.remove("tokenSession");
+                                editor.commit();
+                                Intent intent2 = new Intent(MainActivity_predio.this, MainActivity_jefeSesiones.class);
+                                startActivity(intent2);
+                                finish();
+                            }else{
+                                Log.e("TAG OK","se cierra la sesión... SIN SESIONES ACTIVAS");
+                                editor.remove("idUsuario");
+                                editor.remove("tokenSession");
+                                editor.commit();
+                                Intent intent2 = new Intent(MainActivity_predio.this, MainActivity_jefe.class);
+                                startActivity(intent2);
+                                finish();
+                            }
+
                         }else{
                             Log.e("TAG OK:", "Misma pulcera, mismo usuario... SE CIERRA LA SESIÓN");
                             editor.remove("idUsuario");
@@ -280,7 +292,8 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
                 } else {
 
                     Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
-                    Toast.makeText(MainActivity_predio.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
+                    alertNFC("Existe una sesión activa en este equipo...");
+                    //Toast.makeText(MainActivity_predio.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
 
                 }
 

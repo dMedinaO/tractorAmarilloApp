@@ -259,12 +259,24 @@ public class MainActivity_maquinaria extends AppCompatActivity implements Connec
                             Log.e("HANDLER", "El tag es un operador, se cierra la sesión");
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(this.context).closeSession(tokenSession)) {
-                                editor.remove("idUsuario");
-                                editor.remove("tokenSession");
-                                editor.commit();
-                                Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
-                                startActivity(intent2);
-                                finish();
+                                if (new SessionHandler(getApplicationContext()).getSessionActive().size()>0){
+                                    Log.e("TAG OK","se cierra la sesión... CON SESIONES ACTIVAS");
+                                    editor.remove("idUsuario");
+                                    editor.remove("tokenSession");
+                                    editor.commit();
+                                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefeSesiones.class);
+                                    startActivity(intent2);
+                                    finish();
+                                }else{
+                                    Log.e("TAG OK","se cierra la sesión... SIN SESIONES ACTIVAS");
+                                    editor.remove("idUsuario");
+                                    editor.remove("tokenSession");
+                                    editor.commit();
+                                    Intent intent2 = new Intent(MainActivity_maquinaria.this, MainActivity_jefe.class);
+                                    startActivity(intent2);
+                                    finish();
+                                }
+
                             }else{
                                 Log.e("TAG:ERROR", "No se que paso aquí!!!");
                             }
@@ -289,7 +301,8 @@ public class MainActivity_maquinaria extends AppCompatActivity implements Connec
 
                     }else{
                         Log.e("TAG ERROR:", "ingresa otro usuario. Sesión esta tomada por otro usuario");
-                        Toast.makeText(MainActivity_maquinaria.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
+                        alertWriteNFC("Existe una sesión activa en este equipo...");
+                        //Toast.makeText(MainActivity_maquinaria.this, "Existe una sesión activa en este equipo...", Toast.LENGTH_SHORT).show();
                     }
 
 
