@@ -185,7 +185,13 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
                     sessionHandler.ChangeStatusSession("ACTIVE");
 
-                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+                String tokenSession = prefs.getString("tokenSession", "pull");
+                String idUsuario = prefs.getString("idUsuario", "null");
+                long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
+
+                Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
+
+                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
 
                     Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity_jefeSesiones.class);
                     startActivity(intent);
@@ -204,8 +210,15 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
                     String idImplemento = prefs.getString("tagImplemento", "0");
 
-                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
-                }
+                String tokenSession = prefs.getString("tokenSession", "pull");
+                String idUsuario = prefs.getString("idUsuario", "null");
+                long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
+
+                Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
+
+
+                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+            }
 
             }
         });
@@ -436,9 +449,16 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     if (arrayResponse[1].equalsIgnoreCase("3")) {//corresponde a una maquinaria
                         if (arrayResponse[0].equalsIgnoreCase(nombreMaquina)) {// la misma maquinaria
 
-                            Log.e("TAG-ERROR-PUL", arrayResponse[3] + " tag maquina ");
-                            Log.e("TAG-ERROR-PUL", tokenSession + "token session");
-                            if (arrayResponse[3].equalsIgnoreCase(tokenSession.split("_")[1])) {//si esta ocupada la maquina por mi, revisando el token
+                        //id maquina, tipo maquinaria, estado uso, token actual, token previo
+                        String newTag = arrayResponse[0] + ":"+arrayResponse[1]+":0:-:"+arrayResponse[3];
+                        Log.e("TOKEN-ERROR", newTag);
+
+                        myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                        int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+
+                        Log.e("TAG-ERROR-PUL", arrayResponse[3]+" tag maquina ");
+                        Log.e("TAG-ERROR-PUL",tokenSession+"token session");
+                        if (arrayResponse[3].equalsIgnoreCase(tokenSession.split("_")[1])) {//si esta ocupada la maquina por mi, revisando el token
 
                                 //new SessionHandler(getApplicationContext()).closeSession(tokenSession);
                                 Log.e("TAG-ERROR", "SESSION NORMAL CLOSED");

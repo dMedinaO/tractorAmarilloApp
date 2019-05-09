@@ -10,6 +10,8 @@ import com.example.tractoramarilloapp.model.InformeMaquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.InformeFaenaContract;
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.model.UnityLocal;
+import com.example.tractoramarilloapp.persistence.UnityLocalContract;
 
 import java.util.ArrayList;
 
@@ -208,4 +210,96 @@ public class HandlerInforme {
         return response;
     }
 
+    /**
+     * Metodo que permite crear un registro en la unidad local asociado a la informacion del token que viene
+     * @param tokenSession
+     * @return
+     */
+    public UnityLocal createUnityLocal(String tokenSession, String tokenPreview, String idUsuario){
+
+        //obtenemos informacion de la sesion
+        ArrayList<SessionClass> sessionClasses = this.handlerDBPersistence.getSessionActive("ACTIVE");
+
+        UnityLocal unityLocal = new UnityLocal();
+        unityLocal.setTokenSessionPre(tokenPreview);
+        unityLocal.setIdUsuario(idUsuario);
+        for (int i=0; i<sessionClasses.size(); i++){
+
+            Log.e("TAG-UNIDAD-LOCAL", "SESIONES: "+sessionClasses.get(i).getSessionToken()+" tag proveniente: " + tokenSession);
+            if (sessionClasses.get(i).getSessionToken().equalsIgnoreCase(tokenSession)){
+
+                unityLocal.setCloseSession(sessionClasses.get(i).getEndSessionDate());
+                unityLocal.setClseSessionKind(sessionClasses.get(i).getCloseSessionKind());
+                unityLocal.setStartSession(sessionClasses.get(i).getStartSessionDate());
+                unityLocal.setTokenSession(sessionClasses.get(i).getSessionToken());
+                Log.e("TAG-UNIDAD-LOCAL", "ENTRE A LA CAGA Y TIENE VALORES!!!!");
+                break;
+            }
+        }
+
+        //obtenemos la informacion desde el informe de la maquinaria
+        Log.e("TAG-UNIDAD-LOCAL", unityLocal.getIdUsuario()+" el ID del mono ql ");
+        InformationDetailSession informationDetailSession = new InformationDetailSession(tokenSession, this.context, unityLocal.getIdUsuario());
+        unityLocal.setIdFaena(informationDetailSession.getFaena().getCodeInternoFaena());
+        unityLocal.setIdMaquinaria(informationDetailSession.getMaquinaria().getCodeInternoMachine());
+        unityLocal.setIdImplemento(informationDetailSession.getImplemento().getCodeInternoImplemento());
+        unityLocal.setIdPredio(informationDetailSession.getPredio().getCode_internoPredio());
+        unityLocal.setStatusSend("NOT");
+
+        //obtenemos la informacion si existe implemento habilitado
+        if (unityLocal.getIdImplemento().equalsIgnoreCase("0")){
+            unityLocal.setIsAvailableImplement("NO_IMPLEMENT");
+        }else{
+            unityLocal.setIsAvailableImplement("YES_IMPLEMENT");
+        }
+
+        //obtenemos la informacion del horometro
+        String sqlHorometro ="select * from informeMaquinaria where sessionTAG = '"+tokenSession+"'";
+        Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlHorometro);
+        cursor.moveToFirst();
+
+        int horometroInicial = cursor.getColumnIndex("horometroInicio");
+        int horometroFinal = cursor.getColumnIndex("horometroFinal");
+
+        unityLocal.setHorometroInicial(cursor.getString(horometroInicial));
+        unityLocal.setHorometroFinal(cursor.getString(horometroFinal));
+
+        cursor.close();
+
+        String sqlImplemento = "select * from informeUsoImplemento where sessionTAG = '"+tokenSession+"'";
+        Cursor cursor1 = this.handlerDBPersistence.consultarRegistros(sqlImplemento);
+
+        if (cursor1.getCount()>0 && cursor1 != null) {
+            int inicioImplemento = cursor1.getColumnIndex("horaInicio");
+            int finImplemento = cursor1.getColumnIndex("horaFinal");
+
+            unityLocal.setInicioImplemento(cursor1.getString(inicioImplemento));
+            unityLocal.setFinImplemento(cursor1.getString(finImplemento));
+        }else{
+            unityLocal.setInicioImplemento("--");
+            unityLocal.setFinImplemento("--");
+        }
+
+        String sqlQueryInforme = "SELECT * FROM "+ UnityLocalContract.UnityLocalContractEntry.TABLE_NAME;
+        int lastID = this.handlerDBPersistence.getLastID(sqlQueryInforme, UnityLocalContract.UnityLocalContractEntry.ID_UNIDAD);
+
+        if (lastID == -1){
+            lastID = 1;
+        }else{
+            lastID++;
+        }
+
+        unityLocal.setIdUnidad(lastID+"");
+        return unityLocal;
+    }
+
+    public int getUnidadesLocalesNumber(){
+
+        int response = 0;
+
+        String sql = "select * from "+ UnityLocalContract.UnityLocalContractEntry.TABLE_NAME + " where "+ UnityLocalContract.UnityLocalContractEntry.STATUS_SEND +" = 'NOT'";
+        Cursor cursor = this.handlerDBPersistence.consultarRegistros(sql);
+
+        return  cursor.getCount();
+    }
 }

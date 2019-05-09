@@ -250,7 +250,11 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
                 if (tagMaquina.equalsIgnoreCase("" + arrayResponse[0])) {
 
                     String[] tagRead = response.split(":");
-                    String newTag = tagRead[0] + ":" + tagRead[1] + ":" + ":0:-:-";
+                    String newTag;
+                    String tokenSession = prefs.getString("tokenSession", "null");
+                    //id maquina, tipo maquinaria, estado uso, token actual, token previo
+                    newTag = tagRead[0] + ":"+tagRead[1]+":0:-:"+tagRead[3];
+                    Log.e("TOKEN-ERROR", newTag);
 
                     myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                     int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
