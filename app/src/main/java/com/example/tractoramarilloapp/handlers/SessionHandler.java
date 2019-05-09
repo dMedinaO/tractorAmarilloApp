@@ -263,12 +263,16 @@ public class SessionHandler {
 
         //primero obtenermos el token de la sesion
         ArrayList<SessionClass> listSession = this.handlerDBPersistence.getSessionActive("PENDING");//solo las que estan pendiente
-        String tokenSession = listSession.get(listSession.size()-1).getSessionToken();//obtenemos el token del ultimo registro del compadre
+        if (listSession.size()>0) {
+            String tokenSession = listSession.get(listSession.size() - 1).getSessionToken();//obtenemos el token del ultimo registro del compadre
 
-        String sqlExec = "UPDATE "+ SessionClassContract.SessionClassContractEntry.TABLE_NAME +" SET "+SessionClassContract.SessionClassContractEntry.STATUS+ "= '"+status + "' WHERE "+SessionClassContract.SessionClassContractEntry.TOKEN +"= '"+tokenSession+"'";
-        Log.e("CHANGE-SESSION", sqlExec);
-        int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
-        if (responseDB ==0 ){
+            String sqlExec = "UPDATE " + SessionClassContract.SessionClassContractEntry.TABLE_NAME + " SET " + SessionClassContract.SessionClassContractEntry.STATUS + "= '" + status + "' WHERE " + SessionClassContract.SessionClassContractEntry.TOKEN + "= '" + tokenSession + "'";
+            Log.e("CHANGE-SESSION", sqlExec);
+            int responseDB = this.handlerDBPersistence.execSQLData(sqlExec);
+            if (responseDB == 0) {
+                response = true;
+            }
+        }else{
             response=true;
         }
         return response;
