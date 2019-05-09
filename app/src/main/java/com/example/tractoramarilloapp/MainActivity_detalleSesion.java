@@ -672,6 +672,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         editor.remove("comentarios");
         editor.remove("idMaquina_comentario");
         editor.remove("idImplemento_comentario");
+        editor.remove("fromSesiones");
         editor.commit();
 
     }
