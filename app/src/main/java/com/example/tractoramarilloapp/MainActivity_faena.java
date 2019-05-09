@@ -25,13 +25,15 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.handlers.HandlerFaena;
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_faena extends AppCompatActivity {
+public class MainActivity_faena extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView textComentarioLink;
     private Button buttonFaena;
@@ -82,6 +84,9 @@ public class MainActivity_faena extends AppCompatActivity {
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
 
+        // Chequea constantemente si hay internet o no
+        checkConnection();
+
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         // SHARED PREFERENCES
@@ -130,36 +135,29 @@ public class MainActivity_faena extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                editor.putString("nameFaena",spinner.getSelectedItem().toString());
-                editor.putString("idFaena",handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
+            editor.putString("nameFaena",spinner.getSelectedItem().toString());
+            editor.putString("idFaena",handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()]);
 
 
-                //obtener la informacion necesaria para crear el informe
-                SimpleDateFormat sdf;
-                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String tokenSession = prefs.getString("tokenSession", "null");
-                String currentDateandTime = sdf.format(new Date());
-                String idInforme = prefs.getString("idInforme", "null");
-                //String idFaena = spinner.getSelectedItemPosition()+"";
-                String idFaena = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
-                String idUser = prefs.getString("idUsuario", "null");
+            //obtener la informacion necesaria para crear el informe
+            SimpleDateFormat sdf;
+            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String tokenSession = prefs.getString("tokenSession", "null");
+            String currentDateandTime = sdf.format(new Date());
+            String idInforme = prefs.getString("idInforme", "null");
+            //String idFaena = spinner.getSelectedItemPosition()+"";
+            String idFaena = handlerFaena.getFaenaIDList()[spinner.getSelectedItemPosition()];
+            String idUser = prefs.getString("idUsuario", "null");
 
-                int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);
-                editor.putString("idInformeFaena", idInformeFaena+"");
-                editor.commit();
-                Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
-                startActivity(intent);
-                finish();
+            int idInformeFaena = new HandlerInforme(getApplicationContext()).addElementToInformeFaena(idFaena, idUser, tokenSession, currentDateandTime, idInforme);
+            editor.putString("idInformeFaena", idInformeFaena+"");
+            editor.commit();
+            Intent intent = new Intent(MainActivity_faena.this, MainActivity_detalleSesion.class);
+            startActivity(intent);
+            finish();
 
             }
         });
-
-        // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
-            imageSignal.setImageResource(R.mipmap.signal);
-        }else{
-            imageSignal.setImageResource(R.mipmap.signal_off);
-        }
 
         imageComentario.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,6 +176,26 @@ public class MainActivity_faena extends AppCompatActivity {
         });
 
 
+    }
+
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     @Override
@@ -300,6 +318,7 @@ public class MainActivity_faena extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 
     public void alertNFC(String message){

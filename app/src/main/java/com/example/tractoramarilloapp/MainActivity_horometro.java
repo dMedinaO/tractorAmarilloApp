@@ -22,11 +22,13 @@ import android.widget.Toast;
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 import com.example.tractoramarilloapp.utils.FA;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_horometro extends AppCompatActivity {
+public class MainActivity_horometro extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private ImageView imageComentario;
     private ImageView imageSync,imageSignal;
@@ -70,6 +72,9 @@ public class MainActivity_horometro extends AppCompatActivity {
         textComentario = (TextView) findViewById(R.id.textComentarioLink);
         imageComentario.setColorFilter(Color.rgb(206, 206, 206));
         textComentario.setTextColor(Color.rgb(206, 206, 206));
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
 
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
@@ -210,13 +215,26 @@ public class MainActivity_horometro extends AppCompatActivity {
             }
         });
 
-        // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
+    }
+
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
             imageSignal.setImageResource(R.mipmap.signal);
-        }else{
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
+    }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     @Override
@@ -233,6 +251,7 @@ public class MainActivity_horometro extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 
 

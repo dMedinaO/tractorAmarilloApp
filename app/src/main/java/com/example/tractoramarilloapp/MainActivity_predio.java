@@ -28,14 +28,15 @@ import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 import com.kofigyan.stateprogressbar.StateProgressBar;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_predio extends AppCompatActivity {
+public class MainActivity_predio extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     //atributo para representar el valor obtenido desde la activity previa
     private String[] predioString;//para almacenar los predios a mostrar en la lista
@@ -89,6 +90,9 @@ public class MainActivity_predio extends AppCompatActivity {
 
         final RelativeLayout relativePredioSelect = findViewById(R.id.relativePredioSelect);
         final RelativeLayout relativePredioInfo = findViewById(R.id.relativePredioInfo);
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
 
 
         // SHARED PREFERENCES
@@ -188,13 +192,26 @@ public class MainActivity_predio extends AppCompatActivity {
             }
         });
 
-        // CHECK INTERNET CONNECTION
-        if (isOnline(getApplicationContext())) {
+    }
+
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity_predio.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
             imageSignal.setImageResource(R.mipmap.signal);
         } else {
+            //Toast.makeText(MainActivity_predio.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
             imageSignal.setImageResource(R.mipmap.signal_off);
         }
+    }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     @Override
@@ -290,6 +307,7 @@ public class MainActivity_predio extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 
     /**

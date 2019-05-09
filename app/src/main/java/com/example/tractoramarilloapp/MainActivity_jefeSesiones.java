@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,8 @@ import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 import com.example.tractoramarilloapp.utils.FA;
 import com.example.tractoramarilloapp.utils.RecyclerAdapter;
 
@@ -37,12 +40,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity_jefeSesiones extends AppCompatActivity {
+public class MainActivity_jefeSesiones extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private List<String> names;
     private RecyclerView myRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private ImageView imageSignal;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -82,6 +86,11 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
 
         nombreJefe = (TextView) findViewById(R.id.textUsuarioJefe);
         jefeRUT = (TextView) findViewById(R.id.textRUT);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
 
         this.getValuesUser();
 
@@ -166,6 +175,26 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
         alertDialog.show();
     }
 
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
     @Override
     public void onPause(){
         super.onPause();
@@ -177,7 +206,9 @@ public class MainActivity_jefeSesiones extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);

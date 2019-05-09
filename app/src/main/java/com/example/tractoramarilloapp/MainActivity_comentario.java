@@ -13,19 +13,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.tractoramarilloapp.model.Comentarios;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity_comentario extends AppCompatActivity {
+public class MainActivity_comentario extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private Button acceptButton,cancelButton;
     private EditText comentarioField;
+    private ImageView imageSignal;
 
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -51,6 +55,10 @@ public class MainActivity_comentario extends AppCompatActivity {
         acceptButton = (Button) findViewById(R.id.buttonAccept);
         cancelButton = (Button) findViewById(R.id.buttonCancel);
         comentarioField = (EditText) findViewById(R.id.editTextComentarios);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
 
         // NFC CONFIGURATION
         context = this;
@@ -107,6 +115,26 @@ public class MainActivity_comentario extends AppCompatActivity {
 
     }
 
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -123,5 +151,6 @@ public class MainActivity_comentario extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 }

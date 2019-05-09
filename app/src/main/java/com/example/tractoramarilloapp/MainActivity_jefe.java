@@ -20,11 +20,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 
 import org.w3c.dom.Text;
 
@@ -32,7 +35,7 @@ import java.util.Date;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_jefe extends AppCompatActivity {
+public class MainActivity_jefe extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView nombreJefe, jefeRUT;
     private ImageView imageComentario, imageSync, imageSignal;
@@ -84,6 +87,9 @@ public class MainActivity_jefe extends AppCompatActivity {
         relativeInicioJefe = (RelativeLayout) findViewById(R.id.relativeInicioJefe);
         relativeFinJefe = (RelativeLayout) findViewById(R.id.relativeFinJefe);
 
+        // Chequea constantemente si hay internet o no
+        checkConnection();
+
         //nombreJefe.setText(nombreJefe.getText().toString()+""+prefs.getString("usuario_jefe",""));
         //jefeRUT.setText(jefeRUT.getText().toString()+""+prefs.getString("usuario_jefe_rut",""));
 
@@ -102,14 +108,6 @@ public class MainActivity_jefe extends AppCompatActivity {
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
 
-
-        // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
-            imageSignal.setImageResource(R.mipmap.signal);
-        }else{
-            imageSignal.setImageResource(R.mipmap.signal_off);
-        }
-
         imageSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +120,21 @@ public class MainActivity_jefe extends AppCompatActivity {
         });
 
 
+    }
+
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity_jefey.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
     }
 
     @Override
@@ -225,6 +238,12 @@ public class MainActivity_jefe extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     public void alertSync(String message){

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v7.app.ActionBar;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,31 +14,27 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.LoginFilter;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.model.Maquinaria;
-import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
 
-import com.example.tractoramarilloapp.handlers.SessionHandler;
-import com.example.tractoramarilloapp.utils.FA;
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private static ConnectivityManager manager;
 
@@ -63,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
         new ValuesTempDB().addElements(this);
 
         new HandlerInforme(getApplicationContext()).showInformeDetail();
@@ -77,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         this.context = this;
         this.sessionHandler = new SessionHandler(this.context);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
         // VARIABLES INIT
         ActionBar actionBar = getSupportActionBar();
@@ -98,11 +94,13 @@ public class MainActivity extends AppCompatActivity {
         sdf_sync_date = new SimpleDateFormat("yyyy-MM-dd");
         sdf_sync_time = new SimpleDateFormat("HH:mm:ss");
 
+        // Chequea constantemente si hay internet o no
+        checkConnection();
+
         //SHARED PREFERENCES
         final SharedPreferences prefs =
                 getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
-
 
         // NFC CONFIGURATION
         context = this;
@@ -116,14 +114,6 @@ public class MainActivity extends AppCompatActivity {
 
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
-
-
-        // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
-            imageSignal.setImageResource(R.mipmap.signal);
-        }else{
-            imageSignal.setImageResource(R.mipmap.signal_off);
-        }
 
         imageSync.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +138,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+    }
 
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
     }
 
     /**
@@ -235,8 +239,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     public void onPause(){
+        //unregisterReceiver(networkStateReceiver);
         super.onPause();
         this.nfcHandler.changeModeWrite(0, pendingIntent, writeTagFilters);//desactivamos
 
@@ -246,6 +252,13 @@ public class MainActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
+        //registerReceiver(networkStateReceiver, new IntentFilter(android.net.ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     public void alertSync(String message){

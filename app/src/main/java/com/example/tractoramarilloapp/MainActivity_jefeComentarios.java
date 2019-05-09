@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.support.v7.app.ActionBar;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,14 +26,17 @@ import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 
 import java.util.ArrayList;
 
-public class MainActivity_jefeComentarios extends AppCompatActivity {
+public class MainActivity_jefeComentarios extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private EditText editComentarios;
     private Button cancelButton,acceptButton;
     private TextView rutUser, nameUser;
+    private ImageView imageSignal;
 
     private TextView text1, text2, text3, text4;//informacion para la maquinaria
     private TextView textI1, textI2, textI3, textI4;//informacion para el implemento
@@ -58,6 +63,17 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_jefe_comentarios);
 
+        // ACTION BAR INIT
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setCustomView(R.layout.custom_action_bar_jefe);
+
+        View customActionBarView = actionBar.getCustomView();
+
+
+        final RelativeLayout relativeComentarioImplemento = findViewById(R.id.relativeImplemento);
+        final RelativeLayout relativeComentarioMaquinaria = findViewById(R.id.relativeInfoMaquinaria);
+
         //Contenido del usuario
         this.rutUser = findViewById(R.id.textUsuarioJefe);
         this.nameUser = findViewById(R.id.textRUT);
@@ -74,22 +90,16 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
         this.textI3 = findViewById(R.id.textImplementoTipo);
         this.textI4 = findViewById(R.id.textImplementoCapacidad);
 
-        // ACTION BAR INIT
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        actionBar.setCustomView(R.layout.custom_action_bar_jefe);
-
-        View customActionBarView = actionBar.getCustomView();
-
-
-        final RelativeLayout relativeComentarioImplemento = findViewById(R.id.relativeImplemento);
-        final RelativeLayout relativeComentarioMaquinaria = findViewById(R.id.relativeInfoMaquinaria);
-
         editComentarios = (EditText) findViewById(R.id.editTextComentarios);
         cancelButton = (Button) findViewById(R.id.buttonCancel);
         acceptButton = (Button) findViewById(R.id.buttonAccept);
         nameUser = (TextView) findViewById(R.id.textUsuarioJefe);
         rutUser = (TextView) findViewById(R.id.textRUT);
+        imageSignal = (ImageView) findViewById(R.id.imageSignal);
+
+
+        // Chequea constantemente si hay internet o no
+        checkConnection();
 
         handlerDB = new HandlerDBPersistence(MainActivity_jefeComentarios.this);
 
@@ -230,6 +240,26 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
 
     }
 
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
+    }
+
     @Override
     public void onPause(){
         super.onPause();
@@ -241,5 +271,6 @@ public class MainActivity_jefeComentarios extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 }

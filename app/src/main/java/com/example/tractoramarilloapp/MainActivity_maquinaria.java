@@ -27,10 +27,12 @@ import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.HandlerMaquinaria;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
+import com.example.tractoramarilloapp.utils.ConnectivityApplication;
+import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 
 import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 
-public class MainActivity_maquinaria extends AppCompatActivity {
+public class MainActivity_maquinaria extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView textMensajeAlert,textUsuario,textRut,textComentarioLink;
     private ImageView imageComentario,imageSync,imageSignal;
@@ -71,6 +73,9 @@ public class MainActivity_maquinaria extends AppCompatActivity {
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
 
+        // Chequea constantemente si hay internet o no
+        checkConnection();
+
         // SHARED PREFERENCES
         prefs = getSharedPreferences("MisPreferencias",Context.MODE_PRIVATE);
         editor = prefs.edit();
@@ -96,13 +101,6 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             }
         });
 
-        // CHECK INTERNET CONNECTION
-        if(isOnline(getApplicationContext())){
-            imageSignal.setImageResource(R.mipmap.signal);
-        }else{
-            imageSignal.setImageResource(R.mipmap.signal_off);
-        }
-
         imageComentario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +117,26 @@ public class MainActivity_maquinaria extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void checkConnection() {
+        boolean isConnected = ConnectivityReceiver.isConnected();
+        showSnack(isConnected);
+    }
+
+    private void showSnack(boolean isConnected) {
+        if (isConnected) {
+            //Toast.makeText(MainActivity.this,"HAY INTERNET",Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal);
+        } else {
+            //Toast.makeText(MainActivity.this, "NO HAY INTERNET", Toast.LENGTH_SHORT).show();
+            imageSignal.setImageResource(R.mipmap.signal_off);
+        }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        showSnack(isConnected);
     }
 
     @Override
@@ -311,6 +329,7 @@ public class MainActivity_maquinaria extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         this.nfcHandler.changeModeWrite(1, pendingIntent, writeTagFilters);//activamos
+        ConnectivityApplication.getInstance().setConnectivityListener(this);
     }
 
     public void alertWriteNFC(String message){
