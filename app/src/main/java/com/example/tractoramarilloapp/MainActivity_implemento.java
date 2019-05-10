@@ -325,8 +325,6 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
                 alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
             }
 
-
-
         }else{
             Log.e("TAG ERROR:","response VOID: "+response);
             alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");

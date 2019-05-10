@@ -285,7 +285,8 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
                         }
 
                     } else {
-                        Toast.makeText(MainActivity_predio.this, "Debes esperar al menos 5 segundos para cerrar la sesión...", Toast.LENGTH_SHORT).show();
+                        alertNFC("Debes esperar al menos 5 segundos para cerrar la sesión...");
+                        //Toast.makeText(MainActivity_predio.this, "Debes esperar al menos 5 segundos para cerrar la sesión...", Toast.LENGTH_SHORT).show();
                     }
 
 
@@ -299,9 +300,12 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
 
             } else {
                 Log.e("TAG ERROR", "TAG invalido, no es una pulcera");
-                alertNFC("TAG invalido. Favor acerque el dispositivo a un TAG válido.");
+                alertNFC("TAG invalido. Favor seleccionar un predio para continuar...");
             }
 
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){

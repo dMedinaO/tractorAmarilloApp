@@ -271,8 +271,13 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
                     Log.e("TAG ERROR:", "Es maquina pero distinta a la mia.");
                     alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                 }
-            } else {
-                if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
+            }
+
+            if (arrayResponse[1].equalsIgnoreCase("1") || arrayResponse[1].equalsIgnoreCase("2") ) {
+                Log.e("TAG ERROR", "Tag es una pulsera");
+                alertNFC("Existe una sesión activa en este equipo...");
+            }else if (flagImplemento.equalsIgnoreCase("0")) {//ESTA TRABAJANDO CON IMPLEMENTO
+
                     if (arrayResponse[1].equalsIgnoreCase("4")) {//ESTE ES EL CASO A SI CORRESPONDE A IMPLEMENTO
 
                         if (tagImplemento.equalsIgnoreCase(arrayResponse[0])) {
@@ -298,11 +303,13 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
                     } else {//ACA ES CUANDO NO CORRESPONDE A NINGUN CASO
                         alertWriteNFC("El TAG no corresponde a un implemento o maquinaria. Favor acercar el dispositivo a un TAG válido.");
                     }
-                } else {
-                    Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
-                    alertWriteNFC("Debe seleccionar una faena para continuar...");
-                }
+            } else {
+                Log.e("TAG-IMPLEMENTO", "IMPLEMENTO NO HA SIDO SELECCIONADO, NO SE ESTA TRABAJANDO CON IMPLEMENTO");
+                alertWriteNFC("Debe seleccionar una faena para continuar...");
             }
+        }else{
+            Log.e("TAG ERROR:","response VOID: "+response);
+            alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
 
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
@@ -370,6 +377,9 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
                         Log.e("TAG-FAENA", newTagWrite+" TAG a escribir");
 
                         int responseWrite = nfcHandler.writeNFC(newTagWrite, myTag, pendingIntent, writeTagFilters); //escribimos que ya se encuentra vacia
+
+                        String idInforme = prefs.getString("idInformeImplemento", "idInformeImplemento");
+                        new HandlerInforme(getApplicationContext()).closeInformeImplemento(idInforme, currentDateandTime);
 
                         Intent intent2 = new Intent(MainActivity_faena.this,MainActivity_implemento.class);
                         startActivity(intent2);
