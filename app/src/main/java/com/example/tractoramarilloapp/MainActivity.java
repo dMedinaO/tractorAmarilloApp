@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
 
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences.Editor editor;
-    private TextView msjMotivacional,textComentario,textDateTime;
+    private TextView msjMotivacional,textComentario,textDateTime,unidadLocal;
 
     private SimpleDateFormat sdf,sdf_sync_date,sdf_sync_time;
 
@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         imageSync = (ImageView) findViewById(R.id.imageSync);
         textComentario = (TextView) findViewById(R.id.textComentarioLink);
         textDateTime = (TextView) findViewById(R.id.textDateTime);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
         imageComentario.setColorFilter(Color.rgb(206, 206, 206));
         textComentario.setTextColor(Color.rgb(206, 206, 206));
 
@@ -115,11 +116,17 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         //instanciamos al handler de
         String text = this.nfcHandler.readerTAGNFC(getIntent());
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
+
         imageSync.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             Log.e("TAG SYNC","activada sincronización");
+
+            //Actualiza la cantidad de unidades locales
+            syncUnityLocal();
 
             String currentDate = sdf_sync_date.format(new Date());
             String currentTime = sdf_sync_time.format(new Date());
@@ -138,6 +145,11 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
             }
         });
         textDateTime.setText(prefs.getString("last_sync","0000-00-00 a las 23:59:59"));
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     private void checkConnection() {

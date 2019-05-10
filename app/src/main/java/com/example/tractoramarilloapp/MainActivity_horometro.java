@@ -33,6 +33,7 @@ public class MainActivity_horometro extends AppCompatActivity implements Connect
     private ImageView imageComentario;
     private ImageView imageSync,imageSignal;
     private TextView tituloHorometro,textComentario;
+    private TextView unidadLocal;
     private EditText inputHorometro;
     private Button buttonHorometro;
 
@@ -70,6 +71,8 @@ public class MainActivity_horometro extends AppCompatActivity implements Connect
         // botones action bar
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
         textComentario = (TextView) findViewById(R.id.textComentarioLink);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
+
         imageComentario.setColorFilter(Color.rgb(206, 206, 206));
         textComentario.setTextColor(Color.rgb(206, 206, 206));
 
@@ -215,6 +218,14 @@ public class MainActivity_horometro extends AppCompatActivity implements Connect
             }
         });
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
+
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     private void checkConnection() {

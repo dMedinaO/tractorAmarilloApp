@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.tractoramarilloapp.handlers.HandlerFallas;
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Implemento;
 import com.example.tractoramarilloapp.model.Maquinaria;
@@ -40,6 +41,7 @@ public class MainActivity_jefeComentarios extends AppCompatActivity implements C
 
     private TextView text1, text2, text3, text4;//informacion para la maquinaria
     private TextView textI1, textI2, textI3, textI4;//informacion para el implemento
+    private TextView unidadLocal;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -96,7 +98,7 @@ public class MainActivity_jefeComentarios extends AppCompatActivity implements C
         nameUser = (TextView) findViewById(R.id.textUsuarioJefe);
         rutUser = (TextView) findViewById(R.id.textRUT);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
-
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         // Chequea constantemente si hay internet o no
         checkConnection();
@@ -199,7 +201,14 @@ public class MainActivity_jefeComentarios extends AppCompatActivity implements C
             }
         });
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
 
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     /**

@@ -40,6 +40,7 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_implemento extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView textUsuario,textRut,textPredioNombre,textMensajeAlert,textComentarioLink;
+    private TextView unidadLocal;
     private ImageView imageComentario,imageSync,imageSignal;
     private Button buttonImplemento;
     private ProgressDialog dialog;
@@ -78,10 +79,12 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
         //FINDBYID VARIABLES
         textMensajeAlert = (TextView) findViewById(R.id.textMensajeAlert);
         textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
         buttonImplemento = (Button) findViewById(R.id.buttonAceptarImplemento);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
+
 
         // Chequea constantemente si hay internet o no
         checkConnection();
@@ -141,6 +144,14 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
             }
         });
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
+
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     public void alertImplementoError(View view){
@@ -222,7 +233,7 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
         this.nfcHandler = new NFCHandler(this, context, nfcAdapter);
         String response = this.nfcHandler.readerTAGNFC(intent);
 
-        if (!response.equalsIgnoreCase("VOID")){
+        if (!response.equalsIgnoreCase("VOID")) {
 
             //SPLIT TO ARRAY THE VALUES OF TAG
             String[] arrayResponse = response.split(":");
@@ -234,19 +245,19 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
 
             int responseHandler = this.handlerImplemento.applyFluxeCheck();
 
-            if (responseHandler == 0){//todos los procesos fueron OK
+            if (responseHandler == 0) {//todos los procesos fueron OK
 
-                levantarDialog(MainActivity_implemento.this,"Este proceso puede tardar un momento. Favor espere...");
+                levantarDialog(MainActivity_implemento.this, "Este proceso puede tardar un momento. Favor espere...");
 
-                    final String tokenSession = prefs.getString("tokenSession", "null");
+                final String tokenSession = prefs.getString("tokenSession", "null");
 
-                    final String [] tagRead = response.split(":");
-                    String newTag = tagRead[0]+":"+tagRead[1]+":1:"+idUsuario+":"+tokenSession.split("_")[1];
+                final String[] tagRead = response.split(":");
+                String newTag = tagRead[0] + ":" + tagRead[1] + ":1:" + idUsuario + ":" + tokenSession.split("_")[1];
 
-                    Log.e("WRITE", newTag+" new text to NFC");
-                    myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                    int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
-                    if (responseWrite == 0){
+                Log.e("WRITE", newTag + " new text to NFC");
+                myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+                int responseWrite = this.nfcHandler.writeNFC(newTag, myTag, pendingIntent, writeTagFilters);
+                if (responseWrite == 0) {
 
                     Handler handler = new Handler();
 
@@ -255,26 +266,26 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
                             public void run() {
                                 dialog.dismiss();
 
-                                    String currentDateandTime = sdf.format(new Date());
-                                    editor.putString("inicio_implemento", currentDateandTime);
-                                    editor.putString("tagImplemento",tagRead[0]);
+                                String currentDateandTime = sdf.format(new Date());
+                                editor.putString("inicio_implemento", currentDateandTime);
+                                editor.putString("tagImplemento", tagRead[0]);
 
-                                    String idInforme = prefs.getString("idInforme", "null");
-                                    //creamos un informe del tipo implemento
-                                    int informeImplemento = new HandlerInforme(getApplicationContext()).addElementToInformeImplemento(tagRead[0], idUsuario, tokenSession, currentDateandTime, idInforme );
-                                    editor.putString("idInformeImplemento", informeImplemento+"");
-                                    editor.commit();
+                                String idInforme = prefs.getString("idInforme", "null");
+                                //creamos un informe del tipo implemento
+                                int informeImplemento = new HandlerInforme(getApplicationContext()).addElementToInformeImplemento(tagRead[0], idUsuario, tokenSession, currentDateandTime, idInforme);
+                                editor.putString("idInformeImplemento", informeImplemento + "");
+                                editor.commit();
 
-                                    Log.e("HANDLER", "OK");
-                                    Intent intent2 = new Intent(MainActivity_implemento.this,MainActivity_faena.class);
-                                    startActivity(intent2);
-                                    finish();
-                                }
+                                Log.e("HANDLER", "OK");
+                                Intent intent2 = new Intent(MainActivity_implemento.this, MainActivity_faena.class);
+                                startActivity(intent2);
+                                finish();
+                            }
                         }, 2000);
 
                     }
 
-                }else{
+                } else {
                     Log.e("HANDLER", "ERROR");
                     alertWriteNFC("Error al escribir NFC. Favor intente nuevamente.");
                     if (dialog.isShowing()) {
@@ -291,11 +302,11 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
 
                         Log.e("TAG 5: ", "Maquina nuevamente: " + arrayResponse[0] + " maquina: " + tagMaquina);
 
-                        String [] tagRead = response.split(":");
+                        String[] tagRead = response.split(":");
                         String newTag;
                         String tokenSession = prefs.getString("tokenSession", "null");
                         //id maquina, tipo maquinaria, estado uso, token actual, token previo
-                        newTag = tagRead[0] + ":"+tagRead[1]+":0:-:"+tagRead[3];
+                        newTag = tagRead[0] + ":" + tagRead[1] + ":0:-:" + tagRead[3];
                         Log.e("TOKEN-ERROR", newTag);
 
 
@@ -307,30 +318,31 @@ public class MainActivity_implemento extends AppCompatActivity implements Connec
                         startActivity(intent2);
                         finish();
 
-                    }else{
+                    } else {
                         Log.e("TAG ERROR:", "Es maquina pero distinta a la mia.");
                         alertWriteNFC("Esta maquinaria no corresponde a la seleccionada...");
                     }
 
 
-                }else{
+                } else {
                     alertWriteNFC("El TAG no corresponde a un implemento. Favor acercar el dispositivo a un implemento");
                 }
 
             } else if (responseHandler == -2) {
                 Log.e("HANDLER", "ERROR IMPLEMENTO NO REGISTRADO");
                 alertWriteNFC("Implemento no se encuentra registrado.");
-            }else if (responseHandler == -4) {
+            } else if (responseHandler == -4) {
                 Log.e("HANDLER", "ERROR OPERADOR NO CORRESPONDE");
                 alertWriteNFC("El implemento seleccionado no se puede ocupar con la maquinaria actual");
             }
 
-        }else{
-            Log.e("TAG ERROR:","response VOID: "+response);
+        } else {
+            Log.e("TAG ERROR:", "response VOID: " + response);
             alertWriteNFC("Error al leer el TAG. Favor acerque nuevamente el dispositivo al TAG.");
         }
 
-     }
+
+    }
 
     private void checkConnection() {
         boolean isConnected = ConnectivityReceiver.isConnected();

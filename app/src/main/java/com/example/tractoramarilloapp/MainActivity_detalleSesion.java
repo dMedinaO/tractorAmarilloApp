@@ -47,7 +47,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
     private TextView mensajeAlert,nombreUsuario,usuarioRUT,nombrePredio,nombreFaena;
     private TextView nombreMaquina,maquinaModelo,maquinaCapacidad;
     private TextView nombreImplemento,implementoTipo,implementoCapacidad;
-    private TextView textComentarioLink;
+    private TextView textComentarioLink,unidadLocal;
     private int flagInicio;
     private String modalidad;
     private ArrayList<String> result;
@@ -118,6 +118,7 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         implementoTipo = (TextView) findViewById(R.id.textImplementoTipo);
         implementoCapacidad = (TextView) findViewById(R.id.textImplementoCapacidad);
         textComentarioLink = (TextView) findViewById(R.id.textComentarioLink);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         flagInicio = 0;
@@ -185,13 +186,16 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     SessionHandler sessionHandler = new SessionHandler(getApplicationContext());
                     sessionHandler.ChangeStatusSession("ACTIVE");
 
-                String tokenSession = prefs.getString("tokenSession", "pull");
-                String idUsuario = prefs.getString("idUsuario", "null");
-                long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
+                    String tokenSession = prefs.getString("tokenSession", "pull");
+                    String idUsuario = prefs.getString("idUsuario", "null");
+                    long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
 
-                Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
+                    Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 
-                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+
+                    //Actualiza la cantidad de unidades locales
+                    syncUnityLocal();
 
                     Intent intent = new Intent(MainActivity_detalleSesion.this, MainActivity_jefeSesiones.class);
                     startActivity(intent);
@@ -210,15 +214,17 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     //2. modificamos los valores del informe a realizar, obteniendo la data de las shared preference y updateando el dispositivo
                     String idImplemento = prefs.getString("tagImplemento", "0");
 
-                String tokenSession = prefs.getString("tokenSession", "pull");
-                String idUsuario = prefs.getString("idUsuario", "null");
-                long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
+                    String tokenSession = prefs.getString("tokenSession", "pull");
+                    String idUsuario = prefs.getString("idUsuario", "null");
+                    long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
 
-                Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
+                    Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 
+                    //Actualiza la cantidad de unidades locales
+                    syncUnityLocal();
 
-                FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
-            }
+                    FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
+                }
 
             }
         });
@@ -276,10 +282,16 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
 
 
 
-
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
         // Chequea constantemente si hay internet o no
         checkConnection();
 
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     private void checkConnection() {
@@ -322,7 +334,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
 
                         String currentDateandTime = sdf.format(new Date());
                         editor.putString("fin_implemento", currentDateandTime);
-
+                        //Actualiza la cantidad de unidades locales
+                        syncUnityLocal();
                         if (modalidad.equalsIgnoreCase("1")){
                             String tokenSession = prefs.getString("tokenSession", "null");
                             if (new SessionHandler(getApplicationContext()).closeSession(tokenSession)) {
@@ -367,7 +380,8 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
         }
 
         if (requestCode == COMENTARIO_REQUEST){
-
+            //Actualiza la cantidad de unidades locales
+            syncUnityLocal();
             if (resultCode == RESULT_OK){
                 String comentariosResult = data.getStringExtra("comentario");
                 Toast.makeText(MainActivity_detalleSesion.this,"Comentario guardado exitosamente!.",Toast.LENGTH_SHORT).show();

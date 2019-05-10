@@ -47,6 +47,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity implements Conn
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ImageView imageSignal;
+    private TextView unidadLocal;
 
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -87,6 +88,7 @@ public class MainActivity_jefeSesiones extends AppCompatActivity implements Conn
         nombreJefe = (TextView) findViewById(R.id.textUsuarioJefe);
         jefeRUT = (TextView) findViewById(R.id.textRUT);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
 
         // Chequea constantemente si hay internet o no
@@ -152,12 +154,16 @@ public class MainActivity_jefeSesiones extends AppCompatActivity implements Conn
             });
         }
 
-
-
-
-
         myRecyclerView.setAdapter(mAdapter);
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
+
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     public void alertWriteNFC(String message){

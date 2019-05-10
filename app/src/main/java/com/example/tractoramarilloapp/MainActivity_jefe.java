@@ -38,6 +38,7 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_jefe extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView nombreJefe, jefeRUT;
+    private TextView unidadLocal;
     private ImageView imageComentario, imageSync, imageSignal;
 
     private SharedPreferences.Editor editor;
@@ -83,6 +84,7 @@ public class MainActivity_jefe extends AppCompatActivity implements Connectivity
         jefeRUT = (TextView) findViewById(R.id.textRUT);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         relativeInicioJefe = (RelativeLayout) findViewById(R.id.relativeInicioJefe);
         relativeFinJefe = (RelativeLayout) findViewById(R.id.relativeFinJefe);
@@ -118,6 +120,9 @@ public class MainActivity_jefe extends AppCompatActivity implements Connectivity
             }
             }
         });
+
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
 
 
     }
@@ -228,6 +233,11 @@ public class MainActivity_jefe extends AppCompatActivity implements Connectivity
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     @Override

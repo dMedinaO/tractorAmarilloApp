@@ -36,6 +36,7 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_faena extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView textComentarioLink;
+    private TextView unidadLocal;
     private Button buttonFaena;
     private ImageView imageComentario,imageSync,imageSignal;
 
@@ -83,6 +84,7 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         // Chequea constantemente si hay internet o no
         checkConnection();
@@ -175,6 +177,9 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
             }
         });
 
+
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
 
     }
 
@@ -316,6 +321,11 @@ public class MainActivity_faena extends AppCompatActivity implements Connectivit
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
 
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     @Override

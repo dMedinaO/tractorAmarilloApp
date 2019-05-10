@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.model.Comentarios;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
@@ -30,6 +31,7 @@ public class MainActivity_comentario extends AppCompatActivity  implements Conne
     private Button acceptButton,cancelButton;
     private EditText comentarioField;
     private ImageView imageSignal;
+    private TextView unidadLocal;
 
     NFCHandler nfcHandler;
     NfcAdapter nfcAdapter;
@@ -56,6 +58,7 @@ public class MainActivity_comentario extends AppCompatActivity  implements Conne
         cancelButton = (Button) findViewById(R.id.buttonCancel);
         comentarioField = (EditText) findViewById(R.id.editTextComentarios);
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         // Chequea constantemente si hay internet o no
         checkConnection();
@@ -111,8 +114,14 @@ public class MainActivity_comentario extends AppCompatActivity  implements Conne
             }
         });
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
 
+    }
 
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     private void checkConnection() {

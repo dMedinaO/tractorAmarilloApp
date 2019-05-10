@@ -30,13 +30,14 @@
             />
 
         <TextView
+            android:id="@+id/textUnidadLocal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="60dp"
             android:paddingRight="10dp"
             android:gravity="center_vertical"
             android:layout_gravity="center"
-            android:text="U. Local 20"
+            android:text="U. Local 0"
 
             android:textSize="16dp"
             android:textColor="@color/colorPrimaryLight"

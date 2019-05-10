@@ -24,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tractoramarilloapp.handlers.HandlerInforme;
 import com.example.tractoramarilloapp.handlers.SessionHandler;
 import com.example.tractoramarilloapp.model.Predio;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
@@ -43,6 +44,7 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
     private String[] predioCodeInterno; // para almacenar la informacion de los codigo interno del predio, esto se hace por si los locos son wns y ponen un predio  repetido
 
     private TextView textUsuario, textRut, textPredioNombre, textMensajeAlert, textComentarioLink, msjMotivacional;
+    private TextView unidadLocal;
     private ImageView imageComentario, imageSync, imageSignal;
     private Button buttonPredio;
     private int flagLogin;
@@ -87,6 +89,7 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         final RelativeLayout relativePredioSelect = findViewById(R.id.relativePredioSelect);
         final RelativeLayout relativePredioInfo = findViewById(R.id.relativePredioInfo);
@@ -191,6 +194,9 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
                 startActivityForResult(intent, COMENTARIO_REQUEST);
             }
         });
+
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
 
     }
 
@@ -311,6 +317,11 @@ public class MainActivity_predio extends AppCompatActivity implements Connectivi
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())){
             myTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         }
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     @Override

@@ -35,6 +35,7 @@ import static com.example.tractoramarilloapp.InternetStatus.isOnline;
 public class MainActivity_maquinaria extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     private TextView textMensajeAlert,textUsuario,textRut,textComentarioLink;
+    private TextView unidadLocal;
     private ImageView imageComentario,imageSync,imageSignal;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
@@ -72,6 +73,7 @@ public class MainActivity_maquinaria extends AppCompatActivity implements Connec
         imageSignal = (ImageView) findViewById(R.id.imageSignal);
         imageSync = (ImageView) findViewById(R.id.imageSync);
         imageComentario = (ImageView) findViewById(R.id.imageComentario);
+        unidadLocal = (TextView) findViewById(R.id.textUnidadLocal);
 
         // Chequea constantemente si hay internet o no
         checkConnection();
@@ -117,6 +119,14 @@ public class MainActivity_maquinaria extends AppCompatActivity implements Connec
             }
         });
 
+        //Actualiza la cantidad de unidades locales
+        syncUnityLocal();
+
+    }
+
+    public void syncUnityLocal(){
+        int unidadlocalcount = new HandlerInforme(getApplicationContext()).getUnidadesLocalesNumber();
+        unidadLocal.setText("U. Local "+unidadlocalcount);
     }
 
     private void checkConnection() {
