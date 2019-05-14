@@ -9,6 +9,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
@@ -55,12 +56,12 @@ public class SyncUpService {
             RequestQueue queue = Volley.newRequestQueue(this.context);
             String urlFull = this.host+this.url+this.service;
 
-            // Request a string response from the provided URL.
+            // Request a string response from the provided URL.{
             StringRequest stringRequest = new StringRequest(Request.Method.POST, urlFull,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            // your response
+                            Log.e("TAG-SYNC-UP", response);
 
                         }
                     }, new Response.ErrorListener() {

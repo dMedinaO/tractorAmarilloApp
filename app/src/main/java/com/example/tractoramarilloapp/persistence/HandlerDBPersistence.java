@@ -189,6 +189,12 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "statusSend TEXT NOT NULL, "
                 + "UNIQUE (idUnidad))");
 
+        /*demo tabla comentario general*/
+        db.execSQL("CREATE TABLE IF NOT EXISTS mensajeMotivacional ("
+                + "idMensaje INTEGER  NOT NULL, "
+                + "descripcion TEXT NOT NULL, "
+                + "UNIQUE (idMensaje))");
+
     }
 
     @Override
