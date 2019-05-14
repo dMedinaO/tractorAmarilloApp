@@ -51,34 +51,9 @@ public class SyncUpService {
         if (cursor!= null && cursor.getCount()>0){
 
             //procesamos la data, formando un JSON ARRAY, utilizamos los metodos existentes en la clase FA
-            final JSONObject dataToServer = FA.createJSONUnityLocal(cursor);
+            JSONObject dataToServer = FA.createJSONUnityLocal(cursor);
 
-            RequestQueue queue = Volley.newRequestQueue(this.context);
-            String urlFull = this.host+this.url+this.service;
 
-            // Request a string response from the provided URL.{
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, urlFull,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.e("TAG-SYNC-UP", response);
-
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    // error
-                }
-            }){
-                @Override
-                public byte[] getBody() throws AuthFailureError {
-                    String your_string_json = dataToServer.toString(); // put your json
-                    return your_string_json.getBytes();
-                }
-            };
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest);
-            queue.start();
         }else {
             Log.e("TAG-SYNC-UP", "No es necesario ejecutar la subida de datos ya que no existen elementos a subir");
         }

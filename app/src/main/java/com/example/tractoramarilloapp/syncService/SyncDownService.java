@@ -54,6 +54,7 @@ public class SyncDownService {
         listTableName.add("tipoMaquinaria");
         listTableName.add("tipoHabilitado");
         listTableName.add("implementos");
+        listTableName.add("mensajeMotivacional");
 
         //las estructuras de estas tablas se encuentran creadas, solo basta con traer la informacion para poblarla
         for (int i=0; i<listTableName.size(); i++){

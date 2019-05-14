@@ -166,4 +166,24 @@ public class ProcessDataJSON {
         Log.i("responseData", listImplemento.toString());
         return true;
     }
+
+    public  boolean processMensajeMotivacional(JSONArray jsonArray, Context context) throws  JSONException{
+
+        ArrayList<String> stringQueryData =  new ArrayList<>();
+
+        for(int i=0; i<jsonArray.length();i++){
+            JSONObject object = jsonArray.getJSONObject(i);
+
+            String idMensaje = object.getString("idMensaje");
+            String descripcion = object.getString("descripcion");
+
+            String query = "INSERT INTO mensajeMotivacional values ("+idMensaje+", '"+descripcion+"')";
+
+            stringQueryData.add(query);
+        }
+
+        new HandlerDBPersistence(context).processUpdateInformationMensaje(stringQueryData);
+        Log.i("responseData", stringQueryData.toString());
+        return true;
+    }
 }

@@ -98,6 +98,10 @@ public class ConnectToService extends AsyncTask {
                                                 }else{
                                                     if (tableName.equalsIgnoreCase("implementos")){
                                                         new ProcessDataJSON().processDataImplemento(responseObject, context);
+                                                    }else{
+                                                        if(tableName.equalsIgnoreCase("mensajeMotivacional")){
+                                                            new ProcessDataJSON().processMensajeMotivacional(responseObject, context);
+                                                        }
                                                     }
                                                 }
                                             }

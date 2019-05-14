@@ -1048,4 +1048,51 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
 
         return response;
     }
+
+    public boolean processUpdateInformationMensaje (ArrayList<String> listQueries){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE mensajeMotivacional_tmp as SELECT * FROM mensajeMotivacional";
+        Log.e("UPDATE-TIPO-MEN", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM mensajeMotivacional";
+        Log.e("UPDATE-TIPO-MEN", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < listQueries.size(); i++) {
+
+                this.execSQLData(listQueries.get(i));//almacenamos los tipos de maquinarias correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE mensajeMotivacional_tmp";
+            Log.e("UPDATE-TIPO-MEN", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE mensajeMotivacional";
+            Log.e("UPDATE-TIPO-MEN", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE mensajeMotivacional as SELECT * FROM mensajeMotivacional_tmp";
+            Log.e("UPDATE-TIPO-MEN", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE mensajeMotivacional_tmp";
+            Log.e("UPDATE-TIPO-MEN", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
 }
