@@ -280,4 +280,16 @@ public class FA extends AppCompatActivity {
         Log.e("TAG-SYNC-UP", unityLocalData.toString());
         return unityLocalData;
     }
+
+    /**
+     * Metodo que permite formar el mensaje
+     * @return
+     */
+    public String getValuesToMensajeMotivacional(){
+
+        String response = "";
+
+
+        return response;
+    }
 }
