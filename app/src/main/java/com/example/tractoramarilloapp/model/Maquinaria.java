@@ -20,6 +20,7 @@ public class Maquinaria {
     private String patentMachine;
     private String colorMachine;
     private String tipoMaquinaria;
+    private String categoria;
 
     private ArrayList<Implemento> listImplements;
 
@@ -34,7 +35,7 @@ public class Maquinaria {
      * @param colorMachine
      * @param tipoMaquinaria
      */
-    public Maquinaria(String nameMachine, String markMachine, String modelMachine, String yeardMachine, String statusMachine, String patentMachine, String colorMachine, String codeInterno, String tipoMaquinaria) {
+    public Maquinaria(String nameMachine, String markMachine, String modelMachine, String yeardMachine, String statusMachine, String patentMachine, String colorMachine, String codeInterno, String tipoMaquinaria, String categoria) {
         this.nameMachine = nameMachine;
         this.markMachine = markMachine;
         this.modelMachine = modelMachine;
@@ -44,6 +45,7 @@ public class Maquinaria {
         this.colorMachine = colorMachine;
         this.codeInternoMachine = codeInterno;
         this.tipoMaquinaria = tipoMaquinaria;
+        this.categoria = categoria;
         this.listImplements = new ArrayList<>();
     }
 
@@ -157,6 +159,14 @@ public class Maquinaria {
         this.tipoMaquinaria = tipoMaquinaria;
     }
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
     public ContentValues toContentValues(){
 
         ContentValues contentValues = new ContentValues();
@@ -170,7 +180,7 @@ public class Maquinaria {
         contentValues.put(MaquinariaContract.MaquinariaContractEntry.CODE_INTERNO_MACHINE, this.codeInternoMachine);
         contentValues.put(MaquinariaContract.MaquinariaContractEntry.MARK_MACHINE, this.markMachine);
         contentValues.put(MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE, this.tipoMaquinaria);
-
+        contentValues.put(MaquinariaContract.MaquinariaContractEntry.CATEGORIA_MACHINE, this.categoria);
         return contentValues;
     }
 }

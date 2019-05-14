@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.example.tractoramarilloapp.model.Implemento;
+import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 
 import java.util.ArrayList;
@@ -133,12 +134,37 @@ public class HandlerImplemento {
 
         boolean response = false;
 
-        String sqlQuery = "SELECT * FROM implementoHabilitado WHERE implementoHabilitado.implementoID = '"+this.codeImplement+"' AND implementoHabilitado.maquinariaID = '"+ this.codeInternoMachine+"'";
-        Log.e(TAG, sqlQuery);
-        Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlQuery);
-        Log.e(TAG, cursor.getCount()+" tiene datos la puta caga XD ");
-        if (cursor.getCount()!=0){
-            response = true;
+        //obtenemos la categoria de la maquinaria
+        ArrayList<Maquinaria> listMaquinaria = this.handlerDBPersistence.getMaquinariaList();
+        String categoria = "";
+
+        for (int i=0; i<listMaquinaria.size(); i++){
+            if (listMaquinaria.get(i).getCodeInternoMachine().equalsIgnoreCase(this.codeInternoMachine)){
+                categoria = listMaquinaria.get(i).getCategoria();
+                break;
+            }
+        }
+
+        //obtenemos la categoria del implemento
+        ArrayList<Implemento> listImplemento = this.handlerDBPersistence.getImplementos();
+        String categoriaImplement = "";
+
+        for (int i=0; i<listImplemento.size(); i++){
+            if (listImplemento.get(i).getCodeInternoImplemento().equalsIgnoreCase(this.codeImplement)){
+                categoriaImplement = listImplemento.get(i).getCategoria();
+                break;
+            }
+        }
+
+
+        //hacemos un split para obtener la informacion de las categorias del implemento
+        String [] categoriasImp = categoriaImplement.split("-");//asi estan en BD!!!
+
+        for (int i=0; i<categoriasImp.length; i++){
+            if (categoriasImp[i].equalsIgnoreCase(categoria)){
+                response=true;
+                break;
+            }
         }
 
         return  response;

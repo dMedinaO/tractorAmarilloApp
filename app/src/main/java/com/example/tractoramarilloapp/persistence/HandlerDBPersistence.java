@@ -81,6 +81,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + MaquinariaContract.MaquinariaContractEntry.STATUS_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE + " TEXT NOT NULL, "
                 + MaquinariaContract.MaquinariaContractEntry.MARK_MACHINE + " TEXT NOT NULL, "
+                + MaquinariaContract.MaquinariaContractEntry.CATEGORIA_MACHINE+ " TEXT NOT NULL, "
                 + "UNIQUE (" + MaquinariaContract.MaquinariaContractEntry.CODE_INTERNO_MACHINE + "))");
 
         /*demo tabla implementos*/
@@ -92,6 +93,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + ImplementContract.ImplementContractEntry.COLOR_IMPLEMENTO + " TEXT NOT NULL, "
                 + ImplementContract.ImplementContractEntry.NAME_IMPLEMENTO + " TEXT NOT NULL, "
                 + ImplementContract.ImplementContractEntry.STATUS_IMPLEMENTO + " TEXT NOT NULL, "
+                + ImplementContract.ImplementContractEntry.CATEGORIA_IMPLEMENTO + " TEXT NOT NULL, "
                 + "UNIQUE (" + ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO + "))");
 
         /*demo tabla tipoMaquinaria*/
@@ -186,6 +188,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
                 + "idFaena TEXT NOT NULL, "
                 + "statusSend TEXT NOT NULL, "
                 + "UNIQUE (idUnidad))");
+
     }
 
     @Override
@@ -410,6 +413,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         int patentMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.PATENT_MACHINE);
         int colorMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.COLOR_MACHINE);
         int tipoMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE);
+        int categoriaMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.CATEGORIA_MACHINE);
 
         //recorremos el cursor para obtener la informacion y formar el objeto de interes
         while (!cursor.isAfterLast()){
@@ -423,9 +427,10 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             String patentMachineV = cursor.getString(patentMachine);
             String colorMachineV = cursor.getString(colorMachine);
             String tipoMachineV = cursor.getString(tipoMachine);
+            String categoriaV = cursor.getString(categoriaMachine);
 
             //instanciamos un objeto del tipo sesion y lo agregamos a la lista
-            listMaquina.add(new Maquinaria(nameMachineV, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, codeInternoMachineV, tipoMachineV));
+            listMaquina.add(new Maquinaria(nameMachineV, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, codeInternoMachineV, tipoMachineV, categoriaV));
             cursor.moveToNext();
         }
 
@@ -457,6 +462,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         int colorImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.COLOR_IMPLEMENTO);
         int statusImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.STATUS_IMPLEMENTO);
         int fabricanteImplement = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.FABRICANTE_IMPLEMENTO);
+        int categoriaImplemento = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CATEGORIA_IMPLEMENTO);
 
         //recorremos el cursor para obtener la informacion y formar el objeto de interes
         while (!cursor.isAfterLast()){
@@ -468,9 +474,10 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
             String colorImplementV = cursor.getString(colorImplement);
             String statusImplementV = cursor.getString(statusImplement);
             String fabricanteImplementV = cursor.getString(fabricanteImplement);
+            String categoriaV = cursor.getString(categoriaImplemento);
 
             //instanciamos un objeto del tipo sesion y lo agregamos a la lista
-            listImplemento.add(new Implemento(nameImplementV, statusImplementV, anoImplementV, fabricanteImplementV, colorImplementV, capacidadImplementV, codeInternoV));
+            listImplemento.add(new Implemento(nameImplementV, statusImplementV, anoImplementV, fabricanteImplementV, colorImplementV, capacidadImplementV, codeInternoV, categoriaV));
             cursor.moveToNext();
         }
 
@@ -614,6 +621,7 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         );
     }
 
+
     //<SQL SELECT GENERICO>
     public Cursor consultarRegistros(String sql_select) {
 
@@ -685,5 +693,353 @@ public class HandlerDBPersistence extends SQLiteOpenHelper {
         }
 
         return lastID;
+    }
+
+    /**
+     * Metodo que permite hacer la actualizacion de la informacion de la faena, todos funcionan iguales:
+     * 1. Crea una copia de seguridad
+     * 2. Inserta la nueva data
+     * 3. Si no existen problemas se elimina la copia de seguridad
+     * 4. Si hubo problemas, se elimina la data y se considera la informacion previa como muestra de datos
+     * @param dataFaena
+     * @return
+     */
+    public boolean processUpdateInformationFaena (ArrayList<Faena> dataFaena){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE faena_tmp as SELECT * FROM faena";
+        Log.e("UPDATE-FAENA", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM faena";
+        Log.e("UPDATE-FAENA", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataFaena.size(); i++) {
+
+                this.saveFaena(dataFaena.get(i));//almacenamos las faenas correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE faena_tmp";
+            Log.e("UPDATE-FAENA", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE faena";
+            Log.e("UPDATE-FAENA", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE faena as SELECT * FROM faena_tmp";
+            Log.e("UPDATE-FAENA", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE faena_tmp";
+            Log.e("UPDATE-FAENA", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    /**
+     * Metodo que permite actualizar la informacion del predio
+     * @param dataPredio
+     * @return
+     */
+    public boolean processUpdateInformationPredio (ArrayList<Predio> dataPredio){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE predio_tmp as SELECT * FROM "+ PredioContract.PredioContractEntry.TABLE_NAME;
+        Log.e("UPDATE-PREDIO", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM "+ PredioContract.PredioContractEntry.TABLE_NAME;
+        Log.e("UPDATE-PREDIO", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataPredio.size(); i++) {
+
+                this.savePredio(dataPredio.get(i));//almacenamos los predios correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE predio_tmp";
+            Log.e("UPDATE-PREDIO", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE "+ PredioContract.PredioContractEntry.TABLE_NAME;
+            Log.e("UPDATE-PREDIO", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE "+ PredioContract.PredioContractEntry.TABLE_NAME +" as SELECT * FROM predio_tmp";
+            Log.e("UPDATE-PREDIO", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE predio_tmp";
+            Log.e("UPDATE-PREDIO", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    /**
+     * Procesa la informacion del usuario
+     * @param dataUserSession
+     * @return
+     */
+    public boolean processUpdateInformationUser (ArrayList<UserSession> dataUserSession){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE user_tmp as SELECT * FROM "+ UserContract.UserContractEntry.TABLE_NAME;
+        Log.e("UPDATE-USER", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM "+ UserContract.UserContractEntry.TABLE_NAME;
+        Log.e("UPDATE-USER", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataUserSession.size(); i++) {
+
+                this.saveUsuario(dataUserSession.get(i));//almacenamos los usuarios correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE user_tmp";
+            Log.e("UPDATE-USER", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE "+ UserContract.UserContractEntry.TABLE_NAME;
+            Log.e("UPDATE-USER", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE "+ UserContract.UserContractEntry.TABLE_NAME +" as SELECT * FROM user_tmp";
+            Log.e("UPDATE-USER", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE user_tmp";
+            Log.e("UPDATE-USER", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    public boolean processUpdateInformationMaquinaria (ArrayList<Maquinaria> dataMaquinaria){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE maquinaria_tmp as SELECT * FROM "+ MaquinariaContract.MaquinariaContractEntry.TABLE_NAME;
+        Log.e("UPDATE-MAQ", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM "+ MaquinariaContract.MaquinariaContractEntry.TABLE_NAME;
+        Log.e("UPDATE-MAQ", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataMaquinaria.size(); i++) {
+
+                this.saveMaquina(dataMaquinaria.get(i));//almacenamos las maquinarias correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE maquinaria_tmp";
+            Log.e("UPDATE-MAQ", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE "+ MaquinariaContract.MaquinariaContractEntry.TABLE_NAME;
+            Log.e("UPDATE-MAQ", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE "+ MaquinariaContract.MaquinariaContractEntry.TABLE_NAME +" as SELECT * FROM maquinaria_tmp";
+            Log.e("UPDATE-MAQ", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE maquinaria_tmp";
+            Log.e("UPDATE-MAQ", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    public boolean processUpdateInformationTipoMaquinaria (ArrayList<TipoMaquinaria> dataTipoMaquinaria){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE tipo_maquinaria_tmp as SELECT * FROM "+ TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME;
+        Log.e("UPDATE-TIPO-MAQ", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM "+ TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME;
+        Log.e("UPDATE-TIPO-MAQ", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataTipoMaquinaria.size(); i++) {
+
+                this.saveTipoMaquina(dataTipoMaquinaria.get(i));//almacenamos los tipos de maquinarias correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE tipo_maquinaria_tmp";
+            Log.e("UPDATE-TIPO-MAQ", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE "+ TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME;
+            Log.e("UPDATE-TIPO-MAQ", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE "+ TipoMaquinariaContract.TipoMaquinariaContractEntry.TABLE_NAME +" as SELECT * FROM tipo_maquinaria_tmp";
+            Log.e("UPDATE-TIPO-MAQ", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE tipo_maquinaria_tmp";
+            Log.e("UPDATE-TIPO-MAQ", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    public boolean processUpdateInformationTipoHabilitado (ArrayList<String> listQueries){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE tipoHabilitado_tmp as SELECT * FROM tipoHabilitado";
+        Log.e("UPDATE-TIPO-HAB", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM tipoHabilitado";
+        Log.e("UPDATE-TIPO-HAB", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < listQueries.size(); i++) {
+
+                this.execSQLData(listQueries.get(i));//almacenamos los tipos de maquinarias correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE tipoHabilitado_tmp";
+            Log.e("UPDATE-TIPO-HAB", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE tipoHabilitado";
+            Log.e("UPDATE-TIPO-HAB", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE tipoHabilitado as SELECT * FROM tipoHabilitado_tmp";
+            Log.e("UPDATE-TIPO-HAB", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE tipoHabilitado_tmp";
+            Log.e("UPDATE-TIPO-HAB", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
+    }
+
+    public boolean processUpdateInformationImplemento (ArrayList<Implemento> dataImplemento){
+
+        boolean response=false;
+
+        //respaldo
+        String sql = "CREATE TABLE implemento_tmp as SELECT * FROM "+ ImplementContract.ImplementContractEntry.TABLE_NAME;
+        Log.e("UPDATE-IMP", sql);
+        this.execSQLData(sql);
+
+        //eliminamos la data
+        String sql2 = "DELETE FROM "+ ImplementContract.ImplementContractEntry.TABLE_NAME;
+        Log.e("UPDATE-IMP", sql2);
+        this.execSQLData(sql2);
+
+        //insertamos la nueva data
+        try {
+            for (int i = 0; i < dataImplemento.size(); i++) {
+
+                this.saveImplemento(dataImplemento.get(i));//almacenamos las maquinarias correspondientes
+            }
+
+            //hacemos el commit
+            String sql_commit = "DROP TABLE implemento_tmp";
+            Log.e("UPDATE-IMP", sql_commit);
+            this.execSQLData(sql_commit);
+            response=true;
+        }catch (Exception e){
+
+            //hacemos el roll back
+            String sql3 = "DROP TABLE "+ ImplementContract.ImplementContractEntry.TABLE_NAME;
+            Log.e("UPDATE-IMP", sql3);
+            this.execSQLData(sql3);
+
+            //respaldo
+            String sql4 = "CREATE TABLE "+ ImplementContract.ImplementContractEntry.TABLE_NAME +" as SELECT * FROM implemento_tmp";
+            Log.e("UPDATE-IMP", sql4);
+            this.execSQLData(sql4);
+
+            //eliminamos la data
+            String sql5 = "DROP TABLE implemento_tmp";
+            Log.e("UPDATE-IMP", sql5);
+            this.execSQLData(sql5);
+        }
+
+        return response;
     }
 }

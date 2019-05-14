@@ -18,10 +18,10 @@ public class Implemento {
     private String color;
     private String capacidad;
     private String codeInternoImplemento;
-
+    private String categoria;
     private ArrayList<Faena> listFaena;
 
-    public Implemento(String nameImplement, String statusImplement, String ano, String fabricante, String color, String capacidad, String codeInternoImplemento) {
+    public Implemento(String nameImplement, String statusImplement, String ano, String fabricante, String color, String capacidad, String codeInternoImplemento, String categoria) {
 
         this.codeInternoImplemento = codeInternoImplemento;
         this.nameImplement = nameImplement;
@@ -30,6 +30,7 @@ public class Implemento {
         this.fabricante = fabricante;
         this.color = color;
         this.capacidad = capacidad;
+        this.categoria = categoria;
         this.listFaena = new ArrayList<>();
     }
 
@@ -45,6 +46,22 @@ public class Implemento {
     public Faena searchFaena(Faena faena){
 
         return null;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 
     public String getNameImplement() {
@@ -122,6 +139,7 @@ public class Implemento {
         values.put(ImplementContract.ImplementContractEntry.FABRICANTE_IMPLEMENTO, this.fabricante);
         values.put(ImplementContract.ImplementContractEntry.STATUS_IMPLEMENTO, this.statusImplement);
         values.put(ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO, this.codeInternoImplemento);
+        values.put(ImplementContract.ImplementContractEntry.CATEGORIA_IMPLEMENTO, this.categoria);
         
         return  values;
     }

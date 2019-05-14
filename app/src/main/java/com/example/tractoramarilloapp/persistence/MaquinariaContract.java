@@ -16,5 +16,6 @@ public class MaquinariaContract {
         public static final String CODE_INTERNO_MACHINE = "codeInternoMachine";
         public static final String KIND_MACHINE = "tipoMaquinaria";
         public static final String MARK_MACHINE = "marca_maquina";
+        public static final String CATEGORIA_MACHINE = "categoria_maquina";
     }
 }

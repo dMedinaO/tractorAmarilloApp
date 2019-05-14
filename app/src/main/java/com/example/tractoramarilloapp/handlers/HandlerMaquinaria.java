@@ -126,6 +126,7 @@ public class HandlerMaquinaria {
 
         //obtenemos el tipo maquinara
         String sqlQuery = "SELECT * FROM tipoHabilitado where tipoHabilitado.operadorID = '"+this.userValue+"' AND tipoHabilitado.tipoMaquinariaID = '"+this.tipoMaquinaria+"'";
+        Log.e(TAG, "Query de mierda "+sqlQuery);
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqlQuery);
         if (cursor.getCount()!=0){
             response = true;

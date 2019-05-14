@@ -119,6 +119,7 @@ public class InformationDetailSession {
         int colorMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.COLOR_MACHINE);
         int tipoMachine = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.KIND_MACHINE);
         int informeMaquinariaID = cursor.getColumnIndex(InformeMaquinariaContract.InformeMaquinariaContractEntry.ID_INFORME);
+        int categoriaData = cursor.getColumnIndex(MaquinariaContract.MaquinariaContractEntry.CATEGORIA_MACHINE);
 
         String nameMaquina = cursor.getString(nameMaquinaria);
         String idMaquina = cursor.getString(idMaquinaria);
@@ -130,9 +131,11 @@ public class InformationDetailSession {
         String patentMachineV = cursor.getString(patentMachine);
         String colorMachineV = cursor.getString(colorMachine);
         String tipoMachineV = cursor.getString(tipoMachine);
+        String categoriaV = cursor.getString(categoriaData);
+
         this.informeID = cursor.getString(informeMaquinariaID);//esto es para obtener la informacion del informe
 
-        this.maquinaria = new Maquinaria(nameMaquina, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, idMaquina, tipoMachineV);
+        this.maquinaria = new Maquinaria(nameMaquina, markMachineV, modelMachineV, yeardMachineV, statusMachineV, patentMachineV, colorMachineV, idMaquina, tipoMachineV, categoriaV);
     }
 
     /**
@@ -176,7 +179,7 @@ public class InformationDetailSession {
         Cursor cursor = this.handlerDBPersistence.consultarRegistros(sqldata);
 
         if (cursor == null || cursor.getCount()==0){//trabajo sin implemento el mono ql
-            this.implemento = new Implemento("SIN IMPLEMENTO", "--", "--", "--", "--", "--", "0");
+            this.implemento = new Implemento("SIN IMPLEMENTO", "--", "--", "--", "--", "--", "0", "--");
         }else{//trabajo con implemento
 
             cursor.moveToFirst();
@@ -188,6 +191,7 @@ public class InformationDetailSession {
             int color = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.COLOR_IMPLEMENTO);
             int capacidad = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CAPACIDAD_IMPLEMENTO);
             int codeInternoImp = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CODE_INTERNO_IMPLEMENTO);
+            int categoriaImplemento = cursor.getColumnIndex(ImplementContract.ImplementContractEntry.CATEGORIA_IMPLEMENTO);
 
             String nameImplementoV = cursor.getString(nameImplemento);
             String statusImplementoV = cursor.getString(statusImplemento);
@@ -196,7 +200,8 @@ public class InformationDetailSession {
             String colorV = cursor.getString(color);
             String capacidadV = cursor.getString(capacidad);
             String codeInternoImpV = cursor.getString(codeInternoImp);
-            this.implemento = new Implemento(nameImplementoV, statusImplementoV, anoImplementoV, fabricanteV, colorV, capacidadV, codeInternoImpV);
+            String categoriaImplementoV = cursor.getString(categoriaImplemento);
+            this.implemento = new Implemento(nameImplementoV, statusImplementoV, anoImplementoV, fabricanteV, colorV, capacidadV, codeInternoImpV, categoriaImplementoV);
 
         }
     }

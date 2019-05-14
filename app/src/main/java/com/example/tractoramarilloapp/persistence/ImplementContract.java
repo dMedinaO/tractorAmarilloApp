@@ -14,5 +14,6 @@ public class ImplementContract {
         public static final String COLOR_IMPLEMENTO = "color_implemento";
         public static final String CAPACIDAD_IMPLEMENTO = "capacidad_implemento";
         public static final String CODE_INTERNO_IMPLEMENTO = "codeInternoImplemento";
+        public static final String CATEGORIA_IMPLEMENTO = "categoriaImplemento";
     }
 }
