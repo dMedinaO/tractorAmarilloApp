@@ -12,6 +12,11 @@ import com.example.tractoramarilloapp.persistence.InformeFaenaContract;
 import com.example.tractoramarilloapp.persistence.InformeImplementoContract;
 import com.example.tractoramarilloapp.persistence.InformeMaquinariaContract;
 import com.example.tractoramarilloapp.persistence.SessionClass;
+import com.example.tractoramarilloapp.persistence.UnityLocalContract;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -194,5 +199,85 @@ public class FA extends AppCompatActivity {
                 c1.moveToNext();
             }
         }
+    }
+
+    /**
+     * Metodo que permite procesar la informacion de un cursor con data de la unidad local y transformarla en formato JSON
+     * @param cursor
+     * @return
+     */
+    public static JSONObject createJSONUnityLocal(Cursor cursor) throws JSONException {
+
+        JSONArray jsonArray = new JSONArray();//contendra todos los JSON que se formen!
+
+        JSONObject unityLocalData = new JSONObject();
+
+        cursor.moveToFirst();
+
+        while (!cursor.isAfterLast()){//mientras el cursor no sea el ultimo
+
+            //obtenemos la informacion de la unidad local
+            int idUnidad = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_UNIDAD);
+            int idUsuario = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_USUARIO);
+            int tokenSession = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.TOKEN_SESSION);
+            int tokenSessionPrev = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.TOKEN_SESSION_PREV);
+            int startSession = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.START_SESSION);
+            int endSession = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.END_SESSION);
+            int closeKindSession = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.CLOSE_SESSION_KIND);
+            int idMaquinaria = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_MAQUINARIA);
+            int horometroI = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.HOROMETRO_INICIAL);
+            int horometroF = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.HOROMETRO_FINAL);
+            int idPredio = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_PREDIO);
+            int isAvailableImplement = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.IS_AVAILABLE_IMPLEMENT);
+            int idImplemento = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_IMPLEMENT);
+            int inicioI = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.INICIO_IMPLEMENTO);
+            int terminoI = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.FIN_IMPLEMENTO);
+            int idFaena = cursor.getColumnIndex(UnityLocalContract.UnityLocalContractEntry.ID_FAENA);
+
+            //obtenemos los valores
+            String idUnidadV = cursor.getString(idUnidad);
+            String idUsuarioV = cursor.getString(idUsuario);
+            String tokenSessionV = cursor.getString(tokenSession);
+            String tokenSessionPrevV = cursor.getString(tokenSessionPrev);
+            String startSessionV = cursor.getString(startSession);
+            String endSessionV = cursor.getString(endSession);
+            String closeKindSessionV = cursor.getString(closeKindSession);
+            String idMaquinariaV = cursor.getString(idMaquinaria);
+            String horometroIV = cursor.getString(horometroI);
+            String horometroFV = cursor.getString(horometroF);
+            String idPredioV = cursor.getString(idPredio);
+            String isAvailableImplementV = cursor.getString(isAvailableImplement);
+            String idImplementoV = cursor.getString(idImplemento);
+            String inicioIV = cursor.getString(inicioI);
+            String terminoIV = cursor.getString(terminoI);
+            String idFaenaV = cursor.getString(idFaena);
+
+            JSONObject unityLocal = new JSONObject();
+            unityLocal.put("idUnidad", idUnidadV);
+            unityLocal.put("idUsuario", idUsuarioV);
+            unityLocal.put("tokenSession", tokenSessionV);
+            unityLocal.put("tokenSessionPrev", tokenSessionPrevV);
+            unityLocal.put("startSession", startSessionV);
+            unityLocal.put("endSession", endSessionV);
+            unityLocal.put("closeKindSession", closeKindSessionV);
+            unityLocal.put("idMaquinaria", idMaquinariaV);
+            unityLocal.put("horometroI", horometroIV);
+            unityLocal.put("horometroF", horometroFV);
+            unityLocal.put("isAvailableImplement", isAvailableImplementV);
+            unityLocal.put("idPredio", idPredioV);
+            unityLocal.put("idImplemento", idImplementoV);
+            unityLocal.put("inicioI", inicioIV);
+            unityLocal.put("terminoI", terminoIV);
+            unityLocal.put("idFaena", idFaenaV);
+
+            jsonArray.put(unityLocal);
+            cursor.moveToNext();
+
+        }
+
+        unityLocalData.put("unityLocaData", jsonArray);
+
+        Log.e("TAG-SYNC-UP", unityLocalData.toString());
+        return unityLocalData;
     }
 }

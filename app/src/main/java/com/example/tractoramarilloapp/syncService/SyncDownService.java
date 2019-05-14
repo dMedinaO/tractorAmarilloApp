@@ -2,7 +2,7 @@ package com.example.tractoramarilloapp.syncService;
 
 
 import android.content.Context;
-import android.util.Log;
+import android.os.AsyncTask;
 
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
 
@@ -20,8 +20,9 @@ public class SyncDownService {
     private Context context;
     private HandlerDBPersistence handlerDBPersistence;
     private String dateQuery;
+    private String tipoLlamado;
 
-    public SyncDownService(String host, String service, String url, Context context, String dateQuery){
+    public SyncDownService(String host, String service, String url, Context context, String dateQuery, String tipoLlamado){
 
         this.host = host;
         this.service = service;
@@ -29,6 +30,7 @@ public class SyncDownService {
         this.context = context;
         this.handlerDBPersistence = new HandlerDBPersistence(this.context);
         this.dateQuery = dateQuery;
+        this.tipoLlamado = tipoLlamado;
     }
 
     /**
@@ -57,10 +59,11 @@ public class SyncDownService {
         for (int i=0; i<listTableName.size(); i++){
 
             //obtenemos la informacion desde servidor
-            new ConnectToService(this.host, this.url, this.service, this.dateQuery, listTableName.get(i), this.context).getValuesServer();
+            ConnectToService connectToService = new ConnectToService(this.host, this.url, this.service, this.dateQuery, listTableName.get(i), this.context, this.tipoLlamado);
+            //connectToService.execute();
+            connectToService.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         }
 
     }
-
 }

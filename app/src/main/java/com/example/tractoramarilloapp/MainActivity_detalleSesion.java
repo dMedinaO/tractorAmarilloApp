@@ -30,9 +30,12 @@ import com.example.tractoramarilloapp.model.Maquinaria;
 import com.example.tractoramarilloapp.model.UserSession;
 import com.example.tractoramarilloapp.nfc.NFCHandler;
 import com.example.tractoramarilloapp.persistence.HandlerDBPersistence;
+import com.example.tractoramarilloapp.syncService.SyncUpService;
 import com.example.tractoramarilloapp.utils.ConnectivityApplication;
 import com.example.tractoramarilloapp.utils.ConnectivityReceiver;
 import com.example.tractoramarilloapp.utils.FA;
+
+import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -190,6 +193,14 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     String idUsuario = prefs.getString("idUsuario", "null");
                     long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
 
+                    //********************************************* por mientras para probar!!!
+                    SyncUpService syncUpService = new  SyncUpService("http://192.168.1.146", "syncUpService.php", "/syncServiceTractorAmarillo/", context, "-");
+                    try {
+                        syncUpService.processElementToService();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                     Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 
                     FA.showInformationInforme(new HandlerDBPersistence(getApplicationContext()));
@@ -217,6 +228,15 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     String tokenSession = prefs.getString("tokenSession", "pull");
                     String idUsuario = prefs.getString("idUsuario", "null");
                     long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
+
+                    //********************************************* por mientras para probar!!!
+                    SyncUpService syncUpService = new  SyncUpService("http://192.168.1.146", "syncUpService.php", "/syncServiceTractorAmarillo/", context, "-");
+                    try {
+                        syncUpService.processElementToService();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    //********************************************* por mientras para probar!!!
 
                     Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 

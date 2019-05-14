@@ -16,7 +16,7 @@ public class ValuesTempDB {
 
     public void addElements(Context context){
 
-        SyncDownService syncDownService = new SyncDownService("http://192.168.1.146", "syncDownService.php", "/syncServiceTractorAmarillo/", context, "-");
+        SyncDownService syncDownService = new SyncDownService("http://192.168.1.146", "syncDownService.php", "/syncServiceTractorAmarillo/", context, "-", "-");
         syncDownService.processSyncElement();
 
     }

@@ -1,6 +1,7 @@
 package com.example.tractoramarilloapp.syncService;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  * para la manipulacion de las conexiones y posee un metodo que procesa la data y la habilita desde
  * el servidor para almacenarla en el registro de datos persistente
  */
-public class ConnectToService {
+public class ConnectToService extends AsyncTask {
 
     //atributos de la clase
     private String host;
@@ -32,6 +33,7 @@ public class ConnectToService {
     private String params;
     private String tableName;
     private Context context;
+    private String tipoLlamado;
 
     /**
      * Constructor de la clase
@@ -39,8 +41,9 @@ public class ConnectToService {
      * @param url
      * @param service
      * @param params
+     * @param tipoLlamado
      */
-    public ConnectToService(String host, String url, String service, String params, String tableName, Context context){
+    public ConnectToService(String host, String url, String service, String params, String tableName, Context context, String tipoLlamado){
 
         this.host = host;
         this.params = params;
@@ -48,6 +51,7 @@ public class ConnectToService {
         this.service = service;
         this.tableName = tableName;
         this.context = context;
+        this.tipoLlamado = tipoLlamado;
     }
 
     /**
@@ -128,5 +132,17 @@ public class ConnectToService {
         mRequestQueue.add(jsonObjectRequest);
 
         return response;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected Object doInBackground(Object[] objects) {
+
+        this.getValuesServer();
+        return null;
     }
 }
