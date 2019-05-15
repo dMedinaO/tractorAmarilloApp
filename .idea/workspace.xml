@@ -10,10 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8ff685fc-dd97-4aec-8612-badd09f46f63" name="Default Changelist" comment="Commit David">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/utils/FA.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/utils/FA.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -97,14 +99,14 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gradle" value="3" />
-          <entry key="java" value="153" />
+          <entry key="java" value="162" />
           <entry key="xml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="Groovy" value="3" />
-          <entry key="JAVA" value="153" />
+          <entry key="JAVA" value="162" />
           <entry key="XML" value="3" />
         </counts>
       </usages-collector>
@@ -112,14 +114,14 @@
         <counts>
           <entry key="dummy" value="17" />
           <entry key="gradle" value="21" />
-          <entry key="java" value="19284" />
+          <entry key="java" value="21851" />
           <entry key="txt" value="177" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="Groovy" value="21" />
-          <entry key="JAVA" value="19284" />
+          <entry key="JAVA" value="21851" />
           <entry key="PLAIN_TEXT" value="194" />
         </counts>
       </usages-collector>
@@ -128,34 +130,71 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="17" column="82" selection-start-line="17" selection-start-column="82" selection-end-line="17" selection-end-column="82" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="152">
-              <caret line="38" column="19" lean-forward="true" selection-start-line="38" selection-start-column="19" selection-end-line="38" selection-end-column="19" />
+            <state relative-caret-position="1089">
+              <caret line="228" column="5" lean-forward="true" selection-start-line="215" selection-start-column="3" selection-end-line="228" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#2075#5138#0" expanded="true" />
+                <element signature="e#5137#5138#0" expanded="true" />
+                <element signature="e#5164#5465#0" expanded="true" />
+                <element signature="e#5464#5465#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="232" column="89" selection-start-line="232" selection-start-column="89" selection-end-line="232" selection-end-column="89" />
+            <state relative-caret-position="-1777">
+              <caret line="42" column="18" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="18" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="221">
+              <caret line="223" selection-start-line="223" selection-end-line="223" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="203">
+              <caret line="90" column="43" lean-forward="true" selection-start-line="86" selection-start-column="8" selection-end-line="90" selection-end-column="43" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="15" column="20" lean-forward="true" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="158">
+              <caret line="63" column="68" selection-start-line="63" selection-start-column="68" selection-end-line="63" selection-end-column="68" />
             </state>
           </provider>
         </entry>
@@ -1624,7 +1663,6 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/persistence/ComentarioContract.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/model/Comentarios.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_comentario.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/TableSyncDevice.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/persistence/TableSyncContract.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/DifferentsInTablesDown.java" />
@@ -1639,13 +1677,14 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/handlers/InformationDetailSession.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/handlers/HandlerImplemento.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/handlers/HandlerMaquinaria.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ProcessDataJSON.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/persistence/HandlerDBPersistence.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/utils/FA.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java" />
       </list>
     </option>
@@ -1655,6 +1694,26 @@
     <option name="y" value="44" />
     <option name="width" value="1360" />
     <option name="height" value="737" />
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State />
+          <State>
+            <id>Compiler issuesJava</id>
+          </State>
+          <State>
+            <id>Java</id>
+          </State>
+        </expanded-state>
+        <selected-state>
+          <State>
+            <id>UNCHECKED_WARNING</id>
+          </State>
+        </selected-state>
+      </profile-state>
+    </entry>
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -2060,13 +2119,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_faena.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="91" column="58" selection-start-line="91" selection-start-column="58" selection-end-line="91" selection-end-column="58" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/persistence/SessionClassContract.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -2278,26 +2330,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-116">
-          <caret line="33" column="28" selection-start-line="33" selection-start-column="19" selection-end-line="33" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="64" column="79" selection-start-line="61" selection-start-column="12" selection-end-line="64" selection-end-column="79" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
@@ -2313,34 +2345,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_faena.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1173">
-          <caret line="59" selection-start-line="59" selection-end-line="59" />
+        <state relative-caret-position="122">
+          <caret line="42" column="44" lean-forward="true" selection-start-line="42" selection-start-column="12" selection-end-line="42" selection-end-column="44" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/ValuesTempDB.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="17" column="82" selection-start-line="17" selection-start-column="82" selection-end-line="17" selection-end-column="82" />
+        <state relative-caret-position="90">
+          <caret line="15" column="20" lean-forward="true" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="38" column="19" lean-forward="true" selection-start-line="38" selection-start-column="19" selection-end-line="38" selection-end-column="19" />
+        <state relative-caret-position="158">
+          <caret line="63" column="68" selection-start-line="63" selection-start-column="68" selection-end-line="63" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncDownService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="90" column="43" lean-forward="true" selection-start-line="86" selection-start-column="8" selection-end-line="90" selection-end-column="43" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/ConnectToService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1089">
+          <caret line="228" column="5" lean-forward="true" selection-start-line="215" selection-start-column="3" selection-end-line="228" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2075#5138#0" expanded="true" />
+            <element signature="e#5137#5138#0" expanded="true" />
+            <element signature="e#5164#5465#0" expanded="true" />
+            <element signature="e#5464#5465#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/MainActivity_detalleSesion.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="232" column="89" selection-start-line="232" selection-start-column="89" selection-end-line="232" selection-end-column="89" />
+        <state relative-caret-position="221">
+          <caret line="223" selection-start-line="223" selection-end-line="223" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/tractoramarilloapp/syncService/SyncUpService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1777">
+          <caret line="42" column="18" selection-start-line="42" selection-start-column="18" selection-end-line="42" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

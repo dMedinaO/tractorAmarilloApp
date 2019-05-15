@@ -1,5 +1,6 @@
 package com.example.tractoramarilloapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -12,10 +13,10 @@ import java.util.ArrayList;
 
 public class ValuesTempDB {
 
-    public void addElements(Context context){
+    public void addElements(Context context, Activity activity){
 
 
-        SyncDownService syncDownService = new SyncDownService("http://45.7.228.219", "syncDownService.php", "/syncServiceTractorAmarillo/", context, "-", "-");
+        SyncDownService syncDownService = new SyncDownService("http://45.7.228.219", "syncDownService.php", "/syncServiceTractorAmarillo/", context, "-", "-", activity);
         syncDownService.processSyncElement();
 
     }

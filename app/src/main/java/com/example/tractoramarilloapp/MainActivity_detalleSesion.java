@@ -193,13 +193,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     String idUsuario = prefs.getString("idUsuario", "null");
                     long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
 
-                    //********************************************* por mientras para probar!!!
-                    SyncUpService syncUpService = new  SyncUpService("http://45.7.228.219", "syncUpService.php", "/syncServiceTractorAmarillo/", context, "-");
-                    try {
-                        syncUpService.processElementToService();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
                     Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 
@@ -228,15 +221,6 @@ public class MainActivity_detalleSesion extends AppCompatActivity implements Con
                     String tokenSession = prefs.getString("tokenSession", "pull");
                     String idUsuario = prefs.getString("idUsuario", "null");
                     long response = new HandlerDBPersistence(getApplicationContext()).saveUnidadLocal(new HandlerInforme(getApplicationContext()).createUnityLocal(tokenSession, "--", idUsuario));//creamos una unidad local
-
-                    //********************************************* por mientras para probar!!!
-                    SyncUpService syncUpService = new  SyncUpService("http://45.7.228.219", "syncUpService.php", "/syncServiceTractorAmarillo/", context, "-");
-                    try {
-                        syncUpService.processElementToService();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    //********************************************* por mientras para probar!!!
 
                     Log.e("TAG-UNIDAD-LOCAL", "RESPONSE UNIDAD: " + response);
 

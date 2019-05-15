@@ -1,6 +1,8 @@
 package com.example.tractoramarilloapp.syncService;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -17,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 
 /**
  * Clase con la responsabilidad de obtener la informacion desde el servidor, trabaja con Volley
@@ -34,6 +35,7 @@ public class ConnectToService extends AsyncTask {
     private String tableName;
     private Context context;
     private String tipoLlamado;
+    private Activity activity;
 
     /**
      * Constructor de la clase
@@ -43,7 +45,7 @@ public class ConnectToService extends AsyncTask {
      * @param params
      * @param tipoLlamado
      */
-    public ConnectToService(String host, String url, String service, String params, String tableName, Context context, String tipoLlamado){
+    public ConnectToService(String host, String url, String service, String params, String tableName, Context context, String tipoLlamado, Activity activity){
 
         this.host = host;
         this.params = params;
@@ -52,6 +54,7 @@ public class ConnectToService extends AsyncTask {
         this.tableName = tableName;
         this.context = context;
         this.tipoLlamado = tipoLlamado;
+        this.activity = activity;
     }
 
     /**
@@ -76,31 +79,38 @@ public class ConnectToService extends AsyncTask {
 
                             if (tableName.equalsIgnoreCase("faena")){//manipulamos la informacion de la faena
                                 new ProcessDataJSON().processDataFaena(responseObject, context);
+                                changeStatusToShared("0");
                             }else{
 
                                 if (tableName.equalsIgnoreCase("predio")){//manipulamos la informacion del predio
                                     new ProcessDataJSON().processDataPredio(responseObject, context);
+                                    changeStatusToShared("0");
                                 }else{
 
                                     if (tableName.equalsIgnoreCase("usuario")){//manipulamos la informacion del usuario
                                         new ProcessDataJSON().processDataUser(responseObject, context);
+                                        changeStatusToShared("0");
 
                                     }else{
                                         if (tableName.equalsIgnoreCase("maquinaria")){//manipulamos la informacion de la maquinaria
                                             new ProcessDataJSON().processDataMaquinaria(responseObject, context);
+                                            changeStatusToShared("0");
                                         }else{
                                             if (tableName.equalsIgnoreCase("tipoMaquinaria")){//manipulamos la informacion del tipo de maquinaria
-
                                                 new ProcessDataJSON().processDataTipoMaquinaria(responseObject, context);
+                                                changeStatusToShared("0");
                                             }else{
                                                 if (tableName.equalsIgnoreCase("tipoHabilitado")){
                                                     new ProcessDataJSON().processDataTipoHabilitado(responseObject, context);
+                                                    changeStatusToShared("0");
                                                 }else{
                                                     if (tableName.equalsIgnoreCase("implementos")){
                                                         new ProcessDataJSON().processDataImplemento(responseObject, context);
+                                                        changeStatusToShared("0");
                                                     }else{
                                                         if(tableName.equalsIgnoreCase("mensajeMotivacional")){
                                                             new ProcessDataJSON().processMensajeMotivacional(responseObject, context);
+                                                            changeStatusToShared("0");
                                                         }
                                                     }
                                                 }
@@ -113,6 +123,12 @@ public class ConnectToService extends AsyncTask {
                             e.printStackTrace();
                         }
 
+                        //preguntamos si terminamos
+                        int isFinish = isDownFinish();
+
+                        if (isFinish == 0){
+                            finishSync();
+                        }
                     }
                 },
                         new Response.ErrorListener() {
@@ -138,9 +154,86 @@ public class ConnectToService extends AsyncTask {
         return response;
     }
 
+    /**
+     * Metodo que permite la actualizacion de los procesos de sincronizacion en las shared asociados a las tablas de descarga de datos
+     * @param key
+     */
+    public void changeStatusToShared(String key){
+
+        SharedPreferences preferences = this.activity.getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        if (this.tableName.equalsIgnoreCase("faena"))
+            editor.putString("FAENA_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("predio"))
+            editor.putString("PREDIO_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("usuario"))
+            editor.putString("USUARIO_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("maquinaria"))
+            editor.putString("MAQUINARIA_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("tipoMaquinaria"))
+            editor.putString("TIPO_MAQUINARIA_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("tipoHabilitado"))
+            editor.putString("TIPO_HABILITADO_DOWN", key);
+        else if (this.tableName.equalsIgnoreCase("implementos"))
+            editor.putString("IMPLEMENTO_DOWN", key);
+        else
+            editor.putString("MENSAJE_DOWN", key);
+        editor.commit();
+
+    }
+
+    /**
+     * Metodo que permite evaluar si el sincronizador ya se encuentra listo para terminar.
+     * @return
+     */
+    public int isDownFinish(){
+
+        //obtenemos las shared
+        SharedPreferences preferences = this.activity.getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+
+        //formamos un arreglo con las keys
+        String [] keyShared = {"FAENA_DOWN", "PREDIO_DOWN", "USUARIO_DOWN", "MAQUINARIA_DOWN", "TIPO_MAQUINARIA_DOWN", "TIPO_HABILITADO_DOWN", "IMPLEMENTO_DOWN", "MENSAJE_DOWN"};
+        String [] status = new String[keyShared.length];
+
+        for (int i=0; i<keyShared.length; i++){
+            status[i] = preferences.getString(keyShared[i], null);
+        }
+
+        int cont=0;
+        for (int i=0; i<status.length; i++){
+            if (status[i].equalsIgnoreCase("0"))
+                cont++;
+        }
+
+        if (cont == status.length)
+            return 0;
+        else
+            return 1;
+
+    }
+
+    /**
+     * Metodo que da termino al sincronizador
+     */
+    public void finishSync(){
+
+        SharedPreferences preferences = this.activity.getSharedPreferences("MisPreferencias", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString("SYNC_DOWN", "0");
+        editor.commit();
+
+        if (this.tipoLlamado.equalsIgnoreCase("WINDOWS"))
+            Log.e("SYNC_DOWN", "Debo detener el mensaje rql");
+    }
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+
+        if (this.tipoLlamado.equalsIgnoreCase("WINDOWS")){
+            Log.e("SYNC_DOWN", "Debo mostrar el mensaje rql");
+        }
     }
 
     @Override

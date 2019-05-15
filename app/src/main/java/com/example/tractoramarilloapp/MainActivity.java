@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements ConnectivityRecei
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        new ValuesTempDB().addElements(this);
+        new ValuesTempDB().addElements(getApplicationContext(), this);
 
         new HandlerInforme(getApplicationContext()).showInformeDetail();
         int comment = new HandlerDBPersistence(getApplicationContext()).consultarRegistros("SELECT * FROM comentario").getCount();
